@@ -12,7 +12,6 @@
 
 #include <primesum-internal.hpp>
 #include <primesieve.hpp>
-#include <PiTable.hpp>
 #include <generate.hpp>
 #include <int128.hpp>
 #include <min_max.hpp>
