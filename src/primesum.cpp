@@ -280,30 +280,13 @@ double get_alpha_deleglise_rivat(maxint_t x)
   // use default alpha if no command-line alpha provided
   if (alpha < 1)
   {
-    if (x2 <= 1e21)
-    {
-      double a = 0.000711339;
-      double b = -0.0160586;
-      double c = 0.123034;
-      double d = 0.802942;
-      double logx = log(x2);
+    double a = 0.00116661;
+    double b = -0.0197289;
+    double c = -0.0195667;
+    double d = 1.41721;
+    double logx = log(x2);
 
-      alpha = a * pow(logx, 3) + b * pow(logx, 2) + c * logx + d;
-    }
-    else
-    {
-      // Because of CPU cache misses sieving (S2_hard(x) and P2(x))
-      // becomes the main bottleneck above 10^21 . Hence we use a
-      // different alpha formula when x > 10^21 which returns a larger
-      // alpha which reduces sieving but increases S2_easy(x) work.
-      double a = 0.00149066;
-      double b = -0.0375705;
-      double c = 0.282139;
-      double d = 0.591972;
-      double logx = log(x2);
-
-      alpha = a * pow(logx, 3) + b * pow(logx, 2) + c * logx + d;
-    }
+    alpha = a * pow(logx, 3) + b * pow(logx, 2) + c * logx + d;
   }
 
   return in_between(1, alpha, iroot<6>(x));
