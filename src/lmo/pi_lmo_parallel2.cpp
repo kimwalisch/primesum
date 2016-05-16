@@ -108,7 +108,6 @@ T S2_thread(T x,
       int64_t prime = primes[b];
       int64_t min_m = max(x / (prime * high), y / prime);
       int64_t max_m = min(x / (prime * low), y);
-      int64_t count = 0;
       int64_t i = 0;
 
       if (prime >= max_m)
@@ -141,7 +140,6 @@ T S2_thread(T x,
       int64_t prime = primes[b];
       int64_t l = pi[min(x / (prime * low), y)];
       int64_t min_m = max3(x / (prime * high), y / prime, prime);
-      int64_t count = 0;
       int64_t i = 0;
 
       if (prime >= primes[l])
