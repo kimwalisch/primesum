@@ -151,7 +151,6 @@ T S2_thread(T x,
         int64_t stop = xn - low;
         for (; i <= stop; i++)
           phi[b] += (low + i) * sieve[i];
-        int64_t phi_xn = phi[b] + count;
         S2_thread += primes[l] * prime * phi[b];
         mu_sum[b] += primes[l] * prime;
       }
