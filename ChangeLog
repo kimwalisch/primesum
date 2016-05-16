@@ -1,4 +1,8 @@
 2016-05-16 Kim Walisch  <kim.walisch@gmail.com>
 
-  Version 0.1 work in progress.
+  Version 0.1 released.
 
+  This is the first version of primesum. It uses the Deleglise-Rivat
+  algorithm to compute the sum of the primes below x. primesum
+  currently uses the __int128_t integer type so it will work correctly
+  up to 10^20, above 10^20 the prime sum > 2^128.
