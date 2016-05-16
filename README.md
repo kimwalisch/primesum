@@ -57,7 +57,66 @@ Advanced Deleglise-Rivat options:
 
 Benchmarks
 ----------
-TODO.
+<table>
+  <tr align="center">
+    <td><b>x</b></td>
+    <td><b>Prime sum</b></td>
+    <td><b>Time elapsed</b></td>
+  </tr>
+  <tr align="right">
+    <td>10<sup>10</sup></td>
+    <td>2,220,822,432,581,729,238</td>
+    <td>0.02s</td>
+  </tr>
+  </tr>
+  <tr align="right">
+    <td>10<sup>11</sup></td>
+    <td>201,467,077,743,744,681,014</td>
+    <td>0.06s</td>
+  </tr>
+  </tr>
+  <tr align="right">
+    <td>10<sup>12</sup></td>
+    <td>18,435,588,552,550,705,911,377</td>
+    <td>0.07s</td>
+  </tr>
+  </tr>
+  <tr align="right">
+    <td>10<sup>13</sup></td>
+    <td>1,699,246,443,377,779,418,889,494</td>
+    <td>0.26s</td>
+  </tr>
+  </tr>
+  <tr align="right">
+    <td>10<sup>14</sup></td>
+    <td>157,589,260,710,736,940,541,561,021</td>
+    <td>1.03s</td>
+  </tr>
+  <tr align="right">
+    <td>10<sup>15</sup></td>
+    <td>14,692,398,516,908,006,398,225,702,366</td>
+    <td>4.58s</td>
+  </tr>
+  <tr align="right">
+    <td>10<sup>16</sup></td>
+    <td>1,376,110,854,313,351,899,159,632,866,552</td>
+    <td>24.93s</td>
+  </tr>
+  <tr align="right">
+    <td>10<sup>17</sup></td>
+    <td>129,408,626,276,669,278,966,252,031,311,350</td>
+    <td>144.45s</td>
+  </tr>
+  <tr align="right">
+  <td>10<sup>18</sup></td>
+  <td>12,212,914,292,949,226,570,880,576,733,896,687</td>
+    <td>833.35s</td>
+  </tr>
+</table>
+
+The benchmarks above were run on an Intel Core i7-6700 CPU (4 x 3.4 GHz) from
+2015 using a Linux x64 operating system and primecount was compiled using
+GCC 5.2.
 
 Build instructions (Unix-like OSes)
 -----------------------------------
