@@ -181,7 +181,7 @@ T P2_OpenMP_master(T x, int64_t y, int threads)
 
 namespace primesum {
 
-int64_t P2(int64_t x, int64_t y, int threads)
+maxint_t P2(maxint_t x, int64_t y, int threads)
 {
 #ifdef HAVE_MPI
   if (mpi_num_procs() > 1)
@@ -194,33 +194,10 @@ int64_t P2(int64_t x, int64_t y, int threads)
   print(x, y, threads);
 
   double time = get_wtime();
-  int64_t p2 = P2_OpenMP_master(x, y, threads);
+  maxint_t p2 = P2_OpenMP_master(x, y, threads);
 
   print("P2", p2, time);
   return p2;
 }
-
-#ifdef HAVE_INT128_T
-
-int128_t P2(int128_t x, int64_t y, int threads)
-{
-#ifdef HAVE_MPI
-  if (mpi_num_procs() > 1)
-    return P2_mpi(x, y, threads);
-#endif
-
-  print("");
-  print("=== P2(x, y) ===");
-  print("Computation of the 2nd partial sieve function");
-  print(x, y, threads);
-
-  double time = get_wtime();
-  int128_t p2 = P2_OpenMP_master(x, y, threads);
-
-  print("P2", p2, time);
-  return p2;
-}
-
-#endif
 
 } // namespace primesum

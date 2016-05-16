@@ -73,27 +73,7 @@ T S2_trivial_OpenMP(T x,
 
 namespace primesum {
 
-int64_t S2_trivial(int64_t x,
-                   int64_t y,
-                   int64_t z,
-                   int64_t c,
-                   int threads)
-{
-  print("");
-  print("=== S2_trivial(x, y) ===");
-  print("Computation of the trivial special leaves");
-  print(x, y, c, threads);
-
-  double time = get_wtime();
-  int64_t s2_trivial = S2_trivial_OpenMP(x, y, z, c, threads);
-
-  print("S2_trivial", s2_trivial, time);
-  return s2_trivial;
-}
-
-#ifdef HAVE_INT128_T
-
-int128_t S2_trivial(int128_t x,
+maxint_t S2_trivial(maxint_t x,
                     int64_t y,
                     int64_t z,
                     int64_t c,
@@ -105,12 +85,10 @@ int128_t S2_trivial(int128_t x,
   print(x, y, c, threads);
 
   double time = get_wtime();
-  int128_t s2_trivial = S2_trivial_OpenMP(x, y, z, c, threads);
+  maxint_t s2_trivial = S2_trivial_OpenMP(x, y, z, c, threads);
 
   print("S2_trivial", s2_trivial, time);
   return s2_trivial;
 }
-
-#endif
 
 } // namespace primesum

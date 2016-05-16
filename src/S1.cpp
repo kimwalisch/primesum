@@ -11,6 +11,7 @@
 #include <primesum-internal.hpp>
 #include <generate.hpp>
 #include <pmath.hpp>
+#include <int128.hpp>
 
 #include <stdint.h>
 #include <vector>
@@ -80,26 +81,7 @@ X S1_OpenMP_master(X x,
 
 namespace primesum {
 
-int64_t S1(int64_t x,
-           int64_t y,
-           int64_t c,
-           int threads)
-{
-  print("");
-  print("=== S1(x, y) ===");
-  print("Computation of the ordinary leaves");
-  print(x, y, c, threads);
-
-  double time = get_wtime();
-  int64_t s1_sum = S1_OpenMP_master(x, y, c, threads);
-
-  print("S1_sum", s1_sum, time);
-  return s1_sum;
-}
-
-#ifdef HAVE_INT128_T
-
-int128_t S1(int128_t x,
+maxint_t S1(maxint_t x,
             int64_t y,
             int64_t c,
             int threads)
@@ -110,7 +92,7 @@ int128_t S1(int128_t x,
   print(x, y, c, threads);
 
   double time = get_wtime();
-  int128_t s1_sum;
+  maxint_t s1_sum;
 
   // uses less memory
   if (y <= numeric_limits<uint32_t>::max())
@@ -121,7 +103,5 @@ int128_t S1(int128_t x,
   print("S1_sum", s1_sum, time);
   return s1_sum;
 }
-
-#endif
 
 } // namespace primesum

@@ -61,27 +61,11 @@ int64_t phi(int64_t x, int64_t a);
 
 maxint_t pi(maxint_t x, int threads);
 
-#ifdef HAVE_INT128_T
+maxint_t pi(maxint_t x);
 
-int128_t pi(int128_t x);
+maxint_t pi_deleglise_rivat(maxint_t x, int threads);
 
-#endif
-
-int64_t pi_deleglise_rivat(int64_t x, int threads);
-
-#ifdef HAVE_INT128_T
-
-int128_t pi_deleglise_rivat(int128_t x);
-
-int128_t pi_deleglise_rivat(int128_t x, int threads);
-
-#endif
-
-#ifdef HAVE_INT128_T
-
-int128_t pi_deleglise_rivat_parallel3(int128_t x, int threads);
-
-#endif
+maxint_t pi_deleglise_rivat_parallel3(maxint_t x, int threads);
 
 int64_t pi_legendre(int64_t x, int threads);
 
@@ -111,29 +95,9 @@ int64_t phi(int64_t x, int64_t a, int threads);
 
 maxint_t phi_sum(maxint_t x, int64_t a);
 
-int64_t Li(int64_t);
-
-int64_t Li_inverse(int64_t);
-
-#ifdef HAVE_INT128_T
-
-int128_t Li(int128_t);
-
-int128_t Li_inverse(int128_t);
-
-#endif
-
 int64_t nth_prime(int64_t n, int threads);
 
-int64_t P2(int64_t x, int64_t y, int threads);
-
-int64_t P3(int64_t x, int64_t a, int threads);
-
-#ifdef HAVE_INT128_T
-
-int128_t P2(int128_t x, int64_t y, int threads);
-
-#endif
+maxint_t P2(maxint_t x, int64_t y, int threads);
 
 int64_t prime_sum_tiny(int64_t x);
 

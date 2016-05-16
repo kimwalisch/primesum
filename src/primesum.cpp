@@ -83,14 +83,10 @@ maxint_t pi(maxint_t x, int threads)
   return pi_deleglise_rivat(x, threads);
 }
 
-#ifdef HAVE_INT128_T
-
-int128_t pi(int128_t x)
+maxint_t pi(maxint_t x)
 {
   return pi(x, threads_);
 }
-
-#endif
 
 /// Alias for the fastest prime counting function in primesum.
 /// @param x  integer arithmetic expression e.g. "10^12".
@@ -113,18 +109,14 @@ string pi(const string& x, int threads)
   return oss.str();
 }
 
-#ifdef HAVE_INT128_T
-
 /// Calculate the number of primes below x using the
 /// Deleglise-Rivat algorithm.
 /// Run time: O(x^(2/3) / (log x)^2) operations, O(x^(1/3) * (log x)^3) space.
 ///
-int128_t pi_deleglise_rivat(int128_t x, int threads)
+maxint_t pi_deleglise_rivat(maxint_t x, int threads)
 {
   return pi_deleglise_rivat_parallel3(x, threads);
 }
-
-#endif
 
 /// Calculate the number of primes below x using Legendre's formula.
 /// Run time: O(x) operations, O(x^(1/2)) space.

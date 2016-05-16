@@ -253,36 +253,7 @@ T S2_hard_OpenMP_master(T x,
 
 namespace primesum {
 
-int64_t S2_hard(int64_t x,
-                int64_t y,
-                int64_t z,
-                int64_t c,
-                int threads)
-{
-#ifdef HAVE_MPI
-  if (mpi_num_procs() > 1)
-    return S2_hard_mpi(x, y, z, c, threads);
-#endif
-
-  print("");
-  print("=== S2_hard(x, y) ===");
-  print("Computation of the hard special leaves");
-  print(x, y, c, threads);
-
-  double time = get_wtime();
-  FactorTable<uint16_t> factors(y, threads);
-  int64_t max_prime = z / isqrt(y);
-  vector<int32_t> primes = generate_primes(max_prime);
-
-  int64_t s2_hard = S2_hard_OpenMP_master((intfast64_t) x, y, z, c, primes, factors, threads);
-
-  print("S2_hard", s2_hard, time);
-  return s2_hard;
-}
-
-#ifdef HAVE_INT128_T
-
-int128_t S2_hard(int128_t x,
+maxint_t S2_hard(maxint_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
@@ -299,7 +270,7 @@ int128_t S2_hard(int128_t x,
   print(x, y, c, threads);
 
   double time = get_wtime();
-  int128_t s2_hard;
+  maxint_t s2_hard;
 
   // uses less memory
   if (y <= FactorTable<uint16_t>::max())
@@ -308,7 +279,7 @@ int128_t S2_hard(int128_t x,
     int64_t max_prime = z / isqrt(y);
     vector<uint32_t> primes = generate_primes<uint32_t>(max_prime);
 
-    s2_hard = S2_hard_OpenMP_master((intfast128_t) x, y, z, c, primes, factors, threads);
+    s2_hard = S2_hard_OpenMP_master((maxuint_t) x, y, z, c, primes, factors, threads);
   }
   else
   {
@@ -316,13 +287,11 @@ int128_t S2_hard(int128_t x,
     int64_t max_prime = z / isqrt(y);
     vector<int64_t> primes = generate_primes<int64_t>(max_prime);
 
-    s2_hard = S2_hard_OpenMP_master((intfast128_t) x, y, z, c, primes, factors, threads);
+    s2_hard = S2_hard_OpenMP_master((maxuint_t) x, y, z, c, primes, factors, threads);
   }
 
   print("S2_hard", s2_hard, time);
   return s2_hard;
 }
-
-#endif
 
 } // namespace primesum

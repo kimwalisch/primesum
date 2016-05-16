@@ -109,33 +109,7 @@ T S2_easy_OpenMP(T x,
 
 namespace primesum {
 
-int64_t S2_easy(int64_t x,
-                int64_t y,
-                int64_t z,
-                int64_t c,
-                int threads)
-{
-#ifdef HAVE_MPI
-  if (mpi_num_procs() > 1)
-    return S2_easy_mpi(x, y, z, c, threads);
-#endif
-
-  print("");
-  print("=== S2_easy(x, y) ===");
-  print("Computation of the easy special leaves");
-  print(x, y, c, threads);
-
-  double time = get_wtime();
-  vector<int32_t> primes = generate_primes(y);
-  int64_t s2_easy = S2_easy_OpenMP((intfast64_t) x, y, z, c, primes, threads);
-
-  print("S2_easy", s2_easy, time);
-  return s2_easy;
-}
-
-#ifdef HAVE_INT128_T
-
-int128_t S2_easy(int128_t x,
+maxint_t S2_easy(maxint_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
@@ -152,24 +126,22 @@ int128_t S2_easy(int128_t x,
   print(x, y, c, threads);
 
   double time = get_wtime();
-  int128_t s2_easy;
+  maxint_t s2_easy;
 
   // uses less memory
   if (y <= numeric_limits<uint32_t>::max())
   {
     vector<uint32_t> primes = generate_primes<uint32_t>(y);
-    s2_easy = S2_easy_OpenMP((intfast128_t) x, y, z, c, primes, threads);
+    s2_easy = S2_easy_OpenMP((maxuint_t) x, y, z, c, primes, threads);
   }
   else
   {
     vector<int64_t> primes = generate_primes<int64_t>(y);
-    s2_easy = S2_easy_OpenMP((intfast128_t) x, y, z, c, primes, threads);
+    s2_easy = S2_easy_OpenMP((maxuint_t) x, y, z, c, primes, threads);
   }
 
   print("S2_easy", s2_easy, time);
   return s2_easy;
 }
-
-#endif
 
 } // namespace primesum
