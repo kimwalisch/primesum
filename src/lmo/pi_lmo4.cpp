@@ -37,7 +37,6 @@ void cross_off(int64_t prime,
                int64_t& next_multiple,
                T& sieve)
 {
-  int64_t segment_size = sieve.size();
   int64_t m = next_multiple;
 
   for (; m < high; m += prime * 2)
