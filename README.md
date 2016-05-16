@@ -3,9 +3,9 @@ primesum
 [![Build Status](https://travis-ci.org/kimwalisch/primesum.svg)](https://travis-ci.org/kimwalisch/primesum)
 [![GitHub license](https://img.shields.io/badge/license-BSD%202-blue.svg)](https://github.com/kimwalisch/primesum/blob/master/COPYING)
 
-primesum is a command-line program (and C++ library) that computes the
+**primesum** is a command-line program (and C++ library) that computes the
 sum of the primes below an integer x&nbsp;≤&nbsp;10<sup>31</sup> as quickly
-as possible. **primesum** is in fact a modified version of the author's
+as possible. **primesum** is a modified version of the author's
 [primecount](https://github.com/kimwalisch/primecount) program.
 
 Binaries
