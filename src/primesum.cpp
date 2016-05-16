@@ -71,9 +71,6 @@ int status_precision_ = -1;
 
 double alpha_ = -1;
 
-// Below 10^7 the Deleglise-Rivat algorithm is slower than LMO
-const int deleglise_rivat_threshold = 10000000;
-
 }
 
 namespace primesum {
