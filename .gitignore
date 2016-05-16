@@ -30,6 +30,7 @@ confdefs.h
 /libtool
 /ltmain.sh
 /missing
+/m4
 stamp-*
 /test-driver
 /compile
