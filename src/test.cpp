@@ -110,6 +110,7 @@ bool test()
   {
     test_phi_thread_safety(100);
 
+    CHECK_EQUAL(pi_lmo1,                         prime_sum_tiny,      CHECK_11,  50);
     CHECK_EQUAL(pi_lmo2,                         pi_lmo1,             CHECK_11,  100);
     CHECK_EQUAL(pi_lmo4,                         pi_lmo2,             CHECK_11,  300);
     CHECK_EQUAL(pi_lmo5,                         pi_lmo4,             CHECK_11,  400);
