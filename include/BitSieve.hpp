@@ -46,8 +46,8 @@ public:
   }
 
   /// Compute the sum of the primes inside [start, stop]
-  maxint_t prime_sum(uint64_t i,
-                     uint64_t low,
+  maxint_t prime_sum(uint64_t low,
+                     uint64_t start,
                      uint64_t stop) const;
 
   /// Count the number of 1 bits inside [start, stop].

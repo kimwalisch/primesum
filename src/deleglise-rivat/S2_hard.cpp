@@ -127,7 +127,7 @@ T S2_hard_OpenMP_thread(T x,
           int64_t fm = factors.get_number(m);
           int64_t xn = (int64_t) fast_div(x2, fm);
           int64_t stop = xn - low;
-          phi[b] += sieve.prime_sum(start, low, stop);
+          phi[b] += sieve.prime_sum(low, start, stop);
           start = stop + 1;
           int64_t mu_m = factors.mu(m);
           int64_t pmul = mu_m * fm * prime;
@@ -136,7 +136,7 @@ T S2_hard_OpenMP_thread(T x,
         }
       }
 
-      phi[b] += sieve.prime_sum(start, low, (high - low) - 1);
+      phi[b] += sieve.prime_sum(low, start, (high - low) - 1);
       cross_off(sieve, low, high, prime, wheel[b]);
     }
 
@@ -160,14 +160,14 @@ T S2_hard_OpenMP_thread(T x,
       {
         int64_t xn = (int64_t) fast_div(x2, primes[l]);
         int64_t stop = xn - low;
-        phi[b] += sieve.prime_sum(start, low, stop);
+        phi[b] += sieve.prime_sum(low, start, stop);
         start = stop + 1;
         int64_t pmul = primes[l] * prime;
         s2_hard += pmul * phi[b];
         mu_sum[b] += pmul;
       }
 
-      phi[b] += sieve.prime_sum(start, low, (high - low) - 1);
+      phi[b] += sieve.prime_sum(low, start, (high - low) - 1);
       cross_off(sieve, low, high, prime, wheel[b]);
     }
 
