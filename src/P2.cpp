@@ -51,13 +51,13 @@ int64_t balanceLoad(int64_t segment_size, double start_time)
 
 template <typename T>
 T P2_OpenMP_thread(T x,
-                       int64_t y,
-                       int64_t z,
-                       int64_t segment_size,
-                       int64_t thread_num,
-                       int64_t low,
-                       T& prime_sum,
-                       T& correct)
+                   int64_t y,
+                   int64_t z,
+                   int64_t segment_size,
+                   int64_t thread_num,
+                   int64_t low,
+                   T& prime_sum,
+                   T& correct)
 {
   prime_sum = 0;
   correct = 0;
@@ -67,13 +67,13 @@ T P2_OpenMP_thread(T x,
   int64_t sqrtx = isqrt(x);
   int64_t start = (int64_t) max(x / z + 1, y);
   int64_t stop  = (int64_t) min(x / low, sqrtx);
+  int64_t x_div_prime = 0;
 
   primesieve::iterator nit(low - 1, z);
   primesieve::iterator pit(stop + 1, start);
 
   T next_prime = nit.next_prime();
   T previous_prime = pit.previous_prime();
-  T x_div_prime = 0;
   T P2_thread = 0;
 
   while (previous_prime >= start &&
@@ -137,13 +137,13 @@ T P2_OpenMP_master(T x, int64_t y, int threads)
   int64_t low = 2;
   int64_t z = (int64_t)(x / max(y, 1));
   int64_t segment_size = 1 << 20;
-
   threads = validate_threads(threads, z);
+
   aligned_vector<T> prime_sums(threads);
   aligned_vector<T> correct(threads);
 
   T p2 = 0;
-  int64_t prime_sum = prime_sum_tiny(y);
+  T prime_sum = prime_sum_tiny(y);
 
   while (low < z)
   {
