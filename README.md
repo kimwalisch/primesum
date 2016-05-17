@@ -55,8 +55,8 @@ Advanced Deleglise-Rivat options:
          --S2_hard          Only compute the hard special leaves
 ```
 
-Benchmarks
-----------
+Benchmark
+---------
 <table>
   <tr align="center">
     <td><b>x</b></td>
@@ -115,7 +115,7 @@ Benchmarks
 </table>
 
 The benchmarks above were run on an Intel Core i7-6700 CPU (4 x 3.4 GHz) from
-2015 using a Linux x64 operating system and primecount was compiled using
+2015 using a Linux x64 operating system and primesum was compiled using
 GCC 5.2.
 
 Build instructions (Unix-like OSes)
