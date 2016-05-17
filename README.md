@@ -6,8 +6,9 @@ primesum
 **primesum** is a command-line program that computes the sum of the
 primes below an integer x&nbsp;≤&nbsp;10<sup>31</sup> as quickly as
 possible using a modified version of the combinatorial prime counting
-function algorithm <a href="#references">[1]</a>. **primesum** is a
-modified version of the author's
+function algorithm <a href="#references">[1]</a>.
+
+**primesum** is a modified version of the author's
 [primecount](https://github.com/kimwalisch/primecount) program.
 
 Binaries
