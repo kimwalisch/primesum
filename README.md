@@ -128,8 +128,11 @@ GCC 5.2.
 
 Build instructions (Unix-like OSes)
 -----------------------------------
-You need to have installed a C++ compiler, GNU make and GNU Autotools
-(automake, autoconf, libtool) to build ```primesum```.
+You need to have installed a C++ compiler and GNU make to build ```primesum```.
+
+Download
+[primesum-0.1.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.1.tar.gz)
+and build it using:
 
 ```sh
 $ ./build.sh
