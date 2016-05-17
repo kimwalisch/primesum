@@ -13,7 +13,12 @@ function algorithm <a href="#references">[1]</a>.
 
 Binaries
 --------
-Will come within a week or so...
+Below are the latest precompiled binaries for Windows 64-bit and Linux x64.
+These binaries are statically linked and require a CPU which supports the
+POPCNT instruction (2010 or later).
+
+* [primesum-0.1-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-0.1-win64.zip), 358K
+* [primesum-0.1-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.1-linux-x64.tar.gz), 864K
 
 Usage examples
 --------------
