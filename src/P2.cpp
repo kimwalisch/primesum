@@ -1,7 +1,7 @@
 ///
 /// @file  P2.cpp
 /// @brief 2nd partial sieve function.
-///        P2(x, y) counts the numbers <= x that have exactly 2 prime
+///        P2(x, y) sums the numbers <= x that have exactly 2 prime
 ///        factors each exceeding the a-th prime.
 ///
 /// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
@@ -63,6 +63,7 @@ T P2_OpenMP_thread(T x,
   correct = 0;
   low += thread_num * segment_size;
   z = min(low + segment_size, z);
+  T P2_thread = 0;
 
   int64_t sqrtx = isqrt(x);
   int64_t start = (int64_t) max(x / z + 1, y);
@@ -72,13 +73,13 @@ T P2_OpenMP_thread(T x,
   primesieve::iterator nit(low - 1, z);
   primesieve::iterator pit(stop + 1, start);
 
-  T next_prime = nit.next_prime();
-  T previous_prime = pit.previous_prime();
-  T P2_thread = 0;
+  int64_t next_prime = nit.next_prime();
+  int64_t prev_prime = pit.previous_prime();
 
-  while (previous_prime >= start &&
-         (x_div_prime = (int64_t) (x / previous_prime)) < z)
+  while (prev_prime >= start &&
+         (x_div_prime = (int64_t) (x / prev_prime)) < z)
   {
+    // Compute the sum of the primes <= x / prev_prime
     while (next_prime <= x_div_prime)
     {
       if (next_prime > y && 
@@ -92,11 +93,12 @@ T P2_OpenMP_thread(T x,
       next_prime = nit.next_prime();
     }
 
-    P2_thread += previous_prime * prime_sum;
-    correct += previous_prime;
-    previous_prime = pit.previous_prime();
+    P2_thread += prev_prime * prime_sum;
+    correct += prev_prime;
+    prev_prime = pit.previous_prime();
   }
 
+  // Compute the sum of the primes < z
   while (next_prime < z)
   {
     if (next_prime > y && 
@@ -113,7 +115,7 @@ T P2_OpenMP_thread(T x,
   return P2_thread;
 }
 
-/// P2(x, y) counts the numbers <= x that have exactly 2 prime
+/// P2(x, y) sums the numbers <= x that have exactly 2 prime
 /// factors each exceeding the a-th prime, a = pi(y).
 /// Space complexity: O((x / y)^(1/2)).
 ///
