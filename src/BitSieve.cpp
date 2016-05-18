@@ -227,10 +227,10 @@ uint64_t BitSieve::count(uint64_t start,
   return bit_count;
 }
 
-/// Compute the sum of the primes inside [start, stop]
-maxint_t BitSieve::prime_sum(uint64_t low,
-                             uint64_t start,
-                             uint64_t stop) const
+/// Compute the sum of the unsieved numbers inside [start, stop]
+maxint_t BitSieve::sum(uint64_t low,
+                       uint64_t start,
+                       uint64_t stop) const
 {
   if (start > stop)
     return 0;
