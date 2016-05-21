@@ -71,9 +71,9 @@ inline void cnt_update(std::vector<T>& cnt,
 /// Runtime: O(log N).
 ///
 template <typename T>
-inline int64_t cnt_query(const std::vector<T>& cnt, int64_t pos)
+inline T cnt_query(const std::vector<T>& cnt, int64_t pos)
 {
-  int64_t sum = cnt[pos++];
+  T sum = cnt[pos++];
   for (; pos &= pos - 1; sum += cnt[pos - 1]);
   return sum;
 }
