@@ -38,10 +38,10 @@ inline void cnt_finit(const T1& sieve,
                       int64_t low,
                       int64_t segment_size)
 {
-  for (T2 i = 0; i < segment_size; i++)
+  for (int64_t i = 0; i < segment_size; i++)
   {
     cnt[i] = (low + i) * sieve[i];
-    for (T2 k = (i + 1) & ~i, j = i; k >>= 1; j &= j - 1)
+    for (int64_t k = (i + 1) & ~i, j = i; k >>= 1; j &= j - 1)
       cnt[i] += cnt[j - 1];
   }
 }
