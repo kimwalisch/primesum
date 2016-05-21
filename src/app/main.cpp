@@ -176,8 +176,10 @@ int main (int argc, char* argv[])
         res = pi_lmo1(int64_cast(x)); break;
       case OPTION_LMO2:
         res = pi_lmo2(int64_cast(x)); break;
-      case OPTION_LMO4:
+      case OPTION_LMO3:
         res = pi_lmo3(int64_cast(x)); break;
+      case OPTION_LMO4:
+        res = pi_lmo4(int64_cast(x)); break;
       case OPTION_LMO5:
         res = pi_lmo5(int64_cast(x)); break;
       case OPTION_LMO_PARALLEL2:

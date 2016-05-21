@@ -113,7 +113,8 @@ bool test()
     CHECK_EQUAL(pi_lmo1,                         prime_sum_tiny,      CHECK_11,  50);
     CHECK_EQUAL(pi_lmo2,                         pi_lmo1,             CHECK_11,  100);
     CHECK_EQUAL(pi_lmo3,                         pi_lmo2,             CHECK_11,  300);
-    CHECK_EQUAL(pi_lmo5,                         pi_lmo3,             CHECK_11,  400);
+    CHECK_EQUAL(pi_lmo4,                         pi_lmo3,             CHECK_11,  400);
+    CHECK_EQUAL(pi_lmo5,                         pi_lmo4,             CHECK_11,  600);
     CHECK_EQUAL(pi_lmo_parallel2,                pi_lmo5,             CHECK_21,  600);
     CHECK_EQUAL(pi_deleglise_rivat_parallel3,    pi_lmo_parallel2,    CHECK_22,  900);
   }

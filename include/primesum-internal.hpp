@@ -81,6 +81,8 @@ int64_t pi_lmo2(int64_t x);
 
 int64_t pi_lmo3(int64_t x);
 
+int64_t pi_lmo4(int64_t x);
+
 int64_t pi_lmo5(int64_t x);
 
 maxint_t pi_lmo_parallel1(maxint_t x, int threads);

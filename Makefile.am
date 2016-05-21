@@ -66,6 +66,7 @@ libprimesum_la_SOURCES = \
 	src/lmo/pi_lmo1.cpp \
 	src/lmo/pi_lmo2.cpp \
 	src/lmo/pi_lmo3.cpp \
+	src/lmo/pi_lmo4.cpp \
 	src/lmo/pi_lmo5.cpp \
 	src/lmo/pi_lmo_parallel2.cpp \
 	include/aligned_vector.hpp \
@@ -87,6 +88,7 @@ libprimesum_la_SOURCES = \
 	include/S2.hpp \
 	include/S2LoadBalancer.hpp \
 	include/S2Status.hpp \
+	include/tos_counters.hpp \
 	include/Wheel.hpp
 
 if HAVE_LIBDIVIDE
