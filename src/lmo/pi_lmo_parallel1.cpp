@@ -1,5 +1,5 @@
 ///
-/// @file  pi_lmo_parallel2.cpp
+/// @file  pi_lmo_parallel1.cpp
 /// @brief Parallel implementation of the Lagarias-Miller-Odlyzko
 ///        prime summing algorithm using OpenMP. This implementation
 ///        uses improved load balancing and counts the number of
@@ -251,7 +251,7 @@ namespace primesum {
 /// Lagarias-Miller-Odlyzko algorithm.
 /// Run time: O(x^(2/3) / log x) operations, O(x^(1/3) * (log x)^2) space.
 ///
-maxint_t pi_lmo_parallel2(maxint_t x, int threads)
+maxint_t pi_lmo_parallel1(maxint_t x, int threads)
 {
   if (x < 2)
     return 0;
@@ -263,7 +263,7 @@ maxint_t pi_lmo_parallel2(maxint_t x, int threads)
   int64_t c = PhiTiny::get_c(y);
 
   print("");
-  print("=== pi_lmo_parallel2(x) ===");
+  print("=== pi_lmo_parallel1(x) ===");
   print("pi(x) = S1 + S2 + pi(y) - 1 - P2");
   print(x, y, z, c, alpha, threads);
 

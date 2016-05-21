@@ -129,7 +129,7 @@ int64_t pi_legendre(int64_t x)
 ///
 maxint_t pi_lmo(maxint_t x, int threads)
 {
-  return pi_lmo_parallel2(x, threads);
+  return pi_lmo_parallel1(x, threads);
 }
 
 /// Calculate the number of primes below x using an optimized 

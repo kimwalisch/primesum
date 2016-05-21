@@ -182,8 +182,8 @@ int main (int argc, char* argv[])
         res = pi_lmo4(int64_cast(x)); break;
       case OPTION_LMO5:
         res = pi_lmo5(int64_cast(x)); break;
-      case OPTION_LMO_PARALLEL2:
-        res = pi_lmo_parallel2(int64_cast(x), threads); break;
+      case OPTION_LMO_PARALLEL1:
+        res = pi_lmo_parallel1(int64_cast(x), threads); break;
       case OPTION_P2:
         res = P2(x, threads); break;
       case OPTION_PI:

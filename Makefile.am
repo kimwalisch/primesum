@@ -68,7 +68,7 @@ libprimesum_la_SOURCES = \
 	src/lmo/pi_lmo3.cpp \
 	src/lmo/pi_lmo4.cpp \
 	src/lmo/pi_lmo5.cpp \
-	src/lmo/pi_lmo_parallel2.cpp \
+	src/lmo/pi_lmo_parallel1.cpp \
 	include/aligned_vector.hpp \
 	include/BitSieve.hpp \
 	include/calculator.hpp \

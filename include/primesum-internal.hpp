@@ -87,7 +87,7 @@ int64_t pi_lmo5(int64_t x);
 
 maxint_t pi_lmo_parallel1(maxint_t x, int threads);
 
-maxint_t pi_lmo_parallel2(maxint_t x, int threads);
+maxint_t pi_lmo_parallel1(maxint_t x, int threads);
 
 int64_t pi_meissel(int64_t x, int threads);
 
