@@ -61,7 +61,7 @@ void initOptionMap()
   optionMap["--alpha"]                     = OPTION_ALPHA;
   optionMap["-d"]                          = OPTION_DELEGLISE_RIVAT;
   optionMap["--deleglise_rivat"]           = OPTION_DELEGLISE_RIVAT;
-  optionMap["--deleglise_rivat_parallel3"] = OPTION_DELEGLISE_RIVAT_PARALLEL3;
+  optionMap["--deleglise_rivat_parallel1"] = OPTION_DELEGLISE_RIVAT_PARALLEL1;
   optionMap["-h"]                          = OPTION_HELP;
   optionMap["--help"]                      = OPTION_HELP;
   optionMap["-l"]                          = OPTION_LMO;

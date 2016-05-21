@@ -65,7 +65,7 @@ maxint_t pi(maxint_t x);
 
 maxint_t pi_deleglise_rivat(maxint_t x, int threads);
 
-maxint_t pi_deleglise_rivat_parallel3(maxint_t x, int threads);
+maxint_t pi_deleglise_rivat_parallel1(maxint_t x, int threads);
 
 int64_t pi_legendre(int64_t x, int threads);
 

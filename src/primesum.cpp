@@ -112,7 +112,7 @@ string pi(const string& x, int threads)
 ///
 maxint_t pi_deleglise_rivat(maxint_t x, int threads)
 {
-  return pi_deleglise_rivat_parallel3(x, threads);
+  return pi_deleglise_rivat_parallel1(x, threads);
 }
 
 /// Calculate the number of primes below x using Legendre's formula.

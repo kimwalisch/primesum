@@ -62,7 +62,7 @@ libprimesum_la_SOURCES = \
 	src/Wheel.cpp \
 	src/deleglise-rivat/S2_trivial.cpp \
 	src/deleglise-rivat/S2_hard.cpp \
-	src/deleglise-rivat/pi_deleglise_rivat_parallel3.cpp \
+	src/deleglise-rivat/pi_deleglise_rivat_parallel1.cpp \
 	src/lmo/pi_lmo1.cpp \
 	src/lmo/pi_lmo2.cpp \
 	src/lmo/pi_lmo3.cpp \

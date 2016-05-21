@@ -1,5 +1,5 @@
 ///
-/// @file  pi_deleglise_rivat_parallel3.cpp
+/// @file  pi_deleglise_rivat_parallel1.cpp
 /// @brief Parallel implementation of the Deleglise-Rivat prime
 ///        counting algorithm. This implementation is identical to
 ///        pi_deleglise_rivat_parallel2(x) but uses 128-bit integers.
@@ -51,7 +51,7 @@ namespace primesum {
 /// Deleglise-Rivat algorithm.
 /// Run time: O(x^(2/3) / (log x)^2) operations, O(x^(1/3) * (log x)^3) space.
 ///
-maxint_t pi_deleglise_rivat_parallel3(maxint_t x, int threads)
+maxint_t pi_deleglise_rivat_parallel1(maxint_t x, int threads)
 {
   if (x < 2)
     return 0;
@@ -67,7 +67,7 @@ maxint_t pi_deleglise_rivat_parallel3(maxint_t x, int threads)
   int64_t c = PhiTiny::get_c(y);
 
   print("");
-  print("=== pi_deleglise_rivat_parallel3(x) ===");
+  print("=== pi_deleglise_rivat_parallel1(x) ===");
   print("pi(x) = S1 + S2 + pi(y) - 1 - P2");
   print(x, y, z, c, alpha, threads);
 

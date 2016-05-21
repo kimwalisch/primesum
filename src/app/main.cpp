@@ -168,8 +168,8 @@ int main (int argc, char* argv[])
     {
       case OPTION_DELEGLISE_RIVAT:
         res = pi_deleglise_rivat(x, threads); break;
-      case OPTION_DELEGLISE_RIVAT_PARALLEL3:
-        res = pi_deleglise_rivat_parallel3(x, threads); break;
+      case OPTION_DELEGLISE_RIVAT_PARALLEL1:
+        res = pi_deleglise_rivat_parallel1(x, threads); break;
       case OPTION_LMO:
         res = pi_lmo(int64_cast(x), threads); break;
       case OPTION_LMO1:
