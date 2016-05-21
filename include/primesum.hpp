@@ -27,7 +27,7 @@ public:
   { }
 };
 
-/// 128-bit prime counting function.
+/// 128-bit prime summing function.
 /// Run time: O(x^(2/3) / (log x)^2) operations, O(x^(1/3) * (log x)^3) space.
 /// @param expr  Integer arithmetic expression e.g. "1000", "10^22"
 /// @pre   expr  <= get_max_x()

@@ -85,7 +85,7 @@ maxint_t pi(maxint_t x)
   return pi(x, threads_);
 }
 
-/// Alias for the fastest prime counting function in primesum.
+/// Alias for the fastest prime summing function in primesum.
 /// @param x  integer arithmetic expression e.g. "10^12".
 /// @pre   x  <= get_max_x().
 ///
@@ -94,7 +94,7 @@ string pi(const string& x)
   return pi(x, threads_);
 }
 
-/// Alias for the fastest prime counting function in primesum.
+/// Alias for the fastest prime summing function in primesum.
 /// @param x  integer arithmetic expression e.g. "10^12".
 /// @pre   x  <= get_max_x().
 ///
@@ -124,7 +124,7 @@ int64_t pi_legendre(int64_t x)
 }
 
 /// Parallel implementation of the Lagarias-Miller-Odlyzko
-/// prime counting algorithm using OpenMP.
+/// prime summing algorithm using OpenMP.
 /// Run time: O(x^(2/3) / log x) operations, O(x^(1/3) * (log x)^2) space.
 ///
 maxint_t pi_lmo(maxint_t x, int threads)

@@ -1,6 +1,6 @@
 ///
 /// @file  pi_lmo5.cpp
-/// @brief Implementation of the Lagarias-Miller-Odlyzko prime counting
+/// @brief Implementation of the Lagarias-Miller-Odlyzko prime summing
 ///        algorithm. This version uses the modified algorithm as
 ///        described in section 5 (pages 556-557) in the paper
 ///        "Computing pi(x) The Meissel-Lehmer Method", Mathematics of

@@ -1,7 +1,7 @@
 ///
 /// @file  pi_lmo_parallel2.cpp
 /// @brief Parallel implementation of the Lagarias-Miller-Odlyzko
-///        prime counting algorithm using OpenMP. This implementation
+///        prime summing algorithm using OpenMP. This implementation
 ///        uses improved load balancing and counts the number of
 ///        unsieved elements using POPCNT without using any special
 ///        counting tree data structure.

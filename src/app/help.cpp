@@ -20,7 +20,7 @@ namespace {
 const string helpMenu(
   "Usage: primesum x [OPTION]...\n"
   "Sum the primes below x <= 10^31 using fast implementations of the\n"
-  "combinatorial prime counting function.\n"
+  "combinatorial prime summing function.\n"
   "\n"
   "Options:\n"
   "\n"

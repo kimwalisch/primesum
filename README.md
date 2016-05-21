@@ -39,7 +39,7 @@ Command-line options
 ```
 Usage: primesum x [OPTION]...
 Sum the primes below x <= 10^31 using fast implementations of the
-combinatorial prime counting function.
+combinatorial prime summing function.
 
 Options:
 

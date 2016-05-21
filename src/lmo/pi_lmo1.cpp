@@ -1,7 +1,7 @@
 ///
 /// @file  pi_lmo1.cpp
 /// @brief Simple demonstration implementation of the
-///        Lagarias-Miller-Odlyzko prime counting algorithm.
+///        Lagarias-Miller-Odlyzko prime summing algorithm.
 ///        Usually in the Lagarias-Miller-Odlyzko algorithm phi(x, a)
 ///        is calculated using a prime sieve but this simple
 ///        implementation calculates phi(x, a) using the recursive
