@@ -43,11 +43,6 @@ public:
     return count(0, stop);
   }
 
-  /// Compute the sum of the unsieved numbers inside [start, stop]
-  maxint_t sum(uint64_t low,
-               uint64_t start,
-               uint64_t stop) const;
-
   /// Count the number of 1 bits inside [start, stop].
   /// As an optimization this method counts either forwards or
   /// backwards depending on what's faster.
