@@ -33,11 +33,12 @@ maxint_t S2(maxint_t x,
             int64_t y,
             int64_t z,
             int64_t c,
+            double alpha,
             int threads)
 {
   maxint_t s2_trivial = S2_trivial(x, y, z, c, threads);
   maxint_t s2_easy = S2_easy(x, y, z, c, threads);
-  maxint_t s2_hard = S2_hard(x, y, z, c, threads);
+  maxint_t s2_hard = S2_hard(x, y, z, c, alpha, threads);
   maxint_t s2 = s2_trivial + s2_easy + s2_hard;
 
   return s2;
@@ -73,7 +74,7 @@ maxint_t pi_deleglise_rivat_parallel1(maxint_t x, int threads)
 
   maxint_t p2 = P2(x, y, threads);
   maxint_t s1 = S1(x, y, c, threads);
-  maxint_t s2 = S2(x, y, z, c, threads);
+  maxint_t s2 = S2(x, y, z, c, alpha, threads);
   maxint_t phi = s1 + s2;
   maxint_t sum = phi + prime_sum_tiny(y) - 1 - p2;
 

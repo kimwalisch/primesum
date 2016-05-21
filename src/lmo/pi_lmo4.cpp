@@ -3,7 +3,7 @@
 /// @brief Implementation of the Lagarias-Miller-Odlyzko prime
 ///        summing algorithm. This implementation uses the segmented
 ///        sieve of Eratosthenes and a special tree data structure
-///        for faster counting in S2(x).
+///        for faster summing in S2(x).
 ///
 /// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
 ///
@@ -16,7 +16,7 @@
 #include <generate.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>
-#include <tos_counters.hpp>
+#include <tos_sums.hpp>
 
 #include <stdint.h>
 #include <algorithm>
@@ -29,7 +29,7 @@ namespace {
 
 /// Cross-off the multiples of prime in the sieve array.
 /// For each element that is unmarked the first time update
-/// the special counters tree data structure.
+/// the special sums tree data structure.
 ///
 template <typename T1, typename T2>
 void cross_off(int64_t prime,
@@ -37,7 +37,7 @@ void cross_off(int64_t prime,
                int64_t high,
                int64_t& next_multiple,
                T1& sieve,
-               T2& counters)
+               T2& sums)
 {
   int64_t segment_size = sieve.size();
   int64_t m = next_multiple;
@@ -47,7 +47,7 @@ void cross_off(int64_t prime,
     if (sieve[m - low])
     {
       sieve[m - low] = 0;
-      cnt_update(counters, m, low, segment_size);
+      sums_update(sums, m, low, segment_size);
     }
   }
 
@@ -70,7 +70,7 @@ int64_t S2(int64_t x,
   int64_t S2_result = 0;
 
   vector<char> sieve(segment_size);
-  vector<int64_t> counters(segment_size);
+  vector<int64_t> sums(segment_size);
   vector<int64_t> next(primes.begin(), primes.end());
   vector<int64_t> phi(primes.size(), 0);
 
@@ -93,7 +93,7 @@ int64_t S2(int64_t x,
     }
 
     // Initialize special tree data structure from sieve
-    cnt_finit(sieve, counters, low, segment_size);
+    sums_finit(sieve, sums, low, segment_size);
 
     for (int64_t b = c + 1; b < pi_y; b++)
     {
@@ -112,7 +112,7 @@ int64_t S2(int64_t x,
         if (mu[m] != 0 && prime < lpf[m])
         {
           int64_t n = prime * m;
-          int64_t count = cnt_query(counters, (x / n) - low);
+          int64_t count = sums_query(sums, (x / n) - low);
           int64_t phi_xn = phi[b] + count;
 
           S2_result -= mu[m] * m * prime * phi_xn;
@@ -121,10 +121,10 @@ int64_t S2(int64_t x,
 
       // Calculate phi(high - 1, b - 1) which will be used to
       // calculate special leaves in the next segment
-      phi[b] += cnt_query(counters, (high - 1) - low);
+      phi[b] += sums_query(sums, (high - 1) - low);
 
       // Remove the multiples of (b)th prime
-      cross_off(prime, low, high, next[b], sieve, counters);
+      cross_off(prime, low, high, next[b], sieve, sums);
     }
   }
 

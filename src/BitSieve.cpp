@@ -50,17 +50,66 @@ const uint64_t masks[] =
 };
 
 /// Get bitmask with unset multiples
-uint64_t unset_mask(uint64_t mask, uint64_t shift)
+inline uint64_t unset_mask(uint64_t mask, uint64_t shift)
 {
   return ~(mask << shift);
 }
 
 /// @pre x < y * 2
-uint64_t fast_modulo(uint64_t x, uint64_t y)
+inline uint64_t fast_modulo(uint64_t x, uint64_t y)
 {
   x = (x < y) ? x : x - y;
   assert(x < y);
   return x;
+}
+
+/// @return Index of the first set bit
+inline uint64_t bit_scan_forward(uint64_t x)
+{
+  assert (x != 0);
+
+#if defined(__GNUC__) && \
+    defined(__x86_64__)
+  asm ("bsfq %0, %0" : "=r" (x) : "0" (x));
+  return x;
+#else
+  // GCC emits bsfq instruction when using __builtin_ctzll(x)
+  // but the assembly code above is still faster
+  return __builtin_ctzll(x);
+#endif
+}
+
+inline uint64_t sum_word64(uint64_t bits, uint64_t& low)
+{
+  uint64_t sum = 0;
+
+  while (bits != 0)
+  {
+    sum += low + bit_scan_forward(bits);
+    bits &= bits - 1;
+  }
+
+  low += 1 * 64;
+  return sum;
+}
+
+inline maxint_t sum_sieve(const uint64_t* sieve, uint64_t size, uint64_t& low)
+{
+  maxint_t sum = 0;
+  uint64_t i;
+
+  for (i = 0; i < size; i++)
+  {
+    uint64_t bits = sieve[i];
+    while (bits != 0)
+    {
+      sum += low + i * 64 + bit_scan_forward(bits);
+      bits &= bits - 1;
+    }
+  }
+
+  low += i * 64;
+  return sum;
 }
 
 }
@@ -93,7 +142,7 @@ const uint64_t BitSieve::unset_bit_[64] =
   ~(UINT64_C(1) << 63)
 };
 
-BitSieve::BitSieve(std::size_t size) :
+BitSieve::BitSieve(size_t size) :
   sieve_(ceil_div(size, 64)),
   size_(size)
 { }
@@ -185,6 +234,36 @@ uint64_t BitSieve::count(uint64_t start,
   }
 
   return bit_count;
+}
+
+/// Compute the sum of the unsieved numbers inside [start, stop]
+maxint_t BitSieve::sum(uint64_t low,
+                       uint64_t start,
+                       uint64_t stop) const
+{
+  if (start > stop)
+    return 0;
+
+  assert(stop < size_);
+
+  uint64_t start_idx = start / 64;
+  uint64_t stop_idx = stop / 64;
+  uint64_t m1 = UINT64_C(0xffffffffffffffff) << (start % 64);
+  uint64_t m2 = UINT64_C(0xffffffffffffffff) >> (63 - stop % 64);
+
+  maxint_t sum;
+  low += start - start % 64;
+
+  if (start_idx == stop_idx)
+    sum = sum_word64(sieve_[start_idx] & (m1 & m2), low);
+  else
+  {
+    sum = sum_word64(sieve_[start_idx] & m1, low);
+    sum += sum_sieve(&sieve_[start_idx + 1], stop_idx - (start_idx + 1), low);
+    sum += sum_word64(sieve_[stop_idx] & m2, low);
+  }
+
+  return sum;
 }
 
 } // namespace

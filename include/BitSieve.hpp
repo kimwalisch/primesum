@@ -43,25 +43,30 @@ public:
     return count(0, stop);
   }
 
-  /// Count the number of 1 bits inside [start, stop].
+  /// Compute the sum of the unsieved numbers inside [start, stop]
+  maxint_t sum(uint64_t low,
+               uint64_t start,
+               uint64_t stop) const;
+
+  /// Sum the unsieved numbers inside [start, stop].
   /// As an optimization this method counts either forwards or
   /// backwards depending on what's faster.
   ///
-  uint64_t count(uint64_t start,
-                 uint64_t stop,
-                 uint64_t low,
-                 uint64_t high,
-                 uint64_t count_0_start,
-                 uint64_t count_low_high) const
+  maxint_t sum(uint64_t start,
+               uint64_t stop,
+               uint64_t low,
+               uint64_t high,
+               uint64_t sum_0_start,
+               uint64_t sum_low_high) const
   {
     if (start > stop)
       return 0;
 
     if (stop - start < high - low - stop)
-      return count(start, stop);
+      return sum(low, start, stop);
     else
-      // optimization, same as count(start, stop)
-      return count_low_high - count_0_start - count(stop + 1, (high - 1) - low);
+      // optimization, same as sum(low, start, stop)
+      return sum_low_high - sum_0_start - sum(low, stop + 1, (high - 1) - low);
   }
 
   void set(uint64_t pos)

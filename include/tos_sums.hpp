@@ -1,5 +1,5 @@
 ///
-/// @file   tos_counters.hpp
+/// @file   tos_sums.hpp
 /// @brief  This file contains functions to initialize, update and query
 ///         the special tree data structure used for summing the
 ///         number of unsieved elements in the Lagarias-Miller-Odlyzko
@@ -18,49 +18,49 @@
 /// file in the top level directory.
 ///
 
-#ifndef TOS_COUNTERS_HPP
-#define TOS_COUNTERS_HPP
+#ifndef TOS_SUMS_HPP
+#define TOS_SUMS_HPP
 
 #include <stdint.h>
 #include <vector>
 
 namespace primesum {
 
-/// Initialize the counters from the sieve array.
+/// Initialize the sums from the sieve array.
 /// @pre segment_size is a power of 2.
 /// @pre sieve[i] = 1 for unsieved elements and sieve[i] = 0
 ///      for crossed-off elements.
 /// Runtime: O(N log N).
 ///
 template <typename T1, typename T2>
-inline void cnt_finit(const T1& sieve,
-                      std::vector<T2>& cnt,
+inline void sums_finit(const T1& sieve,
+                      std::vector<T2>& sums,
                       int64_t low,
                       int64_t segment_size)
 {
   for (int64_t i = 0; i < segment_size; i++)
   {
-    cnt[i] = (low + i) * sieve[i];
+    sums[i] = (low + i) * sieve[i];
     for (int64_t k = (i + 1) & ~i, j = i; k >>= 1; j &= j - 1)
-      cnt[i] += cnt[j - 1];
+      sums[i] += sums[j - 1];
   }
 }
 
-/// Update the counters after that an element has been
+/// Update the sums after that an element has been
 /// crossed-off for the first time in the sieve array.
 /// @pre segment_size is a power of 2.
 /// Runtime: O(log N).
 ///
 template <typename T>
-inline void cnt_update(std::vector<T>& cnt,
-                       int64_t n,
-                       int64_t low,
-                       int64_t segment_size)
+inline void sums_update(std::vector<T>& sums,
+                        int64_t n,
+                        int64_t low,
+                        int64_t segment_size)
 {
   int64_t i = n - low;
   do
   {
-    cnt[i] -= n;
+    sums[i] -= n;
     i |= i + 1;
   }
   while (i < segment_size);
@@ -71,10 +71,10 @@ inline void cnt_update(std::vector<T>& cnt,
 /// Runtime: O(log N).
 ///
 template <typename T>
-inline T cnt_query(const std::vector<T>& cnt, int64_t pos)
+inline T sums_query(const std::vector<T>& sums, int64_t i)
 {
-  T sum = cnt[pos++];
-  for (; pos &= pos - 1; sum += cnt[pos - 1]);
+  T sum = sums[i++];
+  for (; i &= i - 1; sum += sums[i - 1]);
   return sum;
 }
 

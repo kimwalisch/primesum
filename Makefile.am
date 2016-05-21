@@ -88,7 +88,7 @@ libprimesum_la_SOURCES = \
 	include/S2.hpp \
 	include/S2LoadBalancer.hpp \
 	include/S2Status.hpp \
-	include/tos_counters.hpp \
+	include/tos_sums.hpp \
 	include/Wheel.hpp
 
 if HAVE_LIBDIVIDE
