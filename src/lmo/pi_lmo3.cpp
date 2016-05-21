@@ -1,5 +1,5 @@
 ///
-/// @file  pi_lmo4.cpp
+/// @file  pi_lmo3.cpp
 /// @brief Implementation of the Lagarias-Miller-Odlyzko prime
 ///        counting algorithm. This implementation uses the segmented
 ///        sieve of Eratosthenes and a special tree data structure
@@ -128,7 +128,7 @@ namespace primesum {
 /// Lagarias-Miller-Odlyzko algorithm.
 /// Run time: O(x^(2/3)) operations, O(x^(1/3) * (log x)^2) space.
 ///
-int64_t pi_lmo4(int64_t x)
+int64_t pi_lmo3(int64_t x)
 {
   if (x < 2)
     return 0;

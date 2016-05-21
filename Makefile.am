@@ -65,7 +65,7 @@ libprimesum_la_SOURCES = \
 	src/deleglise-rivat/pi_deleglise_rivat_parallel3.cpp \
 	src/lmo/pi_lmo1.cpp \
 	src/lmo/pi_lmo2.cpp \
-	src/lmo/pi_lmo4.cpp \
+	src/lmo/pi_lmo3.cpp \
 	src/lmo/pi_lmo5.cpp \
 	src/lmo/pi_lmo_parallel2.cpp \
 	include/aligned_vector.hpp \
