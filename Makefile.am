@@ -70,6 +70,7 @@ libprimesum_la_SOURCES = \
 	src/lmo/pi_lmo5.cpp \
 	src/lmo/pi_lmo_parallel1.cpp \
 	include/aligned_vector.hpp \
+	include/bit_scan_forward.hpp \
 	include/BitSieve.hpp \
 	include/calculator.hpp \
 	include/FactorTable.hpp \
@@ -88,6 +89,7 @@ libprimesum_la_SOURCES = \
 	include/S2.hpp \
 	include/S2LoadBalancer.hpp \
 	include/S2Status.hpp \
+	include/SumBits.hpp \
 	include/tos_sums.hpp \
 	include/Wheel.hpp
 

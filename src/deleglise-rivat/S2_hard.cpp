@@ -148,8 +148,7 @@ T S2_hard_OpenMP_thread(T x,
     sieve.pre_sieve(c, low);
 
     // If there are relatively few special leaves per segment
-    // we sum the unsieved numbers directly from the sieve array
-    // using the BSF (Bit Scan Forward) instruction.
+    // we sum the unsieved numbers directly from the sieve array.
     if (few_leaves(low, high, y, alpha))
     {
       // sum of unsieved numbers inside [low, high[

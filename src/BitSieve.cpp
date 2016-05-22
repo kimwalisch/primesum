@@ -16,9 +16,11 @@
 #endif
 
 #include <BitSieve.hpp>
+#include <bit_scan_forward.hpp>
 #include <popcount.hpp>
 #include <pmath.hpp>
 #include <int128.hpp>
+#include <SumBits.hpp>
 
 #include <stdint.h>
 #include <algorithm>
@@ -30,6 +32,8 @@ using namespace std;
 using namespace primesum;
 
 namespace {
+
+const SumBits sum_bits;
 
 /// 1-indexing: primes[1] = 2, primes[2] = 3, ...
 const uint64_t primes[] = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
@@ -63,22 +67,6 @@ inline uint64_t fast_modulo(uint64_t x, uint64_t y)
   return x;
 }
 
-/// @return Index of the first set bit
-inline uint64_t bit_scan_forward(uint64_t x)
-{
-  assert (x != 0);
-
-#if defined(__GNUC__) && \
-    defined(__x86_64__)
-  asm ("bsfq %0, %0" : "=r" (x) : "0" (x));
-  return x;
-#else
-  // GCC emits bsfq instruction when using __builtin_ctzll(x)
-  // but the assembly code above is still faster
-  return __builtin_ctzll(x);
-#endif
-}
-
 inline uint64_t sum_word64(uint64_t bits, uint64_t& low)
 {
   uint64_t sum = 0;
@@ -96,19 +84,12 @@ inline uint64_t sum_word64(uint64_t bits, uint64_t& low)
 inline maxint_t sum_sieve(const uint64_t* sieve, uint64_t size, uint64_t& low)
 {
   maxint_t sum = 0;
-  uint64_t i;
+  const uint16_t* bits = (uint16_t*) sieve;
+  size *= 4;
 
-  for (i = 0; i < size; i++)
-  {
-    uint64_t bits = sieve[i];
-    while (bits != 0)
-    {
-      sum += low + i * 64 + bit_scan_forward(bits);
-      bits &= bits - 1;
-    }
-  }
+  for (uint64_t i = 0; i < size; i++, low += 16)
+    sum += low * popcount_u64(bits[i]) + sum_bits[bits[i]];
 
-  low += i * 64;
   return sum;
 }
 
