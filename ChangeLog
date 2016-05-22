@@ -1,3 +1,13 @@
+2016-05-22 Kim Walisch  <kim.walisch@gmail.com>
+
+  Version 0.2 work in progress.
+
+  This version dramatically speeds up the computation of the hard
+  special leaves (up to 10x faster). The speed up comes from the
+  implementation of a special binary tree data structure for summing
+  the unsieved numbers in O(log n) operations as well as other low
+  level optimizations.
+
 2016-05-16 Kim Walisch  <kim.walisch@gmail.com>
 
   Version 0.1 released.
