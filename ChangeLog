@@ -1,6 +1,6 @@
-2016-05-22 Kim Walisch  <kim.walisch@gmail.com>
+2016-05-24 Kim Walisch  <kim.walisch@gmail.com>
 
-  Version 0.2 work in progress.
+  Version 0.2 released.
 
   This version dramatically speeds up the computation of the hard
   special leaves (up to 10x faster). The speed up comes from the
