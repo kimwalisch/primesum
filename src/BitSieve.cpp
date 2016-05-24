@@ -77,7 +77,7 @@ inline uint64_t sum_word64(uint64_t bits, uint64_t& low)
     bits &= bits - 1;
   }
 
-  low += 1 * 64;
+  low += 64;
   return sum;
 }
 
@@ -87,8 +87,11 @@ inline maxint_t sum_sieve(const uint64_t* sieve, uint64_t size, uint64_t& low)
   const uint16_t* bits = (uint16_t*) sieve;
   size *= 4;
 
-  for (uint64_t i = 0; i < size; i++, low += 16)
+  for (uint64_t i = 0; i < size; i++)
+  {
     sum += low * popcount_u64(bits[i]) + sum_bits[bits[i]];
+    low += 16;
+  }
 
   return sum;
 }
