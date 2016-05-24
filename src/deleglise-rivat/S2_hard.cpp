@@ -204,14 +204,14 @@ T S2_hard_OpenMP_thread(T x,
         int64_t x2_div_low = min(fast_div(x2, low), y);
         int64_t x2_div_high = min(fast_div(x2, high), y);
         int64_t l = pi[min(x2_div_low, z / prime)];
-        int64_t min_hard_leaf = max3(x2_div_high, y / prime, prime);
+        int64_t min_hard = max3(x2_div_high, y / prime, prime);
         int64_t start = 0;
         T sum = 0;
 
         if (prime >= primes[l])
           goto next_segment;
 
-        for (; primes[l] > min_hard_leaf; l--)
+        for (; primes[l] > min_hard; l--)
         {
           int64_t xn = (int64_t) fast_div(x2, primes[l]);
           int64_t stop = xn - low;
@@ -286,12 +286,12 @@ T S2_hard_OpenMP_thread(T x,
         int64_t x2_div_low = min(fast_div(x2, low), y);
         int64_t x2_div_high = min(fast_div(x2, high), y);
         int64_t l = pi[min(x2_div_low, z / prime)];
-        int64_t min_hard_leaf = max3(x2_div_high, y / prime, prime);
+        int64_t min_hard = max3(x2_div_high, y / prime, prime);
 
         if (prime >= primes[l])
           goto next_segment;
 
-        for (; primes[l] > min_hard_leaf; l--)
+        for (; primes[l] > min_hard; l--)
         {
           int64_t xn = (int64_t) fast_div(x2, primes[l]);
           T sum = sums_query(sums, xn - low);
