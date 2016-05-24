@@ -17,8 +17,8 @@ Below are the latest precompiled binaries for Windows 64-bit and Linux x64.
 These binaries are statically linked and require a CPU which supports the
 POPCNT instruction (2010 or later).
 
-* [primesum-0.1-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-0.1-win64.zip), 358K
-* [primesum-0.1-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.1-linux-x64.tar.gz), 864K
+* [primesum-0.2-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2-win64.zip), 362K
+* [primesum-0.2-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2-linux-x64.tar.gz), 867K
 
 Usage examples
 --------------
@@ -141,7 +141,7 @@ Build instructions (Unix-like OSes)
 You need to have installed a C++ compiler and GNU make to build ```primesum```.
 
 Download
-[primesum-0.1.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.1.tar.gz)
+[primesum-0.2.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2.tar.gz)
 and build it using:
 
 ```sh
