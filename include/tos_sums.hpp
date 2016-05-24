@@ -34,9 +34,9 @@ namespace primesum {
 ///
 template <typename T1, typename T2>
 inline void sums_finit(const T1& sieve,
-                      std::vector<T2>& sums,
-                      int64_t low,
-                      int64_t segment_size)
+                       std::vector<T2>& sums,
+                       int64_t low,
+                       int64_t segment_size)
 {
   for (int64_t i = 0; i < segment_size; i++)
   {
