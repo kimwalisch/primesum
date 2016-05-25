@@ -152,4 +152,4 @@ $ sudo make install
 
 References
 ----------
-1. M. Deléglise and Jean-Louis Nicolas, Maximal product of primes whose sum is bounded, Bull. Proc. of the Steklov Institute 17 (2013), 82-112.
+1. M. Deléglise and Jean-Louis Nicolas, Maximal product of primes whose sum is bounded, 3 Jul 2012, http://arxiv.org/abs/1207.0603.
