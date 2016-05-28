@@ -66,7 +66,7 @@ T P2_OpenMP_thread(T x,
   T P2_thread = 0;
 
   int64_t sqrtx = isqrt(x);
-  int64_t start = (int64_t) max(x / z + 1, y);
+  int64_t start = (int64_t) max(x / z, y) + 1;
   int64_t stop  = (int64_t) min(x / low, sqrtx);
   int64_t x_div_prime = 0;
 
