@@ -66,7 +66,7 @@ T P2_OpenMP_thread(T x,
   T P2_thread = 0;
 
   int64_t sqrtx = isqrt(x);
-  int64_t start = (int64_t) max(x / z, y) + 1;
+  int64_t start = (int64_t) max(x / z, y);
   int64_t stop  = (int64_t) min(x / low, sqrtx);
   int64_t x_div_prime = 0;
 
@@ -76,7 +76,7 @@ T P2_OpenMP_thread(T x,
   int64_t next_prime = nit.next_prime();
   int64_t prev_prime = pit.previous_prime();
 
-  while (prev_prime >= start &&
+  while (prev_prime > start &&
          (x_div_prime = (int64_t) (x / prev_prime)) < z)
   {
     // Compute the sum of the primes <= x / prev_prime
