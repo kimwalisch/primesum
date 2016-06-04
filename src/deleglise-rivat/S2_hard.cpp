@@ -133,9 +133,9 @@ T S2_hard_OpenMP_thread(T x,
 
   BitSieve sieve(segment_size);
   Wheel wheel(primes, max_b + 1, low);
-  vector<T> sums(segment_size);
   phi.resize(max_b + 1, 0);
   mu_sum.resize(max_b + 1, 0);
+  vector<T> sums;
 
   // Segmented sieve of Eratosthenes
   for (; low < limit; low += segment_size)
