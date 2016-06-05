@@ -21,7 +21,6 @@ CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
 
 # Check if compiler supports OpenMP 4.0 or later
 AC_TRY_RUN([
-    #include <omp.h>
     #include <boost/multiprecision/cpp_int.hpp>
 
     using namespace boost::multiprecision;
