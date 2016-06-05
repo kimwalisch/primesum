@@ -68,7 +68,7 @@ Benchmark
 <table>
   <tr align="center">
     <td><b>x</b></td>
-    <td><b>Prime sum</b></td>
+    <td><b>Sum of the primes below x</b></td>
     <td><b>Time elapsed</b></td>
   </tr>
   <tr align="right">
@@ -135,6 +135,54 @@ Benchmark
 The benchmarks above were run on an Intel Core i7-6700 CPU (4 x 3.4 GHz) from
 2015 using a Linux x64 operating system and primesum was compiled using
 GCC 5.2.
+
+[A046731](https://oeis.org/A046731) world records
+-------------------------------------------------
+
+<table>
+  <tr align="center">
+    <td><b>x</b></td>
+    <td><b>Sum of the primes below x</b></td>
+  </tr>
+  </tr>
+  <tr align="right">
+    <td>10<sup>21</sup></td>
+    <td>10,449,550,362,130,704,786,220,283,253,063,405,651,965</td>
+  </tr>
+  </tr>
+  <tr align="right">
+    <td>10<sup>22</sup></td>
+    <td>996,973,504,763,259,668,279,213,971,353,794,878,368,213</td>
+  </tr>
+</table>
+
+Note that the sum of the primes below 10^21 was already correctly
+computed by Marc Deléglise in 2009 but when he verified the result
+using his program he found a different result (off by 1) so he
+withdrew his result in 2011.
+
+[A099824](https://oeis.org/A099824) world records
+-------------------------------------------------
+
+<table>
+  <tr align="center">
+    <td><b>n</b></td>
+    <td><b>Sum of the first n primes</b></td>
+  </tr>
+  </tr>
+  <tr align="right">
+    <td>10<sup>18</sup></td>
+    <td>21,849,887,810,843,912,935,127,758,942,358,047,227</td>
+  </tr>
+  <tr align="right">
+    <td>10<sup>19</sup></td>
+    <td>2,302,808,849,326,957,165,657,230,565,155,878,163,277</td>
+  </tr>
+  <tr align="right">
+    <td>10<sup>20</sup></td>
+    <td>242,048,824,942,159,504,049,568,772,767,666,927,073,373</td>
+  </tr>
+</table>
 
 Build instructions (Unix-like OSes)
 -----------------------------------
