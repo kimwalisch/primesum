@@ -20,6 +20,20 @@ POPCNT instruction (2010 or later).
 * [primesum-0.2-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2-win64.zip), 362K
 * [primesum-0.2-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2-linux-x64.tar.gz), 867K
 
+Build instructions (Unix-like OSes)
+-----------------------------------
+You need to have installed a C++ compiler and GNU make to build ```primesum```.
+
+Download
+[primesum-0.2.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2.tar.gz)
+and build it using:
+
+```sh
+$ ./build.sh
+$ make check
+$ sudo make install
+```
+
 Usage examples
 --------------
 Open a terminal and run primesum using e.g.:
@@ -183,20 +197,6 @@ withdrew his result in 2011.
     <td>242,048,824,942,159,504,049,568,772,767,666,927,073,373</td>
   </tr>
 </table>
-
-Build instructions (Unix-like OSes)
------------------------------------
-You need to have installed a C++ compiler and GNU make to build ```primesum```.
-
-Download
-[primesum-0.2.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2.tar.gz)
-and build it using:
-
-```sh
-$ ./build.sh
-$ make check
-$ sudo make install
-```
 
 References
 ----------
