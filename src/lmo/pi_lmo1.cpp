@@ -31,7 +31,7 @@ namespace primesum {
 /// Lagarias-Miller-Odlyzko algorithm.
 /// Run time: O(x^(2/3)) operations, O(x^(1/3)) space.
 ///
-maxint_t pi_lmo1(maxint_t x)
+maxint_t pi_lmo1(int128_t x)
 {
   if (x < 2)
     return 0;
@@ -53,7 +53,7 @@ maxint_t pi_lmo1(maxint_t x)
 
   // Calculate the contribution of the special leaves
   for (int64_t b = c + 1; b < pi_y; b++)
-    for (maxint_t m = (y / primes[b]) + 1; m <= y; m++)
+    for (int128_t m = (y / primes[b]) + 1; m <= y; m++)
       if (lpf[m] > primes[b])
         S2 -= mu[m] * m * primes[b] * phi_sum(x / (primes[b] * m), b - 1);
 

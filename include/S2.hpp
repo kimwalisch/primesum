@@ -18,7 +18,7 @@ namespace primesum {
 
 /// ------------------------ S2_trivial() ----------------------------
 
-maxint_t S2_trivial(maxint_t x,
+maxint_t S2_trivial(int128_t x,
                     int64_t y,
                     int64_t z,
                     int64_t c,
@@ -26,7 +26,7 @@ maxint_t S2_trivial(maxint_t x,
 
 /// ------------------------ S2_easy() -------------------------------
 
-maxint_t S2_easy(maxint_t x,
+maxint_t S2_easy(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
@@ -34,7 +34,7 @@ maxint_t S2_easy(maxint_t x,
 
 #ifdef HAVE_MPI
 
-maxint_t S2_easy_mpi(maxint_t x,
+maxint_t S2_easy_mpi(int128_t x,
                      int64_t y,
                      int64_t z,
                      int64_t c,
@@ -44,7 +44,7 @@ maxint_t S2_easy_mpi(maxint_t x,
 
 /// ------------------------ S2_hard() -------------------------------
 
-maxint_t S2_hard(maxint_t x,
+maxint_t S2_hard(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
@@ -53,7 +53,7 @@ maxint_t S2_hard(maxint_t x,
 
 #ifdef HAVE_MPI
 
-maxint_t S2_hard_mpi(maxint_t x,
+maxint_t S2_hard_mpi(int128_t x,
                      int64_t y,
                      int64_t z,
                      int64_t c,

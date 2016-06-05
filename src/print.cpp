@@ -81,7 +81,7 @@ void print(const string& str)
     cout << str << endl;
 }
 
-void print(maxint_t x, int64_t y, int64_t z, int64_t c, double alpha, int threads)
+void print(int128_t x, int64_t y, int64_t z, int64_t c, double alpha, int threads)
 {
   if (print_status())
   {
@@ -94,11 +94,11 @@ void print(maxint_t x, int64_t y, int64_t z, int64_t c, double alpha, int thread
   }
 }
 
-void print(maxint_t x, int64_t y, int threads)
+void print(int128_t x, int64_t y, int threads)
 {
   if (print_variables())
   {
-    maxint_t z = x / y;
+    int128_t z = x / y;
     cout << "x = " << x << endl;
     cout << "y = " << y << endl;
     cout << "z = " << z << endl;
@@ -108,11 +108,11 @@ void print(maxint_t x, int64_t y, int threads)
   }
 }
 
-void print(maxint_t x, int64_t y, int64_t c, int threads)
+void print(int128_t x, int64_t y, int64_t c, int threads)
 {
   if (print_variables())
   {
-    maxint_t z = x / y;
+    int128_t z = x / y;
     cout << "x = " << x << endl;
     cout << "y = " << y << endl;
     cout << "z = " << z << endl;

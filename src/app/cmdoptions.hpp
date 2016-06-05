@@ -45,7 +45,7 @@ enum OptionValues
 
 struct PrimeSumOptions
 {
-  maxint_t x;
+  int128_t x;
   int64_t option;
   bool time;
   int threads;

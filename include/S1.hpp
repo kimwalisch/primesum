@@ -13,7 +13,7 @@
 
 namespace primesum {
 
-maxint_t S1(maxint_t x,
+maxint_t S1(int128_t x,
             int64_t y,
             int64_t c,
             int threads);

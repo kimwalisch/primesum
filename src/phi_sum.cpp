@@ -26,7 +26,7 @@ maxint_t F(maxint_t u)
 }
 
 template <int SIGN>
-maxint_t phi_sum_tiny(maxint_t x, int64_t a)
+maxint_t phi_sum_tiny(int128_t x, int64_t a)
 {
   maxint_t sum = 0;
 
@@ -44,7 +44,7 @@ maxint_t phi_sum_tiny(maxint_t x, int64_t a)
 }
 
 template <int SIGN>
-maxint_t phi_sum(maxint_t x,
+maxint_t phi_sum(int128_t x,
                  int64_t a,
                  vector<int32_t>& primes)
 {
@@ -67,7 +67,7 @@ maxint_t phi_sum(maxint_t x,
 
 namespace primesum {
 
-maxint_t phi_sum(maxint_t x, int64_t a)
+maxint_t phi_sum(int128_t x, int64_t a)
 {
   if (x < 1)
     return 0;

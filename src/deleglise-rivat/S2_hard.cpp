@@ -106,7 +106,7 @@ bool few_leaves(int64_t low,
 /// the parent S2_hard_OpenMP_master() function.
 ///
 template <typename T, typename FactorTable, typename Primes>
-T S2_hard_OpenMP_thread(T x,
+T S2_hard_OpenMP_thread(uint128_t x,
                         int64_t y,
                         int64_t z,
                         int64_t c,
@@ -160,7 +160,7 @@ T S2_hard_OpenMP_thread(T x,
       for (int64_t end = min(pi_sqrty, max_b); b <= end; b++)
       {
         int64_t prime = primes[b];
-        T x2 = x / prime;
+        uint128_t x2 =  x / prime;
         int64_t x2_div_high = min(fast_div(x2, high), y);
         int64_t min_m = max(x2_div_high, y / prime);
         int64_t max_m = min(fast_div(x2, low), y);
@@ -200,7 +200,7 @@ T S2_hard_OpenMP_thread(T x,
       for (; b <= max_b; b++)
       {
         int64_t prime = primes[b];
-        T x2 = x / prime;
+        uint128_t x2 =  x / prime;
         int64_t x2_div_low = min(fast_div(x2, low), y);
         int64_t x2_div_high = min(fast_div(x2, high), y);
         int64_t l = pi[min(x2_div_low, z / prime)];
@@ -246,7 +246,7 @@ T S2_hard_OpenMP_thread(T x,
       for (int64_t end = min(pi_sqrty, max_b); b <= end; b++)
       {
         int64_t prime = primes[b];
-        T x2 = x / prime;
+        uint128_t x2 =  x / prime;
         int64_t x2_div_high = min(fast_div(x2, high), y);
         int64_t min_m = max(x2_div_high, y / prime);
         int64_t max_m = min(fast_div(x2, low), y);
@@ -282,7 +282,7 @@ T S2_hard_OpenMP_thread(T x,
       for (; b <= max_b; b++)
       {
         int64_t prime = primes[b];
-        T x2 = x / prime;
+        uint128_t x2 =  x / prime;
         int64_t x2_div_low = min(fast_div(x2, low), y);
         int64_t x2_div_high = min(fast_div(x2, high), y);
         int64_t l = pi[min(x2_div_low, z / prime)];
@@ -320,19 +320,19 @@ T S2_hard_OpenMP_thread(T x,
 /// per thread, after each iteration we dynamically increase
 /// the segment size and the segments per thread.
 ///
-template <typename T, typename FactorTable, typename Primes>
-T S2_hard_OpenMP_master(T x,
-                        int64_t y,
-                        int64_t z,
-                        int64_t c,
-                        double alpha,
-                        Primes& primes,
-                        FactorTable& factors,
-                        int threads)
+template <typename FactorTable, typename Primes>
+maxint_t S2_hard_OpenMP_master(int128_t x,
+                               int64_t y,
+                               int64_t z,
+                               int64_t c,
+                               double alpha,
+                               Primes& primes,
+                               FactorTable& factors,
+                               int threads)
 {
   threads = validate_threads(threads, z);
 
-  T s2_hard = 0;
+  maxint_t s2_hard = 0;
   int64_t low = 1;
   int64_t limit = z + 1;
   int64_t max_prime = z / isqrt(y);
@@ -343,7 +343,7 @@ T S2_hard_OpenMP_master(T x,
   int64_t segments_per_thread = 1;
 
   PiTable pi(max_prime);
-  vector<T> phi_total(pi[isqrt(z)] + 1, 0);
+  vector<maxint_t> phi_total(pi[isqrt(z)] + 1, 0);
 
   while (low < limit)
   {
@@ -351,8 +351,8 @@ T S2_hard_OpenMP_master(T x,
     threads = in_between(1, threads, segments);
     segments_per_thread = in_between(1, segments_per_thread, ceil_div(segments, threads));
 
-    aligned_vector<vector<T> > phi(threads);
-    aligned_vector<vector<T> > mu_sum(threads);
+    aligned_vector<vector<maxint_t> > phi(threads);
+    aligned_vector<vector<maxint_t> > mu_sum(threads);
     aligned_vector<double> timings(threads);
 
     #pragma omp parallel for num_threads(threads) reduction(+: s2_hard)
@@ -389,7 +389,7 @@ T S2_hard_OpenMP_master(T x,
 
 namespace primesum {
 
-maxint_t S2_hard(maxint_t x,
+maxint_t S2_hard(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
@@ -416,7 +416,7 @@ maxint_t S2_hard(maxint_t x,
     int64_t max_prime = z / isqrt(y);
     vector<uint32_t> primes = generate_primes<uint32_t>(max_prime);
 
-    s2_hard = S2_hard_OpenMP_master((maxuint_t) x, y, z, c, alpha, primes, factors, threads);
+    s2_hard = S2_hard_OpenMP_master(x, y, z, c, alpha, primes, factors, threads);
   }
   else
   {
@@ -424,7 +424,7 @@ maxint_t S2_hard(maxint_t x,
     int64_t max_prime = z / isqrt(y);
     vector<int64_t> primes = generate_primes<int64_t>(max_prime);
 
-    s2_hard = S2_hard_OpenMP_master((maxuint_t) x, y, z, c, alpha, primes, factors, threads);
+    s2_hard = S2_hard_OpenMP_master(x, y, z, c, alpha, primes, factors, threads);
   }
 
   print("S2_hard", s2_hard, time);

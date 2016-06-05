@@ -99,7 +99,7 @@ double relative_standard_deviation(aligned_vector<double>& timings)
 
 namespace primesum {
 
-S2LoadBalancer::S2LoadBalancer(maxint_t x,
+S2LoadBalancer::S2LoadBalancer(int128_t x,
                                int64_t y,
                                int64_t z,
                                int64_t threads) :
@@ -114,7 +114,7 @@ S2LoadBalancer::S2LoadBalancer(maxint_t x,
   init(x, y, threads);
 }
 
-S2LoadBalancer::S2LoadBalancer(maxint_t x,
+S2LoadBalancer::S2LoadBalancer(int128_t x,
                                int64_t y,
                                int64_t z,
                                int64_t threads,
@@ -130,7 +130,7 @@ S2LoadBalancer::S2LoadBalancer(maxint_t x,
   init(x, y, threads);
 }
 
-void S2LoadBalancer::init(maxint_t x,
+void S2LoadBalancer::init(int128_t x,
                           int64_t y,
                           int64_t threads)
 {

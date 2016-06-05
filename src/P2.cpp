@@ -50,7 +50,7 @@ int64_t balanceLoad(int64_t segment_size, double start_time)
 }
 
 template <typename T>
-T P2_OpenMP_thread(T x,
+T P2_OpenMP_thread(int128_t x,
                    int64_t y,
                    int64_t z,
                    int64_t segment_size,
@@ -119,19 +119,15 @@ T P2_OpenMP_thread(T x,
 /// factors each exceeding the a-th prime, a = pi(y).
 /// Space complexity: O((x / y)^(1/2)).
 ///
-template <typename T>
-T P2_OpenMP_master(T x, int64_t y, int threads)
+maxint_t P2_OpenMP_master(int128_t x,
+                          int64_t y,
+                          int threads)
 {
-#if __cplusplus >= 201103L
-  static_assert(prt::is_signed<T>::value,
-                "P2(T x, ...): T must be signed integer type");
-#endif
-
   if (x < 4)
     return 0;
 
-  T a = pi_legendre(y, threads);
-  T b = pi_legendre((int64_t) isqrt(x), threads);
+  int64_t a = pi_legendre(y, threads);
+  int64_t b = pi_legendre(isqrt(x), threads);
 
   if (a >= b)
     return 0;
@@ -141,11 +137,11 @@ T P2_OpenMP_master(T x, int64_t y, int threads)
   int64_t segment_size = 1 << 20;
   threads = validate_threads(threads, z);
 
-  aligned_vector<T> prime_sums(threads);
-  aligned_vector<T> correct(threads);
+  aligned_vector<maxint_t> prime_sums(threads);
+  aligned_vector<maxint_t> correct(threads);
 
-  T p2 = 0;
-  T prime_sum = prime_sum_tiny(y);
+  maxint_t p2 = 0;
+  maxint_t prime_sum = prime_sum_tiny(y);
 
   while (low < z)
   {
@@ -183,7 +179,7 @@ T P2_OpenMP_master(T x, int64_t y, int threads)
 
 namespace primesum {
 
-maxint_t P2(maxint_t x, int64_t y, int threads)
+maxint_t P2(int128_t x, int64_t y, int threads)
 {
 #ifdef HAVE_MPI
   if (mpi_num_procs() > 1)

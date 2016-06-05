@@ -64,7 +64,7 @@ int get_rand()
   return (rand() % 10000) * 1000 + 1;
 }
 
-void check_equal(const string& f1, int64_t x, int64_t res1, int64_t res2)
+void check_equal(const string& f1, int64_t x, maxint_t res1, maxint_t res2)
 {
   if (res1 != res2)
   {

@@ -29,7 +29,7 @@ using namespace std;
 
 namespace primesum {
 
-S2Status::S2Status(maxint_t x) :
+S2Status::S2Status(int128_t x) :
   old_percent_(0),
   old_time_(0),
   print_threshold_(1.0 / 20),
@@ -38,7 +38,7 @@ S2Status::S2Status(maxint_t x) :
   precision_factor_ = ipow(10, precision_);
 }
 
-double S2Status::skewed_percent(maxint_t n, maxint_t limit) const
+double S2Status::skewed_percent(int128_t n, int128_t limit) const
 {
   double exp = 0.96;
   double percent = get_percent((double) n, (double) limit);
@@ -68,7 +68,7 @@ bool S2Status::is_print(double time, double percent) const
   return new_val > old_val;
 }
 
-void S2Status::print(maxint_t n, maxint_t limit)
+void S2Status::print(int128_t n, int128_t limit)
 {
   double time = get_wtime();
   double percent = skewed_percent(n, limit);
@@ -92,7 +92,7 @@ void S2Status::print(maxint_t n, maxint_t limit)
   }
 }
 
-void S2Status::print(maxint_t n, maxint_t limit, double rsd)
+void S2Status::print(int128_t n, int128_t limit, double rsd)
 {
   double time = get_wtime();
 

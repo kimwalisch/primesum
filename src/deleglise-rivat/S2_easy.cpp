@@ -109,7 +109,7 @@ T S2_easy_OpenMP(T x,
 
 namespace primesum {
 
-maxint_t S2_easy(maxint_t x,
+maxint_t S2_easy(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,

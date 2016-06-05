@@ -33,14 +33,14 @@ using namespace primesum;
 
 namespace primesum {
 
-int64_t int64_cast(maxint_t x)
+int64_t int64_cast(int128_t x)
 {
   if (x > numeric_limits<int64_t>::max())
     throw primesum_error("this is a 63-bit function, x must be < 2^63");
   return (int64_t) x;
 }
 
-maxint_t P2(maxint_t x, int threads)
+maxint_t P2(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -48,7 +48,7 @@ maxint_t P2(maxint_t x, int threads)
   double alpha = get_alpha_deleglise_rivat(x);
   string limit = get_max_x(alpha);
 
-  if (x > to_maxint(limit))
+  if (x > to_int128(limit))
     throw primesum_error("P2(x): x must be <= " + limit);
 
   if (print_status())
@@ -58,7 +58,7 @@ maxint_t P2(maxint_t x, int threads)
   return P2(x, y, threads);
 }
 
-maxint_t S1(maxint_t x, int threads)
+maxint_t S1(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -66,7 +66,7 @@ maxint_t S1(maxint_t x, int threads)
   double alpha = get_alpha_deleglise_rivat(x);
   string limit = get_max_x(alpha);
 
-  if (x > to_maxint(limit))
+  if (x > to_int128(limit))
     throw primesum_error("S1(x): x must be <= " + limit);
 
   if (print_status())
@@ -78,7 +78,7 @@ maxint_t S1(maxint_t x, int threads)
   return S1(x, y, c, threads);
 }
 
-maxint_t S2_trivial(maxint_t x, int threads)
+maxint_t S2_trivial(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -86,7 +86,7 @@ maxint_t S2_trivial(maxint_t x, int threads)
   double alpha = get_alpha_deleglise_rivat(x);
   string limit = get_max_x(alpha);
 
-  if (x > to_maxint(limit))
+  if (x > to_int128(limit))
     throw primesum_error("S2_trivial(x): x must be <= " + limit);
 
   if (print_status())
@@ -102,7 +102,7 @@ maxint_t S2_trivial(maxint_t x, int threads)
     return S2_trivial(x, y, z, c, threads);
 }
 
-maxint_t S2_easy(maxint_t x, int threads)
+maxint_t S2_easy(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -110,7 +110,7 @@ maxint_t S2_easy(maxint_t x, int threads)
   double alpha = get_alpha_deleglise_rivat(x);
   string limit = get_max_x(alpha);
 
-  if (x > to_maxint(limit))
+  if (x > to_int128(limit))
     throw primesum_error("S2_easy(x): x must be <= " + limit);
 
   if (print_status())
@@ -126,7 +126,7 @@ maxint_t S2_easy(maxint_t x, int threads)
     return S2_easy(x, y, z, c, threads);
 }
 
-maxint_t S2_hard(maxint_t x, int threads)
+maxint_t S2_hard(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -134,7 +134,7 @@ maxint_t S2_hard(maxint_t x, int threads)
   double alpha = get_alpha_deleglise_rivat(x);
   string limit = get_max_x(alpha);
 
-  if (x > to_maxint(limit))
+  if (x > to_int128(limit))
     throw primesum_error("S2_hard(x): x must be <= " + limit);
 
   if (print_status())
@@ -158,7 +158,7 @@ int main (int argc, char* argv[])
   PrimeSumOptions pco = parseOptions(argc, argv);
   double time = get_wtime();
 
-  maxint_t x = pco.x;
+  int128_t x = pco.x;
   maxint_t res = 0;
   int threads = pco.threads;
 

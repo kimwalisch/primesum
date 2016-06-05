@@ -56,8 +56,8 @@ public:
                uint64_t stop,
                uint64_t low,
                uint64_t high,
-               uint64_t sum_0_start,
-               uint64_t sum_low_high) const
+               maxint_t sum_0_start,
+               maxint_t sum_low_high) const
   {
     if (start > stop)
       return 0;

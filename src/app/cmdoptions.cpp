@@ -48,7 +48,7 @@ struct Option
   template <typename T>
   T getValue() const
   {
-    return (T) to_maxint(value);
+    return (T) to_int128(value);
   }
 };
 
@@ -116,7 +116,7 @@ PrimeSumOptions parseOptions(int argc, char** argv)
 {
   initOptionMap();
   PrimeSumOptions pco;
-  std::vector<maxint_t> numbers;
+  std::vector<int128_t> numbers;
 
   try
   {
@@ -127,7 +127,7 @@ PrimeSumOptions parseOptions(int argc, char** argv)
       switch (optionMap[option.id])
       {
         case OPTION_ALPHA:   set_alpha(to_double(option.value)); break;
-        case OPTION_NUMBER:  numbers.push_back(option.getValue<maxint_t>()); break;
+        case OPTION_NUMBER:  numbers.push_back(option.getValue<int128_t>()); break;
         case OPTION_THREADS: pco.threads = option.getValue<int>(); break;
         case OPTION_HELP:    help(); break;
         case OPTION_STATUS:  set_print_status(true);

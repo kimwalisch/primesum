@@ -51,15 +51,15 @@ libdivide_divisors(Primes& primes)
 /// Calculate the contribution of the clustered easy
 /// leaves and the sparse easy leaves.
 ///
-template <typename T, typename Primes>
-T S2_easy_OpenMP(T x,
-                 int64_t y,
-                 int64_t z,
-                 int64_t c,
-                 Primes& primes,
-                 int threads)
+template <typename Primes>
+maxint_t S2_easy_OpenMP(uint128_t x,
+                        int64_t y,
+                        int64_t z,
+                        int64_t c,
+                        Primes& primes,
+                        int threads)
 {
-  T s2_easy = 0;
+  maxint_t s2_easy = 0;
   int64_t x13 = iroot<3>(x);
   threads = validate_threads(threads, x13, 1000);
   vector<libdivide_u64_t> fastdiv = libdivide_divisors(primes);
@@ -74,7 +74,7 @@ T S2_easy_OpenMP(T x,
   for (int64_t b = max(c, pi_sqrty) + 1; b <= pi_x13; b++)
   {
     int64_t prime = primes[b];
-    T x2 = x / prime;
+    uint128_t x2 = x / prime;
     int64_t min_trivial = min(x2 / prime, y);
     int64_t min_clustered = (int64_t) isqrt(x2);
     int64_t min_sparse = z / prime;
@@ -97,7 +97,7 @@ T S2_easy_OpenMP(T x,
       {
         int64_t xn = (uint64_t) x2 / fastdiv[l];
         int64_t phi_xn = pi[xn] - b + 2;
-        T phi_xn_sum = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
+        maxint_t phi_xn_sum = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
         int64_t xm = (uint64_t) x2 / fastdiv[b + phi_xn - 1];
         xm = max(xm, min_clustered);
         int64_t l2 = pi[xm];
@@ -111,7 +111,7 @@ T S2_easy_OpenMP(T x,
       for (; l > pi_min_sparse; l--)
       {
         int64_t xn = (uint64_t) x2 / fastdiv[l];
-        T phi = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
+        maxint_t phi = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
         s2_easy += prime * primes[l] * phi;
       }
     }
@@ -125,7 +125,7 @@ T S2_easy_OpenMP(T x,
       {
         int64_t xn = (int64_t) (x2 / primes[l]);
         int64_t phi_xn = pi[xn] - b + 2;
-        T phi_xn_sum = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
+        maxint_t phi_xn_sum = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
         int64_t xm = (int64_t) (x2 / primes[b + phi_xn - 1]);
         xm = max(xm, min_clustered);
         int64_t l2 = pi[xm];
@@ -139,7 +139,7 @@ T S2_easy_OpenMP(T x,
       for (; l > pi_min_sparse; l--)
       {
         int64_t xn = (int64_t) (x2 / primes[l]);
-        T phi = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
+        maxint_t phi = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
         s2_easy += prime * primes[l] * phi;
       }
     }
@@ -155,7 +155,7 @@ T S2_easy_OpenMP(T x,
 
 namespace primesum {
 
-maxint_t S2_easy(maxint_t x,
+maxint_t S2_easy(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
@@ -178,12 +178,12 @@ maxint_t S2_easy(maxint_t x,
   if (y <= numeric_limits<uint32_t>::max())
   {
     vector<uint32_t> primes = generate_primes<uint32_t>(y);
-    s2_easy = S2_easy_OpenMP((maxuint_t) x, y, z, c, primes, threads);
+    s2_easy = S2_easy_OpenMP(x, y, z, c, primes, threads);
   }
   else
   {
     vector<int64_t> primes = generate_primes<int64_t>(y);
-    s2_easy = S2_easy_OpenMP((maxuint_t) x, y, z, c, primes, threads);
+    s2_easy = S2_easy_OpenMP(x, y, z, c, primes, threads);
   }
 
   print("S2_easy", s2_easy, time);

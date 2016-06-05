@@ -75,12 +75,12 @@ double alpha_ = -1;
 
 namespace primesum {
 
-maxint_t pi(maxint_t x, int threads)
+maxint_t pi(int128_t x, int threads)
 {
   return pi_deleglise_rivat(x, threads);
 }
 
-maxint_t pi(maxint_t x)
+maxint_t pi(int128_t x)
 {
   return pi(x, threads_);
 }
@@ -100,7 +100,7 @@ string pi(const string& x)
 ///
 string pi(const string& x, int threads)
 {
-  maxint_t pi_x = pi(to_maxint(x), threads);
+  maxint_t pi_x = pi(to_int128(x), threads);
   ostringstream oss;
   oss << pi_x;
   return oss.str();
@@ -110,7 +110,7 @@ string pi(const string& x, int threads)
 /// Deleglise-Rivat algorithm.
 /// Run time: O(x^(2/3) / (log x)^2) operations, O(x^(1/3) * (log x)^3) space.
 ///
-maxint_t pi_deleglise_rivat(maxint_t x, int threads)
+maxint_t pi_deleglise_rivat(int128_t x, int threads)
 {
   return pi_deleglise_rivat_parallel1(x, threads);
 }
@@ -127,7 +127,7 @@ int64_t pi_legendre(int64_t x)
 /// prime summing algorithm using OpenMP.
 /// Run time: O(x^(2/3) / log x) operations, O(x^(1/3) * (log x)^2) space.
 ///
-maxint_t pi_lmo(maxint_t x, int threads)
+maxint_t pi_lmo(int128_t x, int threads)
 {
   return pi_lmo_parallel1(x, threads);
 }
@@ -237,7 +237,7 @@ double get_alpha()
   return alpha_;
 }
 
-double get_alpha(maxint_t x, int64_t y)
+double get_alpha(int128_t x, int64_t y)
 {
   // y = x13 * alpha, thus alpha = y / x13
   double x13 = (double) iroot<3>(x);
@@ -249,7 +249,7 @@ double get_alpha(maxint_t x, int64_t y)
 /// a, b and c are constants that should be determined empirically.
 /// @see ../doc/alpha-factor-tuning.pdf
 ///
-double get_alpha_lmo(maxint_t x)
+double get_alpha_lmo(int128_t x)
 {
   double alpha = get_alpha();
 
@@ -272,7 +272,7 @@ double get_alpha_lmo(maxint_t x)
 /// a, b, c and d are constants that should be determined empirically.
 /// @see ../doc/alpha-tuning-factor.pdf
 ///
-double get_alpha_deleglise_rivat(maxint_t x)
+double get_alpha_deleglise_rivat(int128_t x)
 {
   double alpha = get_alpha();
   double x2 = (double) x;
@@ -307,23 +307,23 @@ void set_status_precision(int precision)
   status_precision_ = in_between(0, precision, 5);
 }
 
-int get_status_precision(maxint_t x)
+int get_status_precision(int128_t x)
 {
   // use default precision when no command-line precision provided
   if (status_precision_ < 0)
   {
-    if ((double) x >= 1e23)
+    if (x >= 1e23)
       return 2;
-    if ((double) x >= 1e21)
+    if (x >= 1e21)
       return 1;
   }
 
   return (status_precision_ > 0) ? status_precision_ : 0;
 }
 
-maxint_t to_maxint(const string& expr)
+int128_t to_int128(const string& expr)
 {
-  maxint_t n = calculator::eval<maxint_t>(expr);
+  int128_t n = calculator::eval<int128_t>(expr);
   return n;
 }
 

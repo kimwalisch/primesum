@@ -27,11 +27,11 @@ bool print_variables();
 
 void print(const std::string& str);
 
-void print(maxint_t x, int64_t y, int threads);
+void print(int128_t x, int64_t y, int threads);
 
-void print(maxint_t x, int64_t y, int64_t c, int threads);
+void print(int128_t x, int64_t y, int64_t c, int threads);
 
-void print(maxint_t x, int64_t y, int64_t z, int64_t c, double alpha, int threads);
+void print(int128_t x, int64_t y, int64_t z, int64_t c, double alpha, int threads);
 
 void print(const std::string& res_name, maxint_t res, double time);
 

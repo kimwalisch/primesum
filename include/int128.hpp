@@ -15,21 +15,20 @@
 
 #include <limits>
 #include <stdint.h>
+#include <boost/multiprecision/cpp_int.hpp>
 
 #if __cplusplus >= 201103L
   #include <type_traits>
 #endif
 
-#if defined(HAVE_INT128_T)
-
 namespace primesum {
 
-typedef int128_t maxint_t;
-typedef uint128_t maxuint_t;
+typedef boost::multiprecision::int256_t maxint_t;
+typedef boost::multiprecision::uint256_t maxuint_t;
 
 }
 
-#elif defined(HAVE___INT128_T)
+#if defined(HAVE___INT128_T)
 
 #define HAVE_INT128_T
 
@@ -41,8 +40,8 @@ namespace primesum {
 typedef __int128_t int128_t;
 typedef __uint128_t uint128_t;
 
-typedef __int128_t maxint_t;
-typedef __uint128_t maxuint_t;
+typedef boost::multiprecision::int256_t int256_t;
+typedef boost::multiprecision::uint256_t uint256_t;
 
 inline std::ostream& operator<<(std::ostream& stream, uint128_t n)
 {

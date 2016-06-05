@@ -29,7 +29,7 @@ namespace {
 /// Calculate the contribution of the special leaves.
 /// @pre y > 0 && c > 1
 ///
-maxint_t S2(maxint_t x,
+maxint_t S2(int128_t x,
             int64_t y,
             int64_t z,
             int64_t c,
@@ -52,7 +52,7 @@ namespace primesum {
 /// Deleglise-Rivat algorithm.
 /// Run time: O(x^(2/3) / (log x)^2) operations, O(x^(1/3) * (log x)^3) space.
 ///
-maxint_t pi_deleglise_rivat_parallel1(maxint_t x, int threads)
+maxint_t pi_deleglise_rivat_parallel1(int128_t x, int threads)
 {
   if (x < 2)
     return 0;
@@ -60,7 +60,7 @@ maxint_t pi_deleglise_rivat_parallel1(maxint_t x, int threads)
   double alpha = get_alpha_deleglise_rivat(x);
   string limit = get_max_x(alpha);
 
-  if (x > to_maxint(limit))
+  if (x > to_int128(limit))
     throw primesum_error("pi(x): x must be <= " + limit);
 
   int64_t y = (int64_t) (iroot<3>(x) * alpha);

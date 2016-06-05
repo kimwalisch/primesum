@@ -60,7 +60,7 @@ void cross_off(BitSieve& sieve,
 /// the calling (parent) S2 function.
 ///
 template <typename T>
-T S2_thread(T x,
+T S2_thread(uint128_t x,
             int64_t y,
             int64_t c,
             int64_t segment_size,
@@ -175,20 +175,19 @@ T S2_thread(T x,
 /// the segment size and the segments per thread.
 /// @pre y > 0 && c > 1
 ///
-template <typename T>
-T S2(T x,
-     int64_t y,
-     int64_t c,
-     vector<int32_t>& primes,
-     vector<int32_t>& lpf,
-     vector<int32_t>& mu,
-     int threads)
+maxint_t S2(uint128_t x,
+            int64_t y,
+            int64_t c,
+            vector<int32_t>& primes,
+            vector<int32_t>& lpf,
+            vector<int32_t>& mu,
+            int threads)
 {
   print("");
   print("=== S2(x, y) ===");
   print("Computation of the special leaves");
 
-  T S2_total = 0;
+  maxint_t S2_total = 0;
   int64_t low = 1;
   int64_t limit = x / y + 1;
   threads = validate_threads(threads, limit);
@@ -200,7 +199,7 @@ T S2(T x,
 
   double time = get_wtime();
   vector<int32_t> pi = generate_pi(y);
-  vector<T> phi_total(primes.size(), 0);
+  vector<maxint_t> phi_total(primes.size(), 0);
 
   while (low < limit)
   {
@@ -208,8 +207,8 @@ T S2(T x,
     threads = in_between(1, threads, segments);
     segments_per_thread = in_between(1, segments_per_thread, ceil_div(segments, threads));
 
-    aligned_vector<vector<T> > phi(threads);
-    aligned_vector<vector<T> > mu_sum(threads);
+    aligned_vector<vector<maxint_t> > phi(threads);
+    aligned_vector<vector<maxint_t> > mu_sum(threads);
     aligned_vector<double> timings(threads);
 
     #pragma omp parallel for num_threads(threads) reduction(+: S2_total)
@@ -251,7 +250,7 @@ namespace primesum {
 /// Lagarias-Miller-Odlyzko algorithm.
 /// Run time: O(x^(2/3) / log x) operations, O(x^(1/3) * (log x)^2) space.
 ///
-maxint_t pi_lmo_parallel1(maxint_t x, int threads)
+maxint_t pi_lmo_parallel1(int128_t x, int threads)
 {
   if (x < 2)
     return 0;

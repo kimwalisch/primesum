@@ -17,10 +17,10 @@ namespace primesum {
 class S2Status
 {
 public:
-  S2Status(maxint_t x);
-  void print(maxint_t n, maxint_t limit);
-  void print(maxint_t n, maxint_t limit, double rsd);
-  double skewed_percent(maxint_t n, maxint_t limit) const;
+  S2Status(int128_t x);
+  void print(int128_t n, int128_t limit);
+  void print(int128_t n, int128_t limit, double rsd);
+  double skewed_percent(int128_t n, int128_t limit) const;
 private:
   bool is_print(double time) const;
   bool is_print(double time, double percent) const;

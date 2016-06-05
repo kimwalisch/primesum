@@ -13,6 +13,38 @@ AC_OPENMP
 AM_PROG_AR
 LT_INIT
 
+AC_CHECK_HEADERS([boost/multiprecision/cpp_int.hpp], [],
+    [AC_MSG_ERROR(You need to install the Boost C++ Libraries.)])
+
+ac_save_cxxflags="$CXXFLAGS"
+CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
+
+# Check if compiler supports OpenMP 4.0 or later
+AC_TRY_RUN([
+    #include <omp.h>
+    #include <boost/multiprecision/cpp_int.hpp>
+
+    using namespace boost::multiprecision;
+    #pragma omp declare reduction(+ : int256_t : omp_out += omp_in)
+
+    int main()
+    {
+        int256_t sum = 0;
+
+        #pragma omp parallel for reduction (+: sum)
+        for (int i = 0; i < 123456789; i++)
+          sum += i;
+
+        return 0;
+    }
+    ], [], [OpenMP_4_or_later=no])
+
+CXXFLAGS="$ac_save_cxxflags"
+
+AS_IF([test "x$OpenMP_4_or_later" = "xno"], [
+      AC_MSG_ERROR(Your compiler does not support OpenMP 4.0 or later.)
+])
+
 # Check if OS is Windows
 AM_CONDITIONAL(IS_WINDOWS, test "$(uname 2>/dev/null | egrep -i 'windows|cygwin|mingw|msys')" != "")
 
@@ -52,6 +84,10 @@ AC_MSG_CHECKING(for __int128_t)
 AC_TRY_LINK(, [__int128_t x = 0;],
               [AC_MSG_RESULT(yes); int128=yes; AC_DEFINE(HAVE___INT128_T)],
               [AC_MSG_RESULT(no)])
+
+AS_IF([test "x$int128" != "xyes"], [
+      AC_MSG_ERROR(Your compiler does not support int128_t.)
+])
 
 AM_CONDITIONAL(HAVE_INT128_T, test x$int128 = xyes)
 

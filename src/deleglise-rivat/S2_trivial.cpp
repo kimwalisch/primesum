@@ -29,12 +29,11 @@ using namespace primesum;
 
 namespace {
 
-template <typename T>
-T S2_trivial_OpenMP(T x,
-                    int64_t y,
-                    int64_t z,
-                    int64_t c,
-                    int threads)
+maxint_t S2_trivial_OpenMP(int128_t x,
+                           int64_t y,
+                           int64_t z,
+                           int64_t c,
+                           int threads)
 {
   int64_t thread_threshold = ipow(10, 7);
   threads = validate_threads(threads, y, thread_threshold);
@@ -43,8 +42,7 @@ T S2_trivial_OpenMP(T x,
   vector<int64_t> prime_sums = generate_prime_sums(y);
   int64_t sqrtz = isqrt(z);
   int64_t prime_c = nth_prime(c);
-
-  T s2_trivial = 0;
+  maxint_t s2_trivial = 0;
 
   // Find all trivial leaves: n = primes[b] * primes[l]
   // which satisfy phi(x / n), b - 1) = 1
@@ -56,12 +54,12 @@ T S2_trivial_OpenMP(T x,
     start += thread_interval * i;
     int64_t stop = min(start + thread_interval, y);
     primesieve::iterator iter(start - 1, stop);
-    T prime;
+    int128_t prime;
 
     while ((prime = iter.next_prime()) < stop)
     {
       int64_t xn = (int64_t) max(x / (prime * prime), prime);
-      T diff = prime_sums[pi[y]] - prime_sums[pi[xn]];
+      maxint_t diff = prime_sums[pi[y]] - prime_sums[pi[xn]];
       s2_trivial += prime * diff;
     }
   }
@@ -73,7 +71,7 @@ T S2_trivial_OpenMP(T x,
 
 namespace primesum {
 
-maxint_t S2_trivial(maxint_t x,
+maxint_t S2_trivial(int128_t x,
                     int64_t y,
                     int64_t z,
                     int64_t c,

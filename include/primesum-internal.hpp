@@ -23,6 +23,9 @@
 
 namespace primesum {
 
+#pragma omp declare reduction(+ : int256_t : omp_out += omp_in)
+#pragma omp declare reduction(+ : uint256_t : omp_out += omp_in)
+
 enum {
   /// Uses all CPU cores.
   MAX_THREADS = -1
@@ -59,13 +62,13 @@ int64_t nth_prime(int64_t n);
 ///
 int64_t phi(int64_t x, int64_t a);
 
-maxint_t pi(maxint_t x, int threads);
+maxint_t pi(int128_t x, int threads);
 
-maxint_t pi(maxint_t x);
+maxint_t pi(int128_t x);
 
-maxint_t pi_deleglise_rivat(maxint_t x, int threads);
+maxint_t pi_deleglise_rivat(int128_t x, int threads);
 
-maxint_t pi_deleglise_rivat_parallel1(maxint_t x, int threads);
+maxint_t pi_deleglise_rivat_parallel1(int128_t x, int threads);
 
 int64_t pi_legendre(int64_t x, int threads);
 
@@ -73,9 +76,9 @@ int64_t pi_lehmer(int64_t x, int threads);
 
 int64_t pi_lehmer2(int64_t x, int threads);
 
-maxint_t pi_lmo(maxint_t x, int threads);
+maxint_t pi_lmo(int128_t x, int threads);
 
-maxint_t pi_lmo1(maxint_t x);
+maxint_t pi_lmo1(int128_t x);
 
 int64_t pi_lmo2(int64_t x);
 
@@ -85,9 +88,9 @@ int64_t pi_lmo4(int64_t x);
 
 int64_t pi_lmo5(int64_t x);
 
-maxint_t pi_lmo_parallel1(maxint_t x, int threads);
+maxint_t pi_lmo_parallel1(int128_t x, int threads);
 
-maxint_t pi_lmo_parallel1(maxint_t x, int threads);
+maxint_t pi_lmo_parallel1(int128_t x, int threads);
 
 int64_t pi_meissel(int64_t x, int threads);
 
@@ -95,27 +98,27 @@ int64_t pi_primesieve(int64_t x, int threads);
 
 int64_t phi(int64_t x, int64_t a, int threads);
 
-maxint_t phi_sum(maxint_t x, int64_t a);
+maxint_t phi_sum(int128_t x, int64_t a);
 
 int64_t nth_prime(int64_t n, int threads);
 
-maxint_t P2(maxint_t x, int64_t y, int threads);
+maxint_t P2(int128_t x, int64_t y, int threads);
 
 int64_t prime_sum_tiny(int64_t x);
 
 void set_status_precision(int precision);
 
-int get_status_precision(maxint_t x);
+int get_status_precision(int128_t x);
 
 void set_alpha(double alpha);
 
 double get_alpha();
 
-double get_alpha(maxint_t x, int64_t y);
+double get_alpha(int128_t x, int64_t y);
 
-double get_alpha_lmo(maxint_t x);
+double get_alpha_lmo(int128_t x);
 
-double get_alpha_deleglise_rivat(maxint_t x);
+double get_alpha_deleglise_rivat(int128_t x);
 
 double get_wtime();
 
@@ -123,7 +126,7 @@ int validate_threads(int threads);
 
 int validate_threads(int threads, int64_t sieve_limit, int64_t thread_threshold = 100000);
 
-maxint_t to_maxint(const std::string& expr);
+int128_t to_int128(const std::string& expr);
 
 template <typename T>
 T get_percent(T low, T limit)
