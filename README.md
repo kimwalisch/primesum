@@ -1,31 +1,20 @@
-primesum
-========
+primesum 256-bits
+=================
 [![Build Status](https://travis-ci.org/kimwalisch/primesum.svg)](https://travis-ci.org/kimwalisch/primesum)
 [![GitHub license](https://img.shields.io/badge/license-BSD%202-blue.svg)](https://github.com/kimwalisch/primesum/blob/master/COPYING)
 
-**primesum** is a command-line program that computes the sum of the
-primes below an integer x&nbsp;≤&nbsp;10<sup>20</sup> as quickly as
-possible using a modified version of the combinatorial prime counting
-function algorithm <a href="#references">[1]</a>.
-
-**primesum** is a modified version of the author's
-[primecount](https://github.com/kimwalisch/primecount) program.
-
-Binaries
---------
-Below are the latest precompiled binaries for Windows 64-bit and Linux x64.
-These binaries are statically linked and require a CPU which supports the
-POPCNT instruction (2010 or later).
-
-* [primesum-0.2-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2-win64.zip), 362K
-* [primesum-0.2-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2-linux-x64.tar.gz), 867K
+With the 256-bits version of primesum you can compute prime sums for
+values of x&nbsp;>&nbsp;10<sup>20</sup>. The 256-bits version of primesum
+has already been used to compute several world records.
 
 Build instructions (Unix-like OSes)
 -----------------------------------
-You need to have installed a C++ compiler and GNU make to build ```primesum```.
+You need to have installed a C++ compiler which supports OpenMP 4.0 or
+later (e.g. GCC >= 5.0), GNU make and the
+<a href="http://www.boost.org/">Boost C++ libraries</a>.
 
 Download
-[primesum-0.2.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2.tar.gz)
+[primesum-256-bits-1.0.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-256-bits-1.0.tar.gz)
 and build it using:
 
 ```sh
@@ -52,7 +41,7 @@ Command-line options
 --------------------
 ```
 Usage: primesum x [OPTION]...
-Sum the primes below x <= 10^20 using fast implementations of the
+Sum the primes below x <= 10^31 using fast implementations of the
 combinatorial prime summing function.
 
 Options:
@@ -76,79 +65,6 @@ Advanced Deleglise-Rivat options:
          --S2_easy          Only compute the easy special leaves
          --S2_hard          Only compute the hard special leaves
 ```
-
-Benchmark
----------
-<table>
-  <tr align="center">
-    <td><b>x</b></td>
-    <td><b>Sum of the primes below x</b></td>
-    <td><b>Time elapsed</b></td>
-  </tr>
-  <tr align="right">
-    <td>10<sup>10</sup></td>
-    <td>2,220,822,432,581,729,238</td>
-    <td>0.02s</td>
-  </tr>
-  </tr>
-  <tr align="right">
-    <td>10<sup>11</sup></td>
-    <td>201,467,077,743,744,681,014</td>
-    <td>0.03s</td>
-  </tr>
-  </tr>
-  <tr align="right">
-    <td>10<sup>12</sup></td>
-    <td>18,435,588,552,550,705,911,377</td>
-    <td>0.04s</td>
-  </tr>
-  </tr>
-  <tr align="right">
-    <td>10<sup>13</sup></td>
-    <td>1,699,246,443,377,779,418,889,494</td>
-    <td>0.13s</td>
-  </tr>
-  </tr>
-  <tr align="right">
-    <td>10<sup>14</sup></td>
-    <td>157,589,260,710,736,940,541,561,021</td>
-    <td>0.44s</td>
-  </tr>
-  <tr align="right">
-    <td>10<sup>15</sup></td>
-    <td>14,692,398,516,908,006,398,225,702,366</td>
-    <td>1.36s</td>
-  </tr>
-  <tr align="right">
-    <td>10<sup>16</sup></td>
-    <td>1,376,110,854,313,351,899,159,632,866,552</td>
-    <td>5.03s</td>
-  </tr>
-  <tr align="right">
-    <td>10<sup>17</sup></td>
-    <td>129,408,626,276,669,278,966,252,031,311,350</td>
-    <td>24.05s</td>
-  </tr>
-  <tr align="right">
-  <td>10<sup>18</sup></td>
-  <td>12,212,914,292,949,226,570,880,576,733,896,687</td>
-    <td>110.96s</td>
-  </tr>
-  <tr align="right">
-  <td>10<sup>19</sup></td>
-  <td>1,156,251,260,549,368,082,781,614,413,945,980,126</td>
-    <td>438.50s</td>
-  </tr>
-  <tr align="right">
-  <td>10<sup>20</sup></td>
-  <td>109,778,913,483,063,648,128,485,839,045,703,833,541</td>
-    <td>1909.077s</td>
-  </tr>
-</table>
-
-The benchmarks above were run on an Intel Core i7-6700 CPU (4 x 3.4 GHz) from
-2015 using a Linux x64 operating system and primesum was compiled using
-GCC 5.2.
 
 [A046731](https://oeis.org/A046731) world records
 -------------------------------------------------
