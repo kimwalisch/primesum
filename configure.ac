@@ -1,4 +1,4 @@
-AC_INIT([primesum], [1.0], [kim.walisch@gmail.com])
+AC_INIT([primesum-256-bits], [1.0], [kim.walisch@gmail.com])
 AC_SUBST([primesum_lib_version], [1:2:0])
 
 AC_PREREQ([2.62])
