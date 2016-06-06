@@ -20,6 +20,13 @@ POPCNT instruction (2010 or later).
 * [primesum-0.2-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2-win64.zip), 362K
 * [primesum-0.2-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-0.2-linux-x64.tar.gz), 867K
 
+primesum 256-bits
+-----------------
+[primesum 256-bits](https://github.com/kimwalisch/primesum/tree/256-bits)
+allows to compute prime sums for values of x&nbsp;>&nbsp;10<sup>20</sup>. No
+binaries are provided, it must be build from source. primesum 256-bits has
+already been used to compute several world records.
+
 Build instructions (Unix-like OSes)
 -----------------------------------
 You need to have installed a C++ compiler and GNU make to build ```primesum```.
