@@ -41,21 +41,6 @@ vector<int32_t> generate_n_primes(int64_t n)
   return primes;
 }
 
-/// Generate a vector with the prime sums <= max.
-/// The primes vector uses 1-indexing i.e. primes[1] = 2.
-///
-vector<int64_t> generate_prime_sums(int64_t max)
-{
-  vector<int64_t> primes;
-  primes.push_back(0);
-  primesieve::generate_primes(max, &primes);
-
-  for (uint64_t i = 1; i < primes.size(); i++)
-    primes[i] += primes[i - 1];
-
-  return primes;
-}
-
 /// Generate a vector with Möbius function values.
 /// This implementation is based on code by Rick Sladkey
 /// posted here: http://mathoverflow.net/a/99545
