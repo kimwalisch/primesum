@@ -81,9 +81,9 @@ inline uint64_t sum_word64(uint64_t bits, uint64_t& low)
   return sum;
 }
 
-inline maxint_t sum_sieve(const uint64_t* sieve, uint64_t size, uint64_t& low)
+inline int128_t sum_sieve(const uint64_t* sieve, uint64_t size, uint64_t& low)
 {
-  maxint_t sum = 0;
+  int128_t sum = 0;
   const uint16_t* bits = (uint16_t*) sieve;
   size *= 4;
 
@@ -221,7 +221,7 @@ uint64_t BitSieve::count(uint64_t start,
 }
 
 /// Compute the sum of the unsieved numbers inside [start, stop]
-maxint_t BitSieve::sum(uint64_t low,
+int128_t BitSieve::sum(uint64_t low,
                        uint64_t start,
                        uint64_t stop) const
 {
@@ -235,7 +235,7 @@ maxint_t BitSieve::sum(uint64_t low,
   uint64_t m1 = UINT64_C(0xffffffffffffffff) << (start % 64);
   uint64_t m2 = UINT64_C(0xffffffffffffffff) >> (63 - stop % 64);
 
-  maxint_t sum;
+  int128_t sum;
   low += start - start % 64;
 
   if (start_idx == stop_idx)

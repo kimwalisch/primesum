@@ -44,7 +44,7 @@ public:
   }
 
   /// Compute the sum of the unsieved numbers inside [start, stop]
-  maxint_t sum(uint64_t low,
+  int128_t sum(uint64_t low,
                uint64_t start,
                uint64_t stop) const;
 
@@ -52,12 +52,12 @@ public:
   /// As an optimization this method counts either forwards or
   /// backwards depending on what's faster.
   ///
-  maxint_t sum(uint64_t start,
+  int128_t sum(uint64_t start,
                uint64_t stop,
                uint64_t low,
                uint64_t high,
-               maxint_t sum_0_start,
-               maxint_t sum_low_high) const
+               int128_t sum_0_start,
+               int128_t sum_low_high) const
   {
     if (start > stop)
       return 0;

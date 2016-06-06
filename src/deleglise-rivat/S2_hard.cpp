@@ -67,7 +67,7 @@ void cross_off(BitSieve& sieve,
 }
 
 /// Cross-off the multiples of prime in the sieve array.
-maxint_t cross_off(BitSieve& sieve,
+int128_t cross_off(BitSieve& sieve,
                    int64_t low,
                    int64_t high,
                    int64_t prime,
@@ -75,7 +75,7 @@ maxint_t cross_off(BitSieve& sieve,
 {
   int64_t m = w.next_multiple;
   int64_t wheel_index = w.wheel_index;
-  maxint_t sum = 0;
+  int128_t sum = 0;
 
   for (; m < high; m += prime * Wheel::next_multiple_factor(&wheel_index))
   {
@@ -120,7 +120,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
                         PiTable& pi,
                         Primes& primes,
                         vector<T>& mu_sum,
-                        vector<T>& phi)
+                        vector<int128_t>& phi)
 {
   low += segment_size * segments_per_thread * thread_num;
   limit = min(low + segment_size * segments_per_thread, limit);
@@ -135,7 +135,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
   Wheel wheel(primes, max_b + 1, low);
   phi.resize(max_b + 1, 0);
   mu_sum.resize(max_b + 1, 0);
-  vector<T> sums;
+  vector<int128_t> sums;
 
   // Segmented sieve of Eratosthenes
   for (; low < limit; low += segment_size)
@@ -152,7 +152,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
     if (few_leaves(low, high, y, alpha))
     {
       // sum of unsieved numbers inside [low, high[
-      T sum_low_high = sieve.sum(low, 0, (high - 1) - low);
+      int128_t sum_low_high = sieve.sum(low, 0, (high - 1) - low);
 
       // For c + 1 <= b <= pi_sqrty
       // Find all special leaves: n = primes[b] * m
@@ -165,7 +165,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
         int64_t min_m = max(x2_div_high, y / prime);
         int64_t max_m = min(fast_div(x2, low), y);
         int64_t start = 0;
-        T sum = 0;
+        int128_t sum = 0;
 
         if (prime >= max_m)
           goto next_segment;
@@ -181,10 +181,10 @@ T S2_hard_OpenMP_thread(uint128_t x,
             int64_t xn = (int64_t) fast_div(x2, fm);
             int64_t stop = xn - low;
             sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
-            T phi_xn = phi[b] + sum;
+            int128_t phi_xn = phi[b] + sum;
             start = stop + 1;
             int64_t mu_m = factors.mu(m);
-            int64_t pmul = mu_m * fm * prime;
+            maxint_t pmul = mu_m * fm * (int128_t) prime;
             s2_hard -= pmul * phi_xn;
             mu_sum[b] -= pmul;
           }
@@ -206,7 +206,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
         int64_t l = pi[min(x2_div_low, z / prime)];
         int64_t min_hard = max3(x2_div_high, y / prime, prime);
         int64_t start = 0;
-        T sum = 0;
+        int128_t sum = 0;
 
         if (prime >= primes[l])
           goto next_segment;
@@ -216,9 +216,9 @@ T S2_hard_OpenMP_thread(uint128_t x,
           int64_t xn = (int64_t) fast_div(x2, primes[l]);
           int64_t stop = xn - low;
           sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
-          T phi_xn = phi[b] + sum;
+          int128_t phi_xn = phi[b] + sum;
           start = stop + 1;
-          int64_t pmul = primes[l] * prime;
+          maxint_t pmul = primes[l] * (int128_t) prime;
           s2_hard += pmul * phi_xn;
           mu_sum[b] += pmul;
         }
@@ -263,10 +263,10 @@ T S2_hard_OpenMP_thread(uint128_t x,
           {
             int64_t fm = factors.get_number(m);
             int64_t xn = (int64_t) fast_div(x2, fm);
-            T sum = sums_query(sums, xn - low);
-            T phi_xn = phi[b] + sum;
+            int128_t sum = sums_query(sums, xn - low);
+            int128_t phi_xn = phi[b] + sum;
             int64_t mu_m = factors.mu(m);
-            int64_t pmul = mu_m * fm * prime;
+            maxint_t pmul = mu_m * fm * (int128_t) prime;
             s2_hard -= pmul * phi_xn;
             mu_sum[b] -= pmul;
           }
@@ -294,9 +294,9 @@ T S2_hard_OpenMP_thread(uint128_t x,
         for (; primes[l] > min_hard; l--)
         {
           int64_t xn = (int64_t) fast_div(x2, primes[l]);
-          T sum = sums_query(sums, xn - low);
-          T phi_xn = phi[b] + sum;
-          int64_t pmul = primes[l] * prime;
+          int128_t sum = sums_query(sums, xn - low);
+          int128_t phi_xn = phi[b] + sum;
+          maxint_t pmul = primes[l] * (int128_t) prime;
           s2_hard += pmul * phi_xn;
           mu_sum[b] += pmul;
         }
@@ -343,7 +343,7 @@ maxint_t S2_hard_OpenMP_master(int128_t x,
   int64_t segments_per_thread = 1;
 
   PiTable pi(max_prime);
-  vector<maxint_t> phi_total(pi[isqrt(z)] + 1, 0);
+  vector<int128_t> phi_total(pi[isqrt(z)] + 1, 0);
 
   while (low < limit)
   {
@@ -351,7 +351,7 @@ maxint_t S2_hard_OpenMP_master(int128_t x,
     threads = in_between(1, threads, segments);
     segments_per_thread = in_between(1, segments_per_thread, ceil_div(segments, threads));
 
-    aligned_vector<vector<maxint_t> > phi(threads);
+    aligned_vector<vector<int128_t> > phi(threads);
     aligned_vector<vector<maxint_t> > mu_sum(threads);
     aligned_vector<double> timings(threads);
 
