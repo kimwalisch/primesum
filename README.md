@@ -10,7 +10,7 @@ has already been used to compute several world records.
 Build instructions (Unix-like OSes)
 -----------------------------------
 You need to have installed a C++ compiler which supports OpenMP 4.0 or
-later (e.g. GCC >= 5.0), GNU make and the
+later (e.g. GCC >= 5.0, Clang >= 3.8), GNU make and the
 <a href="http://www.boost.org/">Boost C++ libraries</a>.
 
 Download
