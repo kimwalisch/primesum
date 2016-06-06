@@ -19,7 +19,7 @@ Download
 and build it:
 
 ```sh
-# Ubuntu/Debian prerequisities
+# Ubuntu/Debian prerequisites
 sudo apt-get install g++ make libboost-all-dev
 
 $ ./build.sh
