@@ -14,11 +14,14 @@ You need to have installed a C++ compiler which supports OpenMP 4.0 or
 later (e.g. GCC ≥ 5.0, Clang ≥ 3.8), GNU make and the
 <a href="http://www.boost.org/">Boost C++ libraries</a>.
 
-Download
+Download 
 [primesum-256-bits-1.0.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-256-bits-1.0.tar.gz)
-and build it using:
+and build it:
 
 ```sh
+# Ubuntu/Debian prerequisities
+sudo apt-get install g++ make libboost-all-dev
+
 $ ./build.sh
 $ make check
 $ sudo make install
