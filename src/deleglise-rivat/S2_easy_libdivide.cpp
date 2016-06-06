@@ -51,12 +51,13 @@ libdivide_divisors(Primes& primes)
 /// Calculate the contribution of the clustered easy
 /// leaves and the sparse easy leaves.
 ///
-template <typename Primes>
+template <typename Primes, typename PrimeSums>
 maxint_t S2_easy_OpenMP(uint128_t x,
                         int64_t y,
                         int64_t z,
                         int64_t c,
                         Primes& primes,
+                        PrimeSums& prime_sums,
                         int threads)
 {
   maxint_t s2_easy = 0;
@@ -65,7 +66,6 @@ maxint_t S2_easy_OpenMP(uint128_t x,
   vector<libdivide_u64_t> fastdiv = libdivide_divisors(primes);
 
   PiTable pi(y);
-  vector<int64_t> prime_sums = generate_prime_sums(y);
   int64_t pi_sqrty = pi[isqrt(y)];
   int64_t pi_x13 = pi[x13];
   S2Status status(x);
@@ -178,12 +178,14 @@ maxint_t S2_easy(int128_t x,
   if (y <= numeric_limits<uint32_t>::max())
   {
     vector<uint32_t> primes = generate_primes<uint32_t>(y);
-    s2_easy = S2_easy_OpenMP(x, y, z, c, primes, threads);
+    vector<uint64_t> prime_sums = generate_prime_sums<uint64_t>(y);
+    s2_easy = S2_easy_OpenMP(x, y, z, c, primes, prime_sums, threads);
   }
   else
   {
     vector<int64_t> primes = generate_primes<int64_t>(y);
-    s2_easy = S2_easy_OpenMP(x, y, z, c, primes, threads);
+    vector<int128_t> prime_sums = generate_prime_sums<int128_t>(y);
+    s2_easy = S2_easy_OpenMP(x, y, z, c, primes, prime_sums, threads);
   }
 
   print("S2_easy", s2_easy, time);

@@ -39,7 +39,7 @@ maxint_t S2_trivial_OpenMP(int128_t x,
   threads = validate_threads(threads, y, thread_threshold);
 
   PiTable pi(y);
-  vector<int64_t> prime_sums = generate_prime_sums(y);
+  vector<int128_t> prime_sums = generate_prime_sums<int128_t>(y);
   int64_t sqrtz = isqrt(z);
   int64_t prime_c = nth_prime(c);
   maxint_t s2_trivial = 0;
