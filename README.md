@@ -175,6 +175,10 @@ GCC 5.2.
     <td>10<sup>22</sup></td>
     <td>996,973,504,763,259,668,279,213,971,353,794,878,368,213</td>
   </tr>
+  <tr align="right">
+    <td>10<sup>23</sup></td>
+    <td>95,320,530,117,168,404,458,544,684,912,403,185,555,509,650</td>
+  </tr>
 </table>
 
 Note that the sum of the primes below 10^21 was already correctly
@@ -202,6 +206,10 @@ withdrew his result in 2011.
   <tr align="right">
     <td>10<sup>20</sup></td>
     <td>242,048,824,942,159,504,049,568,772,767,666,927,073,373</td>
+  </tr>
+  <tr align="right">
+    <td>10<sup>21</sup></td>
+    <td>25,380,411,223,557,757,489,768,734,384,174,904,646,137,001</td>
   </tr>
 </table>
 
