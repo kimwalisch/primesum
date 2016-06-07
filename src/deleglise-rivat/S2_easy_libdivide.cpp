@@ -112,7 +112,7 @@ maxint_t S2_easy_OpenMP(uint128_t x,
       {
         int64_t xn = (uint64_t) x2 / fastdiv[l];
         maxint_t phi = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
-        s2_easy += prime * primes[l] * phi;
+        s2_easy += prime * (primes[l] * phi);
       }
     }
     else
@@ -140,7 +140,7 @@ maxint_t S2_easy_OpenMP(uint128_t x,
       {
         int64_t xn = (int64_t) (x2 / primes[l]);
         maxint_t phi = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
-        s2_easy += prime * primes[l] * phi;
+        s2_easy += prime * (primes[l] * phi);
       }
     }
 
