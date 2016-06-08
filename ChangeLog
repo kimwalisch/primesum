@@ -1,3 +1,10 @@
+2016-06-08 Kim Walisch  <kim.walisch@gmail.com>
+
+  Version 1.0 released.
+
+  This release adds a new 256-bits branch which allows to compute
+  prime sums for values of x > 10^20.
+
 2016-05-24 Kim Walisch  <kim.walisch@gmail.com>
 
   Version 0.2 released.
