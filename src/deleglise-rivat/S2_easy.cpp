@@ -81,7 +81,7 @@ T S2_easy_OpenMP(T x,
       int64_t xn = (int64_t) fast_div(x2, primes[l]);
       int64_t phi_xn = pi[xn] - b + 2;
       T phi_xn_sum = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
-      int64_t xm = (int64_t) (x2 / primes[b + phi_xn - 1]);
+      int64_t xm = (int64_t) fast_div(x2, primes[b + phi_xn - 1]);
       xm = max(xm, min_clustered);
       int64_t l2 = pi[xm];
       s2_easy += prime * phi_xn_sum * (prime_sums[l] - prime_sums[l2]);
