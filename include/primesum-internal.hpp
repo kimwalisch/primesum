@@ -104,7 +104,7 @@ int64_t nth_prime(int64_t n, int threads);
 
 maxint_t P2(int128_t x, int64_t y, int threads);
 
-int64_t prime_sum_tiny(int64_t x);
+int128_t prime_sum_tiny(int64_t x);
 
 void set_status_precision(int precision);
 

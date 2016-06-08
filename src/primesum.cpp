@@ -159,10 +159,10 @@ int64_t phi(int64_t x, int64_t a)
   return phi(x, a, threads_);
 }
 
-int64_t prime_sum_tiny(int64_t x)
+int128_t prime_sum_tiny(int64_t x)
 {
   int64_t prime = 0;
-  int64_t prime_sum = 0;
+  int128_t prime_sum = 0;
   primesieve::iterator iter(0, x);
 
   while ((prime = iter.next_prime()) <= x)
