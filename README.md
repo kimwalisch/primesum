@@ -179,6 +179,10 @@ GCC 5.2.
     <td>10<sup>23</sup></td>
     <td>95,320,530,117,168,404,458,544,684,912,403,185,555,509,650</td>
   </tr>
+  <tr align="right">
+    <td>10<sup>24</sup></td>
+    <td>9,131,187,511,156,941,634,384,410,084,928,380,134,453,142,199</td>
+  </tr>
 </table>
 
 Note that the sum of the primes below 10^21 was already correctly
