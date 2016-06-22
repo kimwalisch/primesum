@@ -164,24 +164,34 @@ GCC 5.2.
   <tr align="center">
     <td><b>x</b></td>
     <td><b>Sum of the primes below x</b></td>
+    <td><b>Date</b></td>
+    <td><b>Computed by</b></td>
   </tr>
   </tr>
   <tr align="right">
     <td>10<sup>21</sup></td>
     <td>10,449,550,362,130,704,786,220,283,253,063,405,651,965</td>
+    <td>June 6, 2016</td>
+    <td>Kim Walisch</td>
   </tr>
   </tr>
   <tr align="right">
     <td>10<sup>22</sup></td>
     <td>996,973,504,763,259,668,279,213,971,353,794,878,368,213</td>
+    <td>June 6, 2016</td>
+    <td>Kim Walisch</td>
   </tr>
   <tr align="right">
     <td>10<sup>23</sup></td>
     <td>95,320,530,117,168,404,458,544,684,912,403,185,555,509,650</td>
+    <td>June 11, 2016</td>
+    <td>Kim Walisch</td>
   </tr>
   <tr align="right">
     <td>10<sup>24</sup></td>
     <td>9,131,187,511,156,941,634,384,410,084,928,380,134,453,142,199</td>
+    <td>June 17, 2016</td>
+    <td>David Baugh</td>
   </tr>
 </table>
 
@@ -197,27 +207,39 @@ withdrew his result in 2011.
   <tr align="center">
     <td><b>n</b></td>
     <td><b>Sum of the first n primes</b></td>
+    <td><b>Date</b></td>
+    <td><b>Computed by</b></td>
   </tr>
   </tr>
   <tr align="right">
     <td>10<sup>18</sup></td>
     <td>21,849,887,810,843,912,935,127,758,942,358,047,227</td>
+    <td>June 5, 2016</td>
+    <td>Kim Walisch</td>
   </tr>
   <tr align="right">
     <td>10<sup>19</sup></td>
     <td>2,302,808,849,326,957,165,657,230,565,155,878,163,277</td>
+    <td>June 5, 2016</td>
+    <td>Kim Walisch</td>
   </tr>
   <tr align="right">
     <td>10<sup>20</sup></td>
     <td>242,048,824,942,159,504,049,568,772,767,666,927,073,373</td>
+    <td>June 5, 2016</td>
+    <td>Kim Walisch</td>
   </tr>
   <tr align="right">
     <td>10<sup>21</sup></td>
     <td>25,380,411,223,557,757,489,768,734,384,174,904,646,137,001</td>
+    <td>June 11, 2016</td>
+    <td>Kim Walisch</td>
   </tr>
   <tr align="right">
     <td>10<sup>22</sup></td>
     <td>2,655,479,563,137,417,712,148,525,630,666,125,075,397,977,159</td>
+    <td>June 22, 2016</td>
+    <td>David Baugh</td>
   </tr>
 </table>
 
