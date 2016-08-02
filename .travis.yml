@@ -12,8 +12,8 @@ env:
 before_install:
   - sudo apt-get update -qq
 
-# Install OpenMPI and libprimesieve
 install:
+  - sudo apt-get install -y cppcheck
   - rm -rf primesieve-master*
   - curl -L -o primesieve-master.zip https://github.com/kimwalisch/primesieve/archive/master.zip
   - unzip primesieve-master.zip
@@ -39,3 +39,4 @@ script:
   - sudo make install
   - make dist
   - make distcheck
+  - cppcheck . --error-exitcode=1 -i$(cd primesieve-*; basename $(pwd))
