@@ -241,6 +241,12 @@ withdrew his result in 2011.
     <td>June 22, 2016</td>
     <td>David Baugh</td>
   </tr>
+  <tr align="right">
+    <td>10<sup>23</sup></td>
+    <td>277,281,399,946,560,013,844,427,926,899,019,949,823,102,890,613</td>
+    <td>Sep. 19, 2016</td>
+    <td>David Baugh</td>
+  </tr>
 </table>
 
 References
