@@ -244,7 +244,7 @@ withdrew his result in 2011.
   <tr align="right">
     <td>10<sup>23</sup></td>
     <td>277,281,399,946,560,013,844,427,926,899,019,949,823,102,890,613</td>
-    <td>Sep. 19, 2016</td>
+    <td>Sep. 26, 2016</td>
     <td>David Baugh</td>
   </tr>
 </table>
