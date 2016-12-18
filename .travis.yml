@@ -21,7 +21,7 @@ install:
 before_script:
   - cmake .
   - make -j4
-  - ldd primecount
+  - ldd primesum
   - cppcheck src include --error-exitcode=1 -i$(cd primesieve-*; basename $(pwd))
 
 # Run primecount tests
