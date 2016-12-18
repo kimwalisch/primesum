@@ -20,11 +20,11 @@ and build it:
 
 ```sh
 # Ubuntu/Debian prerequisites
-sudo apt-get install g++ make libboost-all-dev
+sudo apt-get install g++ make cmake libboost-all-dev
 
-$ ./build.sh
-$ make check
-$ sudo make install
+cmake .
+make -j8
+sudo make install
 ```
 
 Usage examples
@@ -32,13 +32,13 @@ Usage examples
 Open a terminal and run primesum using e.g.:
 ```sh
 # Sum the primes below 10^14
-$ ./primesum 1e14
+./primesum 1e14
 
 # Print progress and status information during computation
-$ ./primesum 1e20 --status
+./primesum 1e20 --status
 
 # Use 4 threads
-$ ./primesum 1e14 --threads=4 --time
+./primesum 1e14 --threads=4 --time
 ```
 
 Command-line options
