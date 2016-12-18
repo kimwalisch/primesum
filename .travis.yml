@@ -15,7 +15,7 @@ before_install:
 
 # Install cmake cppcheck
 install:
-  - sudo apt-get install -y cmake cppcheck
+  - sudo apt-get install -y cmake cppcheck libboost-all-dev
 
 # Test build.sh script
 before_script:
