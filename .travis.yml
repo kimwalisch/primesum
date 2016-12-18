@@ -7,36 +7,23 @@ compiler:
 
 env:
   global:
+    - CXXFLAGS="-O2 -pedantic -Wall -Wextra -Werror -Wno-long-long -Wno-unused-parameter -Wno-strict-aliasing -Wno-unknown-pragmas"
     - OMP_NUM_THREADS=4
 
 before_install:
   - sudo apt-get update -qq
 
+# Install cmake cppcheck
 install:
-  - sudo apt-get install -y cppcheck
-  - rm -rf primesieve-master*
-  - curl -L -o primesieve-master.zip https://github.com/kimwalisch/primesieve/archive/master.zip
-  - unzip primesieve-master.zip
-  - cd primesieve-master
-  - ./autogen.sh
-  - ./configure
-  - make
-  - sudo make uninstall
-  - sudo make install
-  - cd ..
+  - sudo apt-get install -y cmake cppcheck
 
 # Test build.sh script
 before_script:
-  - ./build.sh
-  - ldd primesum
-  - make distclean
+  - cmake .
+  - make -j4
+  - ldd primecount
+  - cppcheck src include --error-exitcode=1 -i$(cd primesieve-*; basename $(pwd))
 
-# Test standard build procedure
+# Run primecount tests
 script:
-  - ./autogen.sh
-  - ./configure --enable-assert CXXFLAGS="-O2 -pedantic -Wall -Wextra -Werror -Wno-long-long -Wno-unused-parameter -Wno-unknown-pragmas"
-  - make
-  - sudo make install
-  - make dist
-  - make distcheck
-  - cppcheck . --error-exitcode=1 -i$(cd primesieve-*; basename $(pwd))
+  - ./primesum --test
