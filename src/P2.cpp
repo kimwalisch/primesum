@@ -32,28 +32,34 @@ using namespace primesum;
 
 namespace {
 
-/// Calculate the segment_size per thread.
-/// The idea is to gradually increase the segment_size per
-/// thread in order to keep all CPU cores busy.
+/// Calculate the thread sieving distance. The idea is to
+/// gradually increase the thread_distance in order to
+/// keep all CPU cores busy.
 ///
-int64_t balanceLoad(int64_t segment_size, double start_time)
+void balanceLoad(int64_t* thread_distance, 
+                 int64_t low,
+                 int64_t z,
+                 int threads,
+                 double start_time)
 {
   double seconds = get_wtime() - start_time;
-  int min_segment_size = 1 << 20;
 
-  if (seconds < 30)
-    segment_size *= 2;
-  else if (segment_size > min_segment_size)
-    segment_size -= segment_size / 4;
+  int64_t min_distance = 1 << 23;
+  int64_t max_distance = ceil_div(z - low, threads);
 
-  return segment_size;
+  if (seconds < 60)
+    *thread_distance *= 2;
+  if (seconds > 60)
+    *thread_distance /= 2;
+
+  *thread_distance = in_between(min_distance, *thread_distance, max_distance);
 }
 
 template <typename T>
 T P2_OpenMP_thread(T x,
                    int64_t y,
                    int64_t z,
-                   int64_t segment_size,
+                   int64_t thread_distance,
                    int64_t thread_num,
                    int64_t low,
                    T& prime_sum,
@@ -61,55 +67,54 @@ T P2_OpenMP_thread(T x,
 {
   prime_sum = 0;
   correct = 0;
-  low += thread_num * segment_size;
-  z = min(low + segment_size, z);
-  T P2_thread = 0;
+  low += thread_distance * thread_num;
+  z = min(low + thread_distance, z);
 
   int64_t sqrtx = isqrt(x);
   int64_t start = (int64_t) max(x / z, y);
   int64_t stop  = (int64_t) min(x / low, sqrtx);
   int64_t x_div_prime = 0;
 
-  primesieve::iterator nit(low - 1, z);
-  primesieve::iterator pit(stop + 1, start);
+  primesieve::iterator rit(stop + 1, start);
+  primesieve::iterator it(low - 1, z);
 
-  int64_t next_prime = nit.next_prime();
-  int64_t prev_prime = pit.previous_prime();
+  int64_t next = it.next_prime();
+  int64_t prime = rit.previous_prime();
+  T P2_thread = 0;
 
-  while (prev_prime > start &&
-         (x_div_prime = (int64_t) (x / prev_prime)) < z)
+  while (prime > start && (x_div_prime = (int64_t) (x / prime)) < z)
   {
-    // Compute the sum of the primes <= x / prev_prime
-    while (next_prime <= x_div_prime)
+    // Sum the primes <= x / prime
+    while (next <= x_div_prime)
     {
-      if (next_prime > y && 
-          next_prime <= sqrtx)
+      if (next > y && 
+          next <= sqrtx)
       {
-        P2_thread -= next_prime * prime_sum;
-        correct -= next_prime;
+        P2_thread -= next * prime_sum;
+        correct -= next;
       }
 
-      prime_sum += next_prime;
-      next_prime = nit.next_prime();
+      prime_sum += next;
+      next = it.next_prime();
     }
 
-    P2_thread += prev_prime * prime_sum;
-    correct += prev_prime;
-    prev_prime = pit.previous_prime();
+    P2_thread += prime * prime_sum;
+    correct += prime;
+    prime = rit.previous_prime();
   }
 
-  // Compute the sum of the primes < z
-  while (next_prime < z)
+  // Sum the primes < z
+  while (next < z)
   {
-    if (next_prime > y && 
-        next_prime <= sqrtx)
+    if (next > y && 
+        next <= sqrtx)
     {
-      P2_thread -= next_prime * prime_sum;
-      correct -= next_prime;
+      P2_thread -= next * prime_sum;
+      correct -= next;
     }
 
-    prime_sum += next_prime;
-    next_prime = nit.next_prime();
+    prime_sum += next;
+    next = it.next_prime();
   }
 
   return P2_thread;
@@ -138,8 +143,8 @@ T P2_OpenMP_master(T x, int64_t y, int threads)
 
   int64_t low = 2;
   int64_t z = (int64_t)(x / max(y, 1));
-  int64_t segment_size = 1 << 20;
-  threads = ideal_num_threads(threads, z);
+  int64_t min_distance = 1 << 23;
+  int64_t thread_distance = min_distance;
 
   aligned_vector<T> prime_sums(threads);
   aligned_vector<T> correct(threads);
@@ -149,14 +154,14 @@ T P2_OpenMP_master(T x, int64_t y, int threads)
 
   while (low < z)
   {
-    int64_t segments = ceil_div(z - low, segment_size);
+    int64_t segments = ceil_div(z - low, thread_distance);
     threads = in_between(1, threads, segments);
     double time = get_wtime();
 
     #pragma omp parallel for \
         num_threads(threads) reduction(+: p2)
     for (int i = 0; i < threads; i++)
-      p2 += P2_OpenMP_thread(x, y, z, segment_size, 
+      p2 += P2_OpenMP_thread(x, y, z, thread_distance, 
          i, low, prime_sums[i], correct[i]);
 
     for (int i = 0; i < threads; i++)
@@ -165,8 +170,8 @@ T P2_OpenMP_master(T x, int64_t y, int threads)
       prime_sum += prime_sums[i];
     }
 
-    low += segment_size * threads;
-    segment_size = balanceLoad(segment_size, time);
+    low += thread_distance * threads;
+    balanceLoad(&thread_distance, low, z, threads, time);
 
     if (print_status())
     {
