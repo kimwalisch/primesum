@@ -128,4 +128,4 @@ bool test()
   return true;
 }
 
-} // namespace primesum
+} // namespace

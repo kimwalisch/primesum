@@ -55,6 +55,6 @@ std::string get_max_x(double alpha = 1.0);
 /// Get the primesum version number, in the form “i.j”.
 std::string primesum_version();
 
-} // namespace primesum
+} // namespace
 
 #endif

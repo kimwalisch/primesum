@@ -64,4 +64,4 @@ maxint_t pi_lmo1(maxint_t x)
   return sum;
 }
 
-} // namespace primesum
+} // namespace

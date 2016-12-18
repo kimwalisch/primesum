@@ -280,4 +280,4 @@ maxint_t pi_lmo_parallel1(maxint_t x, int threads)
   return sum;
 }
 
-} // namespace primesum
+} // namespace

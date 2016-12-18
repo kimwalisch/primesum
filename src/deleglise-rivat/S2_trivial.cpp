@@ -91,4 +91,4 @@ maxint_t S2_trivial(maxint_t x,
   return s2_trivial;
 }
 
-} // namespace primesum
+} // namespace

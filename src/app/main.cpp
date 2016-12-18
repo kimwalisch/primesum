@@ -147,7 +147,7 @@ maxint_t S2_hard(maxint_t x, int threads)
   return S2_hard(x, y, z, c, alpha, threads);
 }
 
-} // namespace primesum
+} // namespace
 
 int main (int argc, char* argv[])
 {

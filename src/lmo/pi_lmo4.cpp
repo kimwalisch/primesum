@@ -162,4 +162,4 @@ int64_t pi_lmo4(int64_t x)
   return sum;
 }
 
-} // namespace primesum
+} // namespace

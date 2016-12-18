@@ -144,4 +144,4 @@ maxint_t S2_easy(maxint_t x,
   return s2_easy;
 }
 
-} // namespace primesum
+} // namespace

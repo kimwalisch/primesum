@@ -62,6 +62,6 @@ maxint_t S2_hard_mpi(maxint_t x,
 
 #endif
 
-} // namespace primesum
+} // namespace
 
 #endif

@@ -59,6 +59,6 @@ struct PrimeSumOptions
 
 PrimeSumOptions parseOptions(int, char**);
 
-} // namespace primesum
+} // namespace
 
 #endif

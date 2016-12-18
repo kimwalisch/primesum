@@ -18,4 +18,4 @@ maxint_t S1(maxint_t x,
             int64_t c,
             int threads);
 
-} // namespace primesum
+} // namespace

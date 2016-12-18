@@ -431,4 +431,4 @@ maxint_t S2_hard(maxint_t x,
   return s2_hard;
 }
 
-} // namespace primesum
+} // namespace

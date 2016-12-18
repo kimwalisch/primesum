@@ -104,4 +104,4 @@ maxint_t S1(maxint_t x,
   return s1_sum;
 }
 
-} // namespace primesum
+} // namespace

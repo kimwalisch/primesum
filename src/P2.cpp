@@ -202,4 +202,4 @@ maxint_t P2(maxint_t x, int64_t y, int threads)
   return p2;
 }
 
-} // namespace primesum
+} // namespace

@@ -333,4 +333,4 @@ string primesum_version()
   return PRIMESUM_VERSION;
 }
 
-} // namespace primesum
+} // namespace

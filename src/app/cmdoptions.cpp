@@ -155,4 +155,4 @@ PrimeSumOptions parseOptions(int argc, char** argv)
   return pco;
 }
 
-} // namespace primesum
+} // namespace
