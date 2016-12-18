@@ -66,17 +66,17 @@ uint64_t fast_modulo(uint64_t x, uint64_t y)
   return x;
 }
 
-uint64_t sum_bits(uint64_t bits64, uint64_t& low)
+uint64_t sum_bits(uint64_t bits, uint64_t& low)
 {
-  maxint_t sum = 0;
-  uint16_t* bits = (uint16_t*) &bits64;
+  uint64_t sum = 0;
 
-  for (uint64_t i = 0; i < 4; i++)
+  while (bits)
   {
-    sum += low * popcnt64(bits[i]) + sumBits[bits[i]];
-    low += 16;
+    sum += low + __builtin_ctzll(bits);
+    bits &= bits - 1;
   }
 
+  low += 64;
   return sum;
 }
 
