@@ -78,7 +78,7 @@ libprimesum_la_SOURCES = \
 	include/int128_t.hpp \
 	include/isqrt.hpp \
 	include/min_max.hpp \
-	include/popcount.hpp \
+	include/popcnt.hpp \
 	include/imath.hpp \
 	include/print.hpp \
 	include/primesum-internal.hpp \
