@@ -17,7 +17,7 @@
 #include <BitSieve.hpp>
 #include <generate.hpp>
 #include <min_max.hpp>
-#include <pmath.hpp>
+#include <imath.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>
 #include <S2LoadBalancer.hpp>
@@ -190,7 +190,7 @@ maxint_t S2(uint128_t x,
   maxint_t S2_total = 0;
   int64_t low = 1;
   int64_t limit = x / y + 1;
-  threads = validate_threads(threads, limit);
+  threads = ideal_num_threads(threads, limit);
 
   S2LoadBalancer loadBalancer(x, y, limit, threads);
   int64_t min_segment_size = loadBalancer.get_min_segment_size();
@@ -279,4 +279,4 @@ maxint_t pi_lmo_parallel1(int128_t x, int threads)
   return sum;
 }
 
-} // namespace primesum
+} // namespace

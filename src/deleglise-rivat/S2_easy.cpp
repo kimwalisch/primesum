@@ -14,9 +14,9 @@
 #include <primesum-internal.hpp>
 #include <fast_div.hpp>
 #include <generate.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <min_max.hpp>
-#include <pmath.hpp>
+#include <imath.hpp>
 #include <S2Status.hpp>
 #include <S2.hpp>
 
@@ -48,7 +48,7 @@ maxint_t S2_easy_OpenMP(uint128_t x,
   maxint_t s2_easy = 0;
   int64_t x13 = iroot<3>(x);
   int64_t thread_threshold = 1000;
-  threads = validate_threads(threads, x13, thread_threshold);
+  threads = ideal_num_threads(threads, x13, thread_threshold);
 
   PiTable pi(y);
   int64_t pi_sqrty = pi[isqrt(y)];
@@ -146,4 +146,4 @@ maxint_t S2_easy(int128_t x,
   return s2_easy;
 }
 
-} // namespace primesum
+} // namespace

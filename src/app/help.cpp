@@ -71,4 +71,4 @@ void version()
   exit(1);
 }
 
-} // namespace primesum
+} // namespace

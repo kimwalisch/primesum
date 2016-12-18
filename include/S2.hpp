@@ -11,7 +11,7 @@
 #ifndef S2_HPP
 #define S2_HPP
 
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <stdint.h>
 
 namespace primesum {
@@ -62,6 +62,6 @@ maxint_t S2_hard_mpi(int128_t x,
 
 #endif
 
-} // namespace primesum
+} // namespace
 
 #endif

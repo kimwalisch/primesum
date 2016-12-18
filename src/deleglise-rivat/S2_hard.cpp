@@ -18,9 +18,9 @@
 #include <BitSieve.hpp>
 #include <fast_div.hpp>
 #include <generate.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <min_max.hpp>
-#include <pmath.hpp>
+#include <imath.hpp>
 #include <S2.hpp>
 #include <S2LoadBalancer.hpp>
 #include <tos_sums.hpp>
@@ -330,7 +330,7 @@ maxint_t S2_hard_OpenMP_master(int128_t x,
                                FactorTable& factors,
                                int threads)
 {
-  threads = validate_threads(threads, z);
+  threads = ideal_num_threads(threads, z);
 
   maxint_t s2_hard = 0;
   int64_t low = 1;
@@ -431,4 +431,4 @@ maxint_t S2_hard(int128_t x,
   return s2_hard;
 }
 
-} // namespace primesum
+} // namespace

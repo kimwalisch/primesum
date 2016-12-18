@@ -10,8 +10,8 @@
 #include <S1.hpp>
 #include <primesum-internal.hpp>
 #include <generate.hpp>
-#include <pmath.hpp>
-#include <int128.hpp>
+#include <imath.hpp>
+#include <int128_t.hpp>
 
 #include <stdint.h>
 #include <vector>
@@ -63,7 +63,7 @@ maxint_t S1_OpenMP_master(int128_t x,
                           int threads)
 {
   int64_t thread_threshold = ipow(10, 6);
-  threads = validate_threads(threads, y, thread_threshold);
+  threads = ideal_num_threads(threads, y, thread_threshold);
   vector<Y> primes = generate_primes<Y>(y);
   maxint_t s1_sum = phi_sum(x, c);
 
@@ -104,4 +104,4 @@ maxint_t S1(int128_t x,
   return s1_sum;
 }
 
-} // namespace primesum
+} // namespace

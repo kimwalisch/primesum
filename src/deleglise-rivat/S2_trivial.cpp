@@ -14,7 +14,7 @@
 #include <primesum-internal.hpp>
 #include <primesieve.hpp>
 #include <generate.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 
 #include <stdint.h>
 #include <algorithm>
@@ -36,7 +36,7 @@ maxint_t S2_trivial_OpenMP(int128_t x,
                            int threads)
 {
   int64_t thread_threshold = ipow(10, 7);
-  threads = validate_threads(threads, y, thread_threshold);
+  threads = ideal_num_threads(threads, y, thread_threshold);
 
   PiTable pi(y);
   vector<int128_t> prime_sums = generate_prime_sums<int128_t>(y);
@@ -89,4 +89,4 @@ maxint_t S2_trivial(int128_t x,
   return s2_trivial;
 }
 
-} // namespace primesum
+} // namespace

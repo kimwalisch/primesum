@@ -14,7 +14,7 @@
 ///
 
 #include <PhiTiny.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 
 #include <stdint.h>
 #include <vector>
@@ -52,4 +52,4 @@ PhiTiny::PhiTiny()
   }
 }
 
-} // namespace primesum
+} // namespace

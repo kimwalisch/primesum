@@ -13,9 +13,9 @@
 #include <string>
 #include <stdint.h>
 
-#define PRIMESUM_VERSION "1.0"
+#define PRIMESUM_VERSION "1.1"
 #define PRIMESUM_VERSION_MAJOR 1
-#define PRIMESUM_VERSION_MINOR 0
+#define PRIMESUM_VERSION_MINOR 1
 
 namespace primesum {
 
@@ -55,6 +55,6 @@ std::string get_max_x(double alpha = 1.0);
 /// Get the primesum version number, in the form “i.j”.
 std::string primesum_version();
 
-} // namespace primesum
+} // namespace
 
 #endif

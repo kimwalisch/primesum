@@ -34,4 +34,4 @@ int64_t nth_prime(int64_t n, int threads)
   return primes[n];
 }
 
-} // namespace primesum
+} // namespace

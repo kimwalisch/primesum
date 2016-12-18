@@ -16,7 +16,7 @@
 #include <cassert>
 #include <cstddef>
 #include <vector>
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <stdint.h>
 
 namespace primesum {

@@ -28,8 +28,8 @@
 #include <primesum.hpp>
 #include <primesum-internal.hpp>
 #include <primesieve.hpp>
-#include <pmath.hpp>
-#include <int128.hpp>
+#include <imath.hpp>
+#include <int128_t.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -131,7 +131,7 @@ private:
     factors_[0] = T_MAX - 1;
 
     int64_t thread_threshold = ipow(10, 7);
-    threads = validate_threads(threads, y, thread_threshold);
+    threads = ideal_num_threads(threads, y, thread_threshold);
     int64_t thread_interval = ceil_div(y, threads);
 
     #pragma omp parallel for num_threads(threads)

@@ -8,7 +8,7 @@
 /// file in the top level directory.
 ///
 
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <stdint.h>
 
 namespace primesum {
@@ -18,4 +18,4 @@ maxint_t S1(int128_t x,
             int64_t c,
             int threads);
 
-} // namespace primesum
+} // namespace

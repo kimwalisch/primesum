@@ -11,7 +11,7 @@
 
 #include "cmdoptions.hpp"
 #include <primesum-internal.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 
 #include <stdint.h>
 #include <vector>
@@ -155,4 +155,4 @@ PrimeSumOptions parseOptions(int argc, char** argv)
   return pco;
 }
 
-} // namespace primesum
+} // namespace

@@ -11,7 +11,7 @@
 #define S2LOADBALANCER_HPP
 
 #include <aligned_vector.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 
 #include <stdint.h>
 
@@ -21,7 +21,6 @@ class S2LoadBalancer
 {
 public:
   S2LoadBalancer(int128_t x, int64_t y, int64_t z, int64_t threads);
-  S2LoadBalancer(int128_t x, int64_t y, int64_t z, int64_t threads, double rsd);
   int64_t get_min_segment_size() const;
   double get_rsd() const;
   void update(int64_t low,
@@ -32,21 +31,21 @@ public:
 private:
   void init(int128_t x, int64_t y, int64_t threads);
   void set_min_size(int64_t z);
-  void update(int64_t* segments_per_thread, double decrease_threshold, double seconds);
-  void update_avg_seconds(double seconds);
+  void update(int64_t* segments_per_thread, double seconds, double pivot);
   void update_min_size(double divisor);
-  double get_decrease_threshold(double seconds) const;
-  bool increase_size(double seconds, double decrease) const;
-  bool decrease_size(double seconds, double decrease) const;
+  double get_avg_seconds() const;
+  double get_pivot(double seconds) const;
+  bool is_increase(double seconds, double pivot) const;
+  bool is_decrease(double seconds, double pivot) const;
   double x_;
   double y_;
   double z_;
   double rsd_;
-  double avg_seconds_;
+  double count_;
+  double total_seconds_;
   double min_seconds_;
   double decrease_dividend_;
   int64_t min_size_;
-  int64_t count_;
   int64_t sqrtz_;
   int64_t smallest_hard_leaf_;
 };

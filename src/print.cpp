@@ -9,7 +9,7 @@
 
 #include <print.hpp>
 #include <primesum-internal.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <stdint.h>
 
 #include <iostream>
@@ -30,39 +30,17 @@ namespace primesum {
 
 void set_print_status(bool print_status)
 {
-#ifdef HAVE_MPI
-  print_status_ = print_status && is_mpi_master_proc();
-#else
   print_status_ = print_status;
-#endif
 }
 
 void set_print_variables(bool print_variables)
 {
-#ifdef HAVE_MPI
-  print_variables_ = print_variables && is_mpi_master_proc();
-#else
   print_variables_ = print_variables;
-#endif
 }
 
 bool print_result()
 {
-#ifdef HAVE_MPI
-  return !print_variables() && is_mpi_master_proc();
-#else
   return !print_variables();
-#endif
-}
-
-void print_threads(int threads)
-{
-#ifdef HAVE_MPI
-  cout << "processes = " << mpi_num_procs() << endl;
-  cout << "threads = " << mpi_num_procs() << " * " << validate_threads(threads) << endl;
-#else
-  cout << "threads = " << validate_threads(threads) << endl;
-#endif
 }
 
 bool print_status()
@@ -90,7 +68,7 @@ void print(int128_t x, int64_t y, int64_t z, int64_t c, double alpha, int thread
     cout << "z = " << z << endl;
     cout << "c = " << c << endl;
     cout << "alpha = " << fixed << setprecision(3) << alpha << endl;
-    print_threads(threads);
+    cout << "threads = " << threads << endl;
   }
 }
 
@@ -103,7 +81,7 @@ void print(int128_t x, int64_t y, int threads)
     cout << "y = " << y << endl;
     cout << "z = " << z << endl;
     cout << "alpha = " << fixed << setprecision(3) << get_alpha(x, y) << endl;
-    print_threads(threads);
+    cout << "threads = " << threads << endl;
     cout << endl;
   }
 }
@@ -118,7 +96,7 @@ void print(int128_t x, int64_t y, int64_t c, int threads)
     cout << "z = " << z << endl;
     cout << "c = " << c << endl;
     cout << "alpha = " << fixed << setprecision(3) << get_alpha(x, y) << endl;
-    print_threads(threads);
+    cout << "threads = " << threads << endl;
     cout << endl;
   }
 }

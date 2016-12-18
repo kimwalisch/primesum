@@ -10,7 +10,7 @@
 
 #include <primesum-internal.hpp>
 #include <primesum.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 
 #include <stdint.h>
 #include <iostream>
@@ -128,4 +128,4 @@ bool test()
   return true;
 }
 
-} // namespace primesum
+} // namespace

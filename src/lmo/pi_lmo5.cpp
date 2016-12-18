@@ -17,7 +17,7 @@
 #include <BitSieve.hpp>
 #include <generate.hpp>
 #include <min_max.hpp>
-#include <pmath.hpp>
+#include <imath.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>
 #include <Wheel.hpp>
@@ -188,4 +188,4 @@ int64_t pi_lmo5(int64_t x)
   return sum.convert_to<int64_t>();
 }
 
-} // namespace primesum
+} // namespace

@@ -16,10 +16,9 @@
 #endif
 
 #include <BitSieve.hpp>
-#include <bit_scan_forward.hpp>
-#include <popcount.hpp>
-#include <pmath.hpp>
-#include <int128.hpp>
+#include <popcnt.hpp>
+#include <imath.hpp>
+#include <int128_t.hpp>
 #include <SumBits.hpp>
 
 #include <stdint.h>
@@ -33,7 +32,7 @@ using namespace primesum;
 
 namespace {
 
-const SumBits sum_bits;
+const SumBits sumBits;
 
 /// 1-indexing: primes[1] = 2, primes[2] = 3, ...
 const uint64_t primes[] = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
@@ -54,26 +53,26 @@ const uint64_t masks[] =
 };
 
 /// Get bitmask with unset multiples
-inline uint64_t unset_mask(uint64_t mask, uint64_t shift)
+uint64_t unset_mask(uint64_t mask, uint64_t shift)
 {
   return ~(mask << shift);
 }
 
 /// @pre x < y * 2
-inline uint64_t fast_modulo(uint64_t x, uint64_t y)
+uint64_t fast_modulo(uint64_t x, uint64_t y)
 {
   x = (x < y) ? x : x - y;
   assert(x < y);
   return x;
 }
 
-inline uint64_t sum_word64(uint64_t bits, uint64_t& low)
+uint64_t sum_bits(uint64_t bits, uint64_t& low)
 {
   uint64_t sum = 0;
 
-  while (bits != 0)
+  while (bits)
   {
-    sum += low + bit_scan_forward(bits);
+    sum += low + __builtin_ctzll(bits);
     bits &= bits - 1;
   }
 
@@ -81,7 +80,7 @@ inline uint64_t sum_word64(uint64_t bits, uint64_t& low)
   return sum;
 }
 
-inline int128_t sum_sieve(const uint64_t* sieve, uint64_t size, uint64_t& low)
+int128_t sum_bits(const uint64_t* sieve, uint64_t size, uint64_t& low)
 {
   int128_t sum = 0;
   const uint16_t* bits = (uint16_t*) sieve;
@@ -89,14 +88,14 @@ inline int128_t sum_sieve(const uint64_t* sieve, uint64_t size, uint64_t& low)
 
   for (uint64_t i = 0; i < size; i++)
   {
-    sum += low * popcount_u64(bits[i]) + sum_bits[bits[i]];
+    sum += low * popcnt64(bits[i]) + sumBits[bits[i]];
     low += 16;
   }
 
   return sum;
 }
 
-}
+} // namepsace
 
 namespace primesum {
 
@@ -209,12 +208,12 @@ uint64_t BitSieve::count(uint64_t start,
   uint64_t bit_count;
 
   if (start_idx == stop_idx)
-    bit_count = popcount_u64(sieve_[start_idx] & (m1 & m2));
+    bit_count = popcnt64(sieve_[start_idx] & (m1 & m2));
   else
   {
-    bit_count = popcount_u64(sieve_[start_idx] & m1);
-    bit_count += popcount_u64(&sieve_[start_idx + 1], stop_idx - (start_idx + 1));
-    bit_count += popcount_u64(sieve_[stop_idx] & m2);
+    bit_count = popcnt64(sieve_[start_idx] & m1);
+    bit_count += popcnt64(&sieve_[start_idx + 1], stop_idx - (start_idx + 1));
+    bit_count += popcnt64(sieve_[stop_idx] & m2);
   }
 
   return bit_count;
@@ -239,12 +238,12 @@ int128_t BitSieve::sum(uint64_t low,
   low += start - start % 64;
 
   if (start_idx == stop_idx)
-    sum = sum_word64(sieve_[start_idx] & (m1 & m2), low);
+    sum = sum_bits(sieve_[start_idx] & (m1 & m2), low);
   else
   {
-    sum = sum_word64(sieve_[start_idx] & m1, low);
-    sum += sum_sieve(&sieve_[start_idx + 1], stop_idx - (start_idx + 1), low);
-    sum += sum_word64(sieve_[stop_idx] & m2, low);
+    sum = sum_bits(sieve_[start_idx] & m1, low);
+    sum += sum_bits(&sieve_[start_idx + 1], stop_idx - (start_idx + 1), low);
+    sum += sum_bits(sieve_[stop_idx] & m2, low);
   }
 
   return sum;

@@ -11,8 +11,8 @@
 
 #include <S2Status.hpp>
 #include <primesum-internal.hpp>
-#include <pmath.hpp>
-#include <int128.hpp>
+#include <imath.hpp>
+#include <int128_t.hpp>
 
 #include <algorithm>
 #include <cmath>

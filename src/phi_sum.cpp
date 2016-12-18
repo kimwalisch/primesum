@@ -10,6 +10,7 @@
 #include <primesum-internal.hpp>
 #include <primesum.hpp>
 #include <generate.hpp>
+#include <fast_div.hpp>
 
 #include <stdint.h>
 
@@ -34,8 +35,8 @@ maxint_t phi_sum_tiny(int128_t x, int64_t a)
   {
     if (x <= primes_[a])
       return sum + SIGN;
-
-    sum += primes_[a] * phi_sum_tiny<-SIGN>(x / primes_[a], a - 1);
+    int128_t x2 = fast_div(x, primes_[a]);
+    sum += primes_[a] * phi_sum_tiny<-SIGN>(x2, a - 1);
   }
 
   sum += SIGN * F(x);
@@ -46,7 +47,7 @@ maxint_t phi_sum_tiny(int128_t x, int64_t a)
 template <int SIGN>
 maxint_t phi_sum(int128_t x,
                  int64_t a,
-                 vector<int32_t>& primes)
+                 vector<int>& primes)
 {
   maxint_t sum = 0;
 
@@ -54,8 +55,8 @@ maxint_t phi_sum(int128_t x,
   {
     if (x <= primes[a])
       return sum + SIGN;
-
-    sum += primes[a] * phi_sum<-SIGN>(x / primes[a], a - 1, primes);
+    int128_t x2 = fast_div(x, primes[a]);
+    sum += primes[a] * phi_sum<-SIGN>(x2, a - 1, primes);
   }
 
   sum += SIGN * F(x);
@@ -75,7 +76,7 @@ maxint_t phi_sum(int128_t x, int64_t a)
   if (a < 10)
     return phi_sum_tiny<1>(x, a);
 
-  vector<int32_t> primes = generate_n_primes(a);
+  vector<int> primes = generate_n_primes(a);
   return ::phi_sum<1>(x, a, primes);
 }
 

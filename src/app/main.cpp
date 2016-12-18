@@ -12,8 +12,8 @@
 
 #include <primesum-internal.hpp>
 #include <primesum.hpp>
-#include <pmath.hpp>
-#include <int128.hpp>
+#include <imath.hpp>
+#include <int128_t.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>
 #include <S2.hpp>
@@ -147,7 +147,7 @@ maxint_t S2_hard(int128_t x, int threads)
   return S2_hard(x, y, z, c, alpha, threads);
 }
 
-} // namespace primesum
+} // namespace
 
 int main (int argc, char* argv[])
 {

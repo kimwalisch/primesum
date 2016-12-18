@@ -11,7 +11,7 @@
 ///
 
 #include <primesum-internal.hpp>
-#include <pmath.hpp>
+#include <imath.hpp>
 #include <generate.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>
@@ -113,4 +113,4 @@ int64_t pi_lmo2(int64_t x)
   return sum.convert_to<int64_t>();
 }
 
-} // namespace primesum
+} // namespace

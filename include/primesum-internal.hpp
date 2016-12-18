@@ -11,9 +11,9 @@
 #ifndef PRIMESUM_INTERNAL_HPP
 #define PRIMESUM_INTERNAL_HPP
 
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <aligned_vector.hpp>
-#include <pmath.hpp>
+#include <imath.hpp>
 #include <print.hpp>
 
 #include <stdint.h>
@@ -122,9 +122,7 @@ double get_alpha_deleglise_rivat(int128_t x);
 
 double get_wtime();
 
-int validate_threads(int threads);
-
-int validate_threads(int threads, int64_t sieve_limit, int64_t thread_threshold = 100000);
+int ideal_num_threads(int threads, int64_t sieve_limit, int64_t thread_threshold = 100000);
 
 int128_t to_int128(const std::string& expr);
 
@@ -137,27 +135,6 @@ T get_percent(T low, T limit)
 
 bool test();
 
-#ifdef HAVE_MPI
-
-class PiTable;
-
-std::vector<int64_t> phi_vector(int64_t x, int64_t a, const std::vector<int64_t>& primes, const PiTable& pi, int threads);
-
-bool is_mpi_master_proc();
-int mpi_num_procs();
-int mpi_proc_id();
-int mpi_master_proc_id();
-
-int64_t P2_mpi(int64_t x, int64_t y, int threads);
-
-#ifdef HAVE_INT128_T
-
-int128_t P2_mpi(int128_t x, int64_t y, int threads);
-
-#endif /* HAVE_INT128_T */
-
-#endif /* HAVE_MPI */
-
-} // namespace primesum
+} // namespace
 
 #endif

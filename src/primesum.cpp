@@ -12,8 +12,8 @@
 #include <primesum.hpp>
 #include <primesieve.hpp>
 #include <calculator.hpp>
-#include <int128.hpp>
-#include <pmath.hpp>
+#include <int128_t.hpp>
+#include <imath.hpp>
 
 #include <algorithm>
 #include <ctime>
@@ -27,45 +27,13 @@
   #include <omp.h>
 #endif
 
-#ifdef HAVE_MPI
-
-#include <mpi.h>
-
-namespace primesum {
-
-int mpi_num_procs()
-{
-  int procs;
-  MPI_Comm_size(MPI_COMM_WORLD, &procs);
-  return procs;
-}
-
-int mpi_proc_id()
-{
-  int proc_id;
-  MPI_Comm_rank(MPI_COMM_WORLD, &proc_id);
-  return proc_id;
-}
-
-int mpi_master_proc_id()
-{
-  return 0;
-}
-
-bool is_mpi_master_proc()
-{
-  return mpi_proc_id() == mpi_master_proc_id();
-}
-
-} // namespace
-
-#endif
-
 using namespace std;
 
 namespace {
 
-int threads_ = primesum::MAX_THREADS;
+#ifdef _OPENMP
+  int threads_ = -1;
+#endif
 
 int status_precision_ = -1;
 
@@ -82,7 +50,7 @@ maxint_t pi(int128_t x, int threads)
 
 maxint_t pi(int128_t x)
 {
-  return pi(x, threads_);
+  return pi(x, get_num_threads());
 }
 
 /// Alias for the fastest prime summing function in primesum.
@@ -91,7 +59,7 @@ maxint_t pi(int128_t x)
 ///
 string pi(const string& x)
 {
-  return pi(x, threads_);
+  return pi(x, get_num_threads());
 }
 
 /// Alias for the fastest prime summing function in primesum.
@@ -120,7 +88,7 @@ maxint_t pi_deleglise_rivat(int128_t x, int threads)
 ///
 int64_t pi_legendre(int64_t x)
 {
-  return pi_legendre(x, threads_);
+  return pi_legendre(x, get_num_threads());
 }
 
 /// Parallel implementation of the Lagarias-Miller-Odlyzko
@@ -138,7 +106,7 @@ maxint_t pi_lmo(int128_t x, int threads)
 ///
 int64_t pi_primesieve(int64_t x)
 {
-  return pi_primesieve(x, threads_);
+  return pi_primesieve(x, get_num_threads());
 }
 
 /// Calculate the nth prime using a combination of the prime
@@ -147,7 +115,7 @@ int64_t pi_primesieve(int64_t x)
 ///
 int64_t nth_prime(int64_t n)
 {
-  return nth_prime(n, threads_);
+  return nth_prime(n, get_num_threads());
 }
 
 /// Partial sieve function (a.k.a. Legendre-sum).
@@ -156,7 +124,7 @@ int64_t nth_prime(int64_t n)
 ///
 int64_t phi(int64_t x, int64_t a)
 {
-  return phi(x, a, threads_);
+  return phi(x, a, get_num_threads());
 }
 
 int128_t prime_sum_tiny(int64_t x)
@@ -206,7 +174,7 @@ double get_wtime()
 #endif
 }
 
-int validate_threads(int threads)
+int ideal_num_threads(int threads)
 {
 #ifdef _OPENMP
   if (threads == MAX_THREADS)
@@ -218,9 +186,8 @@ int validate_threads(int threads)
 #endif
 }
 
-int validate_threads(int threads, int64_t sieve_limit, int64_t thread_threshold)
+int ideal_num_threads(int threads, int64_t sieve_limit, int64_t thread_threshold)
 {
-  threads = validate_threads(threads);
   thread_threshold = max((int64_t) 1, thread_threshold);
   threads = (int) min((int64_t) threads, sieve_limit / thread_threshold);
   threads = max(1, threads);
@@ -294,12 +261,23 @@ double get_alpha_deleglise_rivat(int128_t x)
 
 void set_num_threads(int threads)
 {
-  threads_ = validate_threads(threads);
+#ifdef _OPENMP
+  threads_ = in_between(1, threads, omp_get_max_threads());
+#else
+  unused_param(threads);
+#endif
 }
 
 int get_num_threads()
 {
-  return validate_threads(threads_);
+#ifdef _OPENMP
+  if (threads_ != -1)
+    return threads_;
+  else
+    return max(1, omp_get_max_threads());
+#else
+  return 1;
+#endif
 }
 
 void set_status_precision(int precision)
@@ -333,4 +311,4 @@ string primesum_version()
   return PRIMESUM_VERSION;
 }
 
-} // namespace primesum
+} // namespace

@@ -13,7 +13,6 @@
 #define SUMBITS_HPP
 
 #include <stdint.h>
-#include <bit_scan_forward.hpp>
 
 namespace primesum {
 
@@ -26,7 +25,7 @@ public:
     {
       sum_bits_[i] = 0;
       for (int j = i; j != 0; j &= j - 1)
-        sum_bits_[i] += (uint8_t) bit_scan_forward(j);
+        sum_bits_[i] += (uint8_t) __builtin_ctzll(j);
     }
   }
 

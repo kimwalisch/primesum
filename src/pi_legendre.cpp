@@ -9,7 +9,7 @@
 
 #include <primesum-internal.hpp>
 #include <primesum.hpp>
-#include <pmath.hpp>
+#include <imath.hpp>
 
 #include <stdint.h>
 
@@ -35,4 +35,4 @@ int64_t pi_legendre(int64_t x, int threads)
   return sum;
 }
 
-} // namespace primesum
+} // namespace
