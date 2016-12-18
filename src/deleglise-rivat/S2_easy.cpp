@@ -47,7 +47,7 @@ T S2_easy_OpenMP(T x,
   T s2_easy = 0;
   int64_t x13 = iroot<3>(x);
   int64_t thread_threshold = 1000;
-  threads = validate_threads(threads, x13, thread_threshold);
+  threads = ideal_num_threads(threads, x13, thread_threshold);
 
   PiTable pi(y);
   vector<int64_t> prime_sums = generate_prime_sums(y);
