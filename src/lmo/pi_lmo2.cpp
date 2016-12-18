@@ -11,7 +11,7 @@
 ///
 
 #include <primesum-internal.hpp>
-#include <pmath.hpp>
+#include <imath.hpp>
 #include <generate.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>

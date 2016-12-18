@@ -32,7 +32,7 @@
 #include <primesum-internal.hpp>
 #include <primesum.hpp>
 #include <generate.hpp>
-#include <pmath.hpp>
+#include <imath.hpp>
 #include <PhiTiny.hpp>
 #include <fast_div.hpp>
 #include <min_max.hpp>

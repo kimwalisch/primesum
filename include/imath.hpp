@@ -1,15 +1,15 @@
 ///
-/// @file  pmath.hpp
+/// @file  imath.hpp
 /// @brief Integer math functions used in primesum.
 ///
-/// Copyright (C) 2014 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
 ///
 
-#ifndef PMATH_HPP
-#define PMATH_HPP
+#ifndef IMATH_HPP
+#define IMATH_HPP
 
 #include <int128_t.hpp>
 #include <isqrt.hpp>

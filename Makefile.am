@@ -80,7 +80,7 @@ libprimesum_la_SOURCES = \
 	include/isqrt.hpp \
 	include/min_max.hpp \
 	include/popcount.hpp \
-	include/pmath.hpp \
+	include/imath.hpp \
 	include/print.hpp \
 	include/primesum-internal.hpp \
 	include/PhiTiny.hpp \

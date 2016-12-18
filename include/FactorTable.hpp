@@ -28,7 +28,7 @@
 #include <primesum.hpp>
 #include <primesum-internal.hpp>
 #include <primesieve.hpp>
-#include <pmath.hpp>
+#include <imath.hpp>
 #include <int128_t.hpp>
 
 #include <algorithm>

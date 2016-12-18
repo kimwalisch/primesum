@@ -10,7 +10,7 @@
 #include <S1.hpp>
 #include <primesum-internal.hpp>
 #include <generate.hpp>
-#include <pmath.hpp>
+#include <imath.hpp>
 #include <int128_t.hpp>
 
 #include <stdint.h>
