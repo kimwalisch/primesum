@@ -12,7 +12,7 @@
 #include <primesum.hpp>
 #include <primesieve.hpp>
 #include <calculator.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <pmath.hpp>
 
 #include <algorithm>

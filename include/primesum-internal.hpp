@@ -11,7 +11,7 @@
 #ifndef PRIMESUM_INTERNAL_HPP
 #define PRIMESUM_INTERNAL_HPP
 
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <aligned_vector.hpp>
 #include <pmath.hpp>
 #include <print.hpp>

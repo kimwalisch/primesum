@@ -11,7 +11,7 @@
 #define PRIMESUM_CMDOPTIONS_HPP
 
 #include <primesum.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <stdint.h>
 
 namespace primesum {

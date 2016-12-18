@@ -13,7 +13,7 @@
 #include <primesum-internal.hpp>
 #include <primesieve.hpp>
 #include <generate.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <min_max.hpp>
 #include <pmath.hpp>
 

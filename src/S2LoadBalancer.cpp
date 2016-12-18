@@ -52,7 +52,7 @@
 #include <primesum-internal.hpp>
 #include <aligned_vector.hpp>
 #include <pmath.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 
 #include <stdint.h>
 #include <algorithm>

@@ -19,7 +19,7 @@
 #include <bit_scan_forward.hpp>
 #include <popcount.hpp>
 #include <pmath.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <SumBits.hpp>
 
 #include <stdint.h>

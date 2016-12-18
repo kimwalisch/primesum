@@ -13,7 +13,7 @@
 #include <primesum-internal.hpp>
 #include <primesum.hpp>
 #include <pmath.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>
 #include <S2.hpp>

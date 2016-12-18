@@ -11,7 +11,7 @@
 #include <primesum-internal.hpp>
 #include <generate.hpp>
 #include <pmath.hpp>
-#include <int128.hpp>
+#include <int128_t.hpp>
 
 #include <stdint.h>
 #include <vector>
