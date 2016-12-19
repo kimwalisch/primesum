@@ -7,7 +7,7 @@ compiler:
 
 env:
   global:
-    - CXXFLAGS="-O2 -pedantic -Wall -Wextra -Werror -Wno-long-long -Wno-unused-parameter -Wno-strict-aliasing -Wno-unknown-pragmas"
+    - CXXFLAGS="-O2 -pedantic -Wall -Wextra -Werror -Wno-c++0x-compat -Wno-long-long -Wno-unused-parameter -Wno-strict-aliasing -Wno-unknown-pragmas"
     - OMP_NUM_THREADS=4
 
 before_install:
@@ -15,16 +15,14 @@ before_install:
 
 # Install cmake cppcheck
 install:
-  - sudo apt-get install -y cmake cppcheck libboost-all-dev
+  - sudo apt-get install -y cmake cppcheck
 
-# Test build.sh script
+# Download and install Boost C++ libraries
 before_script:
-  - wget https://github.com/boostorg/multiprecision/archive/master.tar.gz
-  - tar xvf master.tar.gz && rm master.tar.gz
-  - cp -rf multiprecision-master/include/boost include
-  - wget https://github.com/boostorg/type_traits/archive/master.tar.gz
-  - tar xvf master.tar.gz && rm master.tar.gz
-  - cp -rf type_traits-master/include/boost include
+  - wget https://sourceforge.net/projects/boost/files/boost/1.62.0/boost_1_62_0.tar.gz/download
+  - tar xvf boost_1_62_0.tar.gz && rm boost_1_62_0.tar.gz
+  - mv boost_1_62_0/boost include
+  - rm -rf boost_1_62_0
 
 # Run primecount tests
 script:
