@@ -16,13 +16,12 @@ before_install:
 # Install cmake cppcheck
 install:
   - sudo apt-get install -y cmake cppcheck libboost-all-dev
-  - wget https://github.com/boostorg/multiprecision/archive/master.tar.gz
-  - tar xvf master.tar.gz
-  - export CPLUS_INCLUDE_PATH=$(pwd)/multiprecision-master/include/:$CPLUS_INCLUDE_PATH
-  - export C_INCLUDE_PATH=$(pwd)/multiprecision-master/include/:$C_INCLUDE_PATH
 
 # Test build.sh script
 before_script:
+  - wget https://github.com/boostorg/multiprecision/archive/master.tar.gz
+  - tar xvf master.tar.gz
+  - cp -rf multiprecision-master/include/boost include
   - cmake .
   - make -j4
   - ldd primesum
