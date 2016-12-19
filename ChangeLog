@@ -1,3 +1,10 @@
+2016-12-19 Kim Walisch  <kim.walisch@gmail.com>
+
+  Version 1.1 released.
+
+  * CMake: Use CMake build system instead of Autotools.
+  * README.md: New 256-bit binaries.
+
 2016-06-10 Kim Walisch  <kim.walisch@gmail.com>
 
   Version 1.0 released.
