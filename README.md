@@ -18,7 +18,7 @@ These binaries are statically linked and require a CPU which supports the
 POPCNT instruction (2010 or later).
 
 * [primesum-1.1-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-1.0-win64.zip), 362K
-* [primesum-1.1-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-1.0-linux-x64.tar.gz), 868K
+* [primesum-1.1-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-1.0-linux-x64.tar.gz), 894K
 
 primesum 256-bit
 ----------------
@@ -29,7 +29,7 @@ version due to slower 256-bit integer arithmetic. primesum 256-bit has
 already been used to compute many new prime sum world records!
 
 * [primesum-256-1.1-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-256-1.1-win64.zip), 362K
-* [primesum-256-1.1-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-256-1.1-linux-x64.tar.gz), 868K
+* [primesum-256-1.1-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-256-1.1-linux-x64.tar.gz), 1005K
 
 Build instructions
 ------------------
