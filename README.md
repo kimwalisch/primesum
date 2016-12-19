@@ -20,12 +20,12 @@ POPCNT instruction (2010 or later).
 * [primesum-1.1-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-1.0-win64.zip), 362K
 * [primesum-1.1-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-1.0-linux-x64.tar.gz), 868K
 
-primesum 256-bits
------------------
-[primesum 256-bits](https://github.com/kimwalisch/primesum/tree/256-bits)
+primesum 256-bit
+----------------
+[primesum 256-bit](https://github.com/kimwalisch/primesum/tree/256-bit)
 allows to compute prime sums for values of x&nbsp;>&nbsp;10<sup>20</sup>
 but it runs only at about half the speed of the primesum 128-bit
-version due to slower 256-bit integer arithmetic. primesum 256-bits has
+version due to slower 256-bit integer arithmetic. primesum 256-bit has
 already been used to compute many new prime sum world records!
 
 * [primesum-256-1.1-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-256-1.1-win64.zip), 362K
