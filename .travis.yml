@@ -20,13 +20,16 @@ install:
 # Test build.sh script
 before_script:
   - wget https://github.com/boostorg/multiprecision/archive/master.tar.gz
-  - tar xvf master.tar.gz
+  - tar xvf master.tar.gz && rm master.tar.gz
   - cp -rf multiprecision-master/include/boost include
+  - wget https://github.com/boostorg/type_traits/archive/master.tar.gz
+  - tar xvf master.tar.gz && rm master.tar.gz
+  - cp -rf type_traits-master/include/boost include
+
+# Run primecount tests
+script:
   - cmake .
   - make -j4
   - ldd primesum
   - cppcheck src include --error-exitcode=1 -i$(cd primesieve-*; basename $(pwd))
-
-# Run primecount tests
-script:
   - ./primesum --test
