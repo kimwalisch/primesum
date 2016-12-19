@@ -1,11 +1,11 @@
-primesum 256-bits
-=================
+primesum 256-bit
+================
 [![Build Status](https://travis-ci.org/kimwalisch/primesum.svg)](https://travis-ci.org/kimwalisch/primesum)
 [![GitHub license](https://img.shields.io/badge/license-BSD%202-blue.svg)](https://github.com/kimwalisch/primesum/blob/master/COPYING)
 
-primesum 256-bits allows to compute prime sums for values of
+primesum 256-bit allows to compute prime sums for values of
 x&nbsp;>&nbsp;10<sup>20</sup>. No binaries are provided, it must be build
-from source. primesum 256-bits has already been used to compute several
+from source. primesum 256-bit has already been used to compute several
 world records.
 
 Build instructions (Unix-like OSes)
@@ -15,7 +15,7 @@ later (e.g. GCC ≥ 5.0, Clang ≥ 3.8), GNU make and the
 <a href="http://www.boost.org/">Boost C++ libraries</a>.
 
 Download 
-[primesum-256-bits-1.0.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-256-bits-1.0.tar.gz)
+[primesum-256-bit.tar.gz](https://github.com/kimwalisch/primesum/archive/256-bit.tar.gz)
 and build it:
 
 ```sh
