@@ -17,22 +17,26 @@ Below are the latest precompiled binaries for Windows 64-bit and Linux x64.
 These binaries are statically linked and require a CPU which supports the
 POPCNT instruction (2010 or later).
 
-* [primesum-1.0-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-1.0-win64.zip), 362K
-* [primesum-1.0-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-1.0-linux-x64.tar.gz), 868K
+* [primesum-1.1-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-1.0-win64.zip), 362K
+* [primesum-1.1-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-1.0-linux-x64.tar.gz), 868K
 
 primesum 256-bits
 -----------------
 [primesum 256-bits](https://github.com/kimwalisch/primesum/tree/256-bits)
-allows to compute prime sums for values of x&nbsp;>&nbsp;10<sup>20</sup>. No
-binaries are provided, it must be build from source. primesum 256-bits has
-already been used to compute several world records.
+allows to compute prime sums for values of x&nbsp;>&nbsp;10<sup>20</sup>
+but it runs only at about half the speed of the primesum 128-bit
+version due to slower 256-bit integer arithmetic. primesum 256-bits has
+already been used to compute many new prime sum world records!
 
-Build instructions (Unix-like OSes)
------------------------------------
-You need to have installed a C++ compiler and GNU make to build ```primesum```.
+* [primesum-256-1.1-win64.zip](https://dl.bintray.com/kimwalisch/primesum/primesum-256-1.1-win64.zip), 362K
+* [primesum-256-1.1-linux-x64.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-256-1.1-linux-x64.tar.gz), 868K
+
+Build instructions
+------------------
+You need to have installed a C++ compiler, make and cmake to build ```primesum```.
 
 Download
-[primesum-1.0.tar.gz](https://dl.bintray.com/kimwalisch/primesum/primesum-1.0.tar.gz)
+[primesum-1.1.tar.gz](https://github.com/kimwalisch/primesum/archive/v1.1.tar.gz)
 and build it using:
 
 ```sh
