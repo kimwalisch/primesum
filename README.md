@@ -101,24 +101,20 @@ Benchmark
     <td>2,220,822,432,581,729,238</td>
     <td>0.02s</td>
   </tr>
-  </tr>
   <tr align="right">
     <td>10<sup>11</sup></td>
     <td>201,467,077,743,744,681,014</td>
     <td>0.03s</td>
-  </tr>
   </tr>
   <tr align="right">
     <td>10<sup>12</sup></td>
     <td>18,435,588,552,550,705,911,377</td>
     <td>0.04s</td>
   </tr>
-  </tr>
   <tr align="right">
     <td>10<sup>13</sup></td>
     <td>1,699,246,443,377,779,418,889,494</td>
     <td>0.13s</td>
-  </tr>
   </tr>
   <tr align="right">
     <td>10<sup>14</sup></td>
@@ -141,18 +137,18 @@ Benchmark
     <td>24.05s</td>
   </tr>
   <tr align="right">
-  <td>10<sup>18</sup></td>
-  <td>12,212,914,292,949,226,570,880,576,733,896,687</td>
+    <td>10<sup>18</sup></td>
+    <td>12,212,914,292,949,226,570,880,576,733,896,687</td>
     <td>110.96s</td>
   </tr>
   <tr align="right">
-  <td>10<sup>19</sup></td>
-  <td>1,156,251,260,549,368,082,781,614,413,945,980,126</td>
+    <td>10<sup>19</sup></td>
+    <td>1,156,251,260,549,368,082,781,614,413,945,980,126</td>
     <td>438.50s</td>
   </tr>
   <tr align="right">
-  <td>10<sup>20</sup></td>
-  <td>109,778,913,483,063,648,128,485,839,045,703,833,541</td>
+    <td>10<sup>20</sup></td>
+    <td>109,778,913,483,063,648,128,485,839,045,703,833,541</td>
     <td>1909.077s</td>
   </tr>
 </table>
@@ -171,13 +167,11 @@ GCC 5.2.
     <td><b>Date</b></td>
     <td><b>Computed by</b></td>
   </tr>
-  </tr>
   <tr align="right">
     <td>10<sup>21</sup></td>
     <td>10,449,550,362,130,704,786,220,283,253,063,405,651,965</td>
     <td>June 6, 2016</td>
     <td>Kim Walisch</td>
-  </tr>
   </tr>
   <tr align="right">
     <td>10<sup>22</sup></td>
@@ -219,7 +213,6 @@ withdrew his result in 2011.
     <td><b>Sum of the first n primes</b></td>
     <td><b>Date</b></td>
     <td><b>Computed by</b></td>
-  </tr>
   </tr>
   <tr align="right">
     <td>10<sup>18</sup></td>
