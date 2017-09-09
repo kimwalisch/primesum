@@ -17,8 +17,8 @@ Below are the latest precompiled binaries for Windows 64-bit and Linux x64.
 These binaries are statically linked and require a CPU which supports the
 POPCNT instruction (2010 or later).
 
-* [primesum-1.1-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.1/primesum-1.1-win64.zip), 382K
-* [primesum-1.1-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.1/primesum-1.1-linux-x64.tar.gz), 894K
+* [primesum-1.1-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.1/primesum-1.1-win64.zip), 382 KB
+* [primesum-1.1-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.1/primesum-1.1-linux-x64.tar.gz), 894 KB
 
 256-bit binaries
 ----------------
@@ -28,8 +28,8 @@ but it runs only at about half the speed of the primesum 128-bit
 version due to slower 256-bit integer arithmetic. primesum 256-bit has
 already been used to compute many new prime sum world records!
 
-* [primesum-1.1-256-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.1-256-bit/primesum-1.1-256-win64.zip), 498K
-* [primesum-1.1-256-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.1-256-bit/primesum-1.1-256-linux-x64.tar.gz), 1005K
+* [primesum-1.1-256-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.1-256-bit/primesum-1.1-256-win64.zip), 498 KB
+* [primesum-1.1-256-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.1-256-bit/primesum-1.1-256-linux-x64.tar.gz), 1005 KB
 
 Build instructions
 ------------------
