@@ -33,15 +33,13 @@ already been used to compute many new prime sum world records!
 
 Build instructions
 ------------------
-You need to have installed a C++ compiler, make and cmake to build ```primesum```.
-
-Download
-[primesum-1.1.tar.gz](https://github.com/kimwalisch/primesum/archive/v1.1.tar.gz)
-and build it using:
+You need to have installed a C++ compiler, cmake and make. Ideally
+primesum should be compiled using the GCC compiler as GCC supports both
+OpenMP and 128-bit integers.
 
 ```sh
 cmake .
-make -j8
+make -j
 sudo make install
 ```
 
