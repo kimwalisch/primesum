@@ -22,7 +22,7 @@ before_script:
   - cmake .
   - make -j4
   - ldd primesum
-  - cppcheck src include --error-exitcode=1 -i$(cd primesieve-*; basename $(pwd))
+  - cppcheck src include --error-exitcode=1 -isrc/primesieve
 
 # Run primecount tests
 script:
