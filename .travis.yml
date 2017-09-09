@@ -19,7 +19,8 @@ install:
 
 # Test build.sh script
 before_script:
-  - cmake .
+  - if [ "$CXX" = "g++" ]; then cmake .; fi
+  - if [ "$CXX" = "clang++" ]; then cmake . -DOpenMP_CXX_FLAGS=""; fi
   - make -j4
   - ldd primesum
   - cppcheck src include --error-exitcode=1 -isrc/primesieve
