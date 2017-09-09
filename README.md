@@ -20,7 +20,7 @@ POPCNT instruction (2010 or later).
 * [primesum-1.1-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.1/primesum-1.1-win64.zip), 382K
 * [primesum-1.1-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.1/primesum-1.1-linux-x64.tar.gz), 894K
 
-primesum 256-bit
+256-bit binaries
 ----------------
 [primesum 256-bit](https://github.com/kimwalisch/primesum/tree/256-bit)
 allows to compute prime sums for values of x&nbsp;>&nbsp;10<sup>20</sup>
