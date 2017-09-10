@@ -1,3 +1,11 @@
+2017-09-09 Kim Walisch  <kim.walisch@gmail.com>
+
+  Version 1.2 work in progress.
+
+  * CMakeLists.txt: Silence OpenMP warning.
+  * README.md: Update build instructions.
+  * .travis.yml: Update to Ubuntu 14.
+
 2016-12-19 Kim Walisch  <kim.walisch@gmail.com>
 
   Version 1.1 released.
