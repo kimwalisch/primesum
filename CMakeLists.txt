@@ -8,11 +8,11 @@ set(CMAKE_BUILD_TYPE Release)
 
 # Build options ######################################################
 
-option(WITH_LIBDIVIDE    "Use libdivide.h"              ON)
-option(ENABLE_POPCNT     "Enable POPCNT instruction"    ON)
-option(WITH_OPENMP       "Enable OpenMP support"        ON)
-option(BUILD_SHARED_LIBS "Build shared libprimesieve"   OFF)
-option(BUILD_STATIC_LIBS "Build static libprimesieve"   ON)
+option(WITH_POPCNT       "Enable x86 POPCNT instruction"  ON)
+option(WITH_LIBDIVIDE    "Use libdivide.h"                ON)
+option(WITH_OPENMP       "Enable OpenMP support"          ON)
+option(BUILD_STATIC_LIBS "Build static libprimesieve"     ON)
+option(BUILD_SHARED_LIBS "Build shared libprimesieve"     OFF)
 
 # Compiler must support C++11 or later ###############################
 
