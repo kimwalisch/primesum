@@ -20,10 +20,10 @@ install:
 # Test build.sh script
 before_script:
   - if [ "$CXX" = "g++" ]; then cmake .; fi
-  - if [ "$CXX" = "clang++" ]; then cmake . -DOpenMP_CXX_FLAGS=""; fi
+  - if [ "$CXX" = "clang++" ]; then cmake . -DWITH_OPENMP=OFF; fi
   - make -j4
   - ldd primesum
-  - cppcheck src include --error-exitcode=1 -isrc/primesieve
+  - cppcheck src include --error-exitcode=1 -ilib
 
 # Run primecount tests
 script:
