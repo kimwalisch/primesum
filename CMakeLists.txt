@@ -8,12 +8,20 @@ set(CMAKE_BUILD_TYPE Release)
 
 # Build options ######################################################
 
-option(ENABLE_POPCNT "Enable POPCNT instruction" ON)
+option(WITH_POPCNT       "Enable x86 POPCNT instruction"  ON)
+option(WITH_LIBDIVIDE    "Use libdivide.h"                ON)
+option(WITH_OPENMP       "Enable OpenMP support"          ON)
+option(BUILD_STATIC_LIBS "Build static libprimesieve"     ON)
+option(BUILD_SHARED_LIBS "Build shared libprimesieve"     OFF)
+
+# Compiler must support C++11 or later ###############################
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Include Check* #####################################################
 
 include(CheckCXXCompilerFlag)
-include(CheckCXXSourceRuns)
 include(CheckTypeSize)
 
 # primesum binary source files #######################################
@@ -22,66 +30,58 @@ set(SRC src/app/cmdoptions.cpp
         src/app/help.cpp
         src/app/main.cpp
         src/BitSieve.cpp
-	src/FactorTable.cpp
-	src/generate.cpp
-	src/nth_prime.cpp
-	src/P2.cpp
-	src/PhiTiny.cpp
-	src/PiTable.cpp
-	src/phi.cpp
-	src/phi_sum.cpp
-	src/pi_primesieve.cpp
-	src/pi_legendre.cpp
-	src/primesum.cpp
-	src/print.cpp
-	src/S1.cpp
-	src/S2LoadBalancer.cpp
-	src/S2Status.cpp
-	src/test.cpp
-	src/Wheel.cpp
-	src/deleglise-rivat/S2_trivial.cpp
-	src/deleglise-rivat/S2_hard.cpp
-	src/deleglise-rivat/pi_deleglise_rivat_parallel1.cpp
-	src/lmo/pi_lmo1.cpp
-	src/lmo/pi_lmo2.cpp
-	src/lmo/pi_lmo3.cpp
-	src/lmo/pi_lmo4.cpp
-	src/lmo/pi_lmo5.cpp
-	src/lmo/pi_lmo_parallel1.cpp)
+        src/FactorTable.cpp
+        src/generate.cpp
+        src/nth_prime.cpp
+        src/P2.cpp
+        src/PhiTiny.cpp
+        src/PiTable.cpp
+        src/phi.cpp
+        src/phi_sum.cpp
+        src/pi_primesieve.cpp
+        src/pi_legendre.cpp
+        src/primesum.cpp
+        src/print.cpp
+        src/S1.cpp
+        src/S2LoadBalancer.cpp
+        src/S2Status.cpp
+        src/test.cpp
+        src/Wheel.cpp
+        src/deleglise-rivat/S2_trivial.cpp
+        src/deleglise-rivat/S2_hard.cpp
+        src/deleglise-rivat/pi_deleglise_rivat_parallel1.cpp
+        src/lmo/pi_lmo1.cpp
+        src/lmo/pi_lmo2.cpp
+        src/lmo/pi_lmo3.cpp
+        src/lmo/pi_lmo4.cpp
+        src/lmo/pi_lmo5.cpp
+        src/lmo/pi_lmo_parallel1.cpp)
 
-# primesieve library source files ####################################
+# libprimesieve ######################################################
 
-set(PRIMESIEVE_PATH src/primesieve/src/primesieve)
+option(BUILD_PRIMESIEVE "Build primesieve binary" OFF)
+set(BUILD_TESTS OFF CACHE BOOL "Build primesieve tests" FORCE)
 
-set(SRC ${SRC}
-        ${PRIMESIEVE_PATH}/EratBig.cpp
-        ${PRIMESIEVE_PATH}/EratMedium.cpp
-        ${PRIMESIEVE_PATH}/EratSmall.cpp
-        ${PRIMESIEVE_PATH}/ParallelPrimeSieve.cpp
-        ${PRIMESIEVE_PATH}/PreSieve.cpp
-        ${PRIMESIEVE_PATH}/PrimeFinder.cpp
-        ${PRIMESIEVE_PATH}/PrimeGenerator.cpp
-        ${PRIMESIEVE_PATH}/PrimeSieve-nthPrime.cpp
-        ${PRIMESIEVE_PATH}/PrimeSieve.cpp
-        ${PRIMESIEVE_PATH}/SieveOfEratosthenes.cpp
-        ${PRIMESIEVE_PATH}/WheelFactorization.cpp
-        ${PRIMESIEVE_PATH}/iterator.cpp
-        ${PRIMESIEVE_PATH}/popcount.cpp
-        ${PRIMESIEVE_PATH}/primesieve-api.cpp
-        ${PRIMESIEVE_PATH}/primesieve_test.cpp)
+add_subdirectory(lib/primesieve)
 
 # Check for OpenMP ###################################################
 
-find_package(OpenMP QUIET)
-if (OPENMP_FOUND)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+if(WITH_OPENMP)
+    find_package(OpenMP QUIET)
+    if(OPENMP_FOUND)
+        message(STATUS "Found OpenMP: ${OpenMP_CXX_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    endif()
 endif()
 
-# Check for -mpopcnt compiler option #################################
+# Check -mpopcnt compiler flag #######################################
 
-if(ENABLE_POPCNT)
-    CHECK_CXX_COMPILER_FLAG(-mpopcnt MPOPCNT_FLAG)
-    if(MPOPCNT_FLAG)
+if(WITH_POPCNT)
+    set(COPY_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS -Werror)
+    check_cxx_compiler_flag(-mpopcnt mpopcnt)
+    set(CMAKE_CXX_FLAGS "${COPY_CXX_FLAGS}")
+    if(mpopcnt)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mpopcnt")
     endif()
 endif()
@@ -101,45 +101,26 @@ else()
     endif()
 endif()
 
-# Check if libdivide works ###########################################
+# Check if libdivide.h works #########################################
 
-set(CMAKE_REQUIRED_INCLUDES ${CMAKE_SOURCE_DIR}/include)
+if(WITH_LIBDIVIDE)
+    message(STATUS "Performing Test libdivide")
 
-check_cxx_source_runs("
-    #include <libdivide.h>
-    #include <stdint.h>
-    #include <limits>
+    try_run(RUN_LIBDIVIDE COMPILE_LIBDIVIDE
+            ${CMAKE_BINARY_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/libdivide.cpp
+            COMPILE_DEFINITIONS -I${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-    int main()
-    {
-        uint64_t tests[20] = {
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-            63, 101, 511,
-            1 << 5, 1 << 9, 1 << 20,
-            std::numeric_limits<int32_t>::max(),
-            std::numeric_limits<uint32_t>::max(),
-            std::numeric_limits<int64_t>::max(),
-            std::numeric_limits<uint64_t>::max() };
-
-        for (int i = 0; i < 20; i++)
-        {
-            uint64_t x = tests[i];
-
-            for (int j = 2; j < 1000; j++)
-            {
-                libdivide::divider<uint64_t, libdivide::BRANCHFREE> divider(j);
-                if (x / j != x / divider)
-                    return 1;
-            }
-        }
-
-        return 0;
-    }"
-    HAVE_LIBDIVIDE)
+    if(RUN_LIBDIVIDE EQUAL 0)
+        message(STATUS "Performing Test libdivide - Success")
+    else()
+        message(STATUS "Performing Test libdivide - Failed")
+    endif()
+endif()
 
 # Include S2_easy* source files ######################################
 
-if(HAVE_LIBDIVIDE)
+if(RUN_LIBDIVIDE EQUAL 0)
     set(SRC ${SRC} src/deleglise-rivat/S2_easy_libdivide.cpp)
 else()
     set(SRC ${SRC} src/deleglise-rivat/S2_easy.cpp)
@@ -148,5 +129,5 @@ endif()
 # Build binary #######################################################
 
 add_executable(primesum ${SRC})
+target_link_libraries(primesum libprimesieve)
 install(TARGETS primesum DESTINATION bin)
-
