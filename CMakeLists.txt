@@ -8,6 +8,7 @@ set(CMAKE_BUILD_TYPE Release)
 
 # Build options ######################################################
 
+option(WITH_LIBDIVIDE    "Use libdivide.h"              ON)
 option(ENABLE_POPCNT     "Enable POPCNT instruction"    ON)
 option(WITH_OPENMP       "Enable OpenMP support"        ON)
 option(BUILD_SHARED_LIBS "Build shared libprimesieve"   OFF)
@@ -21,7 +22,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Include Check* #####################################################
 
 include(CheckCXXCompilerFlag)
-include(CheckCXXSourceRuns)
 include(CheckTypeSize)
 
 # primesum binary source files #######################################
@@ -101,54 +101,26 @@ else()
     endif()
 endif()
 
-# Check if libdivide works ###########################################
+# Check if libdivide.h works #########################################
 
-set(CMAKE_REQUIRED_INCLUDES ${CMAKE_SOURCE_DIR}/include)
+if(WITH_LIBDIVIDE)
+    message(STATUS "Performing Test libdivide")
 
-check_cxx_source_runs("
-    #include <libdivide.h>
-    #include <stdint.h>
+    try_run(RUN_LIBDIVIDE COMPILE_LIBDIVIDE
+            ${CMAKE_BINARY_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/libdivide.cpp
+            COMPILE_DEFINITIONS -I${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-    uint64_t dividends[20] =
-    {
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 63, 101, 511,
-        1 << 5, 1 << 9, 1 << 20,
-        (uint64_t) ((1ull << 31) - 1),
-        (uint64_t) ((1ull << 63) - 1),
-        (uint32_t) (~0ull),
-        (uint64_t) (~0ull)
-    };
-
-    int main()
-    {
-      for (int i = 0; i < 20; i++)
-      {
-          for (int j = 2; j < 1000; j++)
-          {
-            libdivide::divider<uint64_t, libdivide::BRANCHFREE> divider(j);
-            if (dividends[i] / j != dividends[i] / divider)
-                return 1;
-          }
-      }
-
-      for (int i = 0; i < 20; i++)
-      {
-          for (int j = 2; j < 20; j++)
-          {
-              libdivide::divider<uint64_t, libdivide::BRANCHFREE> divider(dividends[j]);
-              if (dividends[i] / dividends[j] != dividends[i] / divider)
-                  return 1;
-          }
-      }
-
-      return 0;
-    }
-}"
-HAVE_LIBDIVIDE)
+    if(RUN_LIBDIVIDE EQUAL 0)
+        message(STATUS "Performing Test libdivide - Success")
+    else()
+        message(STATUS "Performing Test libdivide - Failed")
+    endif()
+endif()
 
 # Include S2_easy* source files ######################################
 
-if(HAVE_LIBDIVIDE)
+if(RUN_LIBDIVIDE EQUAL 0)
     set(SRC ${SRC} src/deleglise-rivat/S2_easy_libdivide.cpp)
 else()
     set(SRC ${SRC} src/deleglise-rivat/S2_easy.cpp)
