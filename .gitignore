@@ -9,6 +9,7 @@
 *.lib
 *.o
 /primesum*
+/build
 Makefile
 CMakeCache.txt
 CMakeFiles
