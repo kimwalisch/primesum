@@ -21,7 +21,7 @@ namespace {
 
 const int primes_[] = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
 
-maxint_t F(maxint_t u)
+maxint_t F(maxuint_t u)
 {
   return (u * (u + 1)) / 2;
 }
