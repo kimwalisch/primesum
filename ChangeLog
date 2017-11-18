@@ -1,7 +1,9 @@
-2017-11-17 Kim Walisch  <kim.walisch@gmail.com>
+2017-11-18 Kim Walisch  <kim.walisch@gmail.com>
 
   Version 1.2 work in progress.
 
+  * Reduce input limit from 10^20 to 2^64-1 to prevent
+    128-bit integer overflows in S1(x).
   * Fix 128-bit integer overflow in phi_sum.cpp.
   * CMakeLists.txt: Silence OpenMP warning.
   * README.md: Update build instructions.
