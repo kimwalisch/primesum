@@ -51,7 +51,7 @@ Open a terminal and run primesum using e.g.:
 ./primesum 1e14
 
 # Print progress and status information during computation
-./primesum 1e20 --status
+./primesum 1e18 --status
 
 # Use 4 threads
 ./primesum 1e14 --threads=4 --time
