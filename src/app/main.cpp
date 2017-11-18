@@ -164,8 +164,8 @@ int main (int argc, char* argv[])
 
   try
   {
-    if ((double) x > 1e20)
-      throw primesum_error("this primesum version only works up to 10^20");
+    if (x > numeric_limits<uint64_t>::max())
+      throw primesum_error("this primesum version only works up to 2^64-1");
 
     switch (pco.option)
     {
