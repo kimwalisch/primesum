@@ -100,8 +100,6 @@ int64_t phi(int64_t x, int64_t a, int threads);
 
 maxint_t phi_sum(int128_t x, int64_t a);
 
-int64_t nth_prime(int64_t n, int threads);
-
 maxint_t P2(int128_t x, int64_t y, int threads);
 
 int128_t prime_sum_tiny(int64_t x);

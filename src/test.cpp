@@ -75,9 +75,10 @@ void check_equal(const string& f1, int64_t x, maxint_t res1, maxint_t res2)
   }
 }
 
+#ifdef _OPENMP
+
 void test_phi_thread_safety(int64_t iters)
 {
-#ifdef _OPENMP
   cout << "Testing phi(x, a)" << flush;
 
   int64_t sum1 = 0;
@@ -94,8 +95,9 @@ void test_phi_thread_safety(int64_t iters)
     throw primesum_error("Error: multi-threaded phi(x, a) is broken.");
 
   std::cout << "\rTesting phi(x, a) 100%" << endl;
-#endif
 }
+
+#endif
 
 } // namespace
 
@@ -108,7 +110,9 @@ bool test()
 
   try
   {
+#ifdef _OPENMP
     test_phi_thread_safety(100);
+#endif
 
     CHECK_EQUAL(pi_lmo1,                         prime_sum_tiny,      CHECK_11,  50);
     CHECK_EQUAL(pi_lmo2,                         pi_lmo1,             CHECK_11,  100);
