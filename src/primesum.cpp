@@ -109,15 +109,6 @@ int64_t pi_primesieve(int64_t x)
   return pi_primesieve(x, get_num_threads());
 }
 
-/// Calculate the nth prime using a combination of the prime
-/// counting function and the sieve of Eratosthenes.
-/// Run time: O(x^(2/3) / (log x)^2) operations, O(x^(1/2)) space.
-///
-int64_t nth_prime(int64_t n)
-{
-  return nth_prime(n, get_num_threads());
-}
-
 /// Partial sieve function (a.k.a. Legendre-sum).
 /// phi(x, a) counts the numbers <= x that are not divisible
 /// by any of the first a primes.
