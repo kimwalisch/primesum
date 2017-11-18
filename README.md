@@ -4,7 +4,7 @@ primesum
 [![GitHub license](https://img.shields.io/badge/license-BSD%202-blue.svg)](https://github.com/kimwalisch/primesum/blob/master/COPYING)
 
 **primesum** is a command-line program that computes the sum of the
-primes below an integer x&nbsp;≤&nbsp;10<sup>20</sup> as quickly as
+primes below an integer x&nbsp;<&nbsp;2<sup>64</sup> as quickly as
 possible using a modified version of the combinatorial prime counting
 function algorithm <a href="#references">[1]</a>.
 
@@ -23,7 +23,7 @@ POPCNT instruction (2010 or later).
 256-bit binaries
 ----------------
 [primesum 256-bit](https://github.com/kimwalisch/primesum/tree/256-bit)
-allows to compute prime sums for values of x&nbsp;>&nbsp;10<sup>20</sup>
+allows to compute prime sums for values of x&nbsp;≥&nbsp;2<sup>64</sup>
 but it runs only at about half the speed of the primesum 128-bit
 version due to slower 256-bit integer arithmetic. primesum 256-bit has
 already been used to compute many new prime sum world records!
@@ -61,7 +61,7 @@ Command-line options
 --------------------
 ```
 Usage: primesum x [OPTION]...
-Sum the primes below x <= 10^20 using fast implementations of the
+Sum the primes below x < 2^64 using fast implementations of the
 combinatorial prime summing function.
 
 Options:
@@ -143,11 +143,6 @@ Benchmark
     <td>10<sup>19</sup></td>
     <td>1,156,251,260,549,368,082,781,614,413,945,980,126</td>
     <td>438.50s</td>
-  </tr>
-  <tr align="right">
-    <td>10<sup>20</sup></td>
-    <td>109,778,913,483,063,648,128,485,839,045,703,833,541</td>
-    <td>1909.077s</td>
   </tr>
 </table>
 
