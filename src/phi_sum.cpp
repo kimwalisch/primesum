@@ -21,25 +21,45 @@ namespace {
 
 const int primes_[] = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
 
+template <int SIGN>
 maxint_t F(maxint_t u)
 {
-  return (u * (u + 1)) / 2;
+  maxint_t u1 = u;
+  u1 += 1;
+  u1 *= u;
+  u1 >>= 1;
+  return u1;
+}
+
+template <>
+maxint_t F<-1>(maxint_t u)
+{
+  maxint_t u1 = u;
+  u1 += 1;
+  u1 *= u;
+  u1 >>= 1;
+  u1 = -u1;
+  return u1;
 }
 
 template <int SIGN>
 maxint_t phi_sum_tiny(int128_t x, int64_t a)
 {
+  maxint_t phi;
   maxint_t sum = 0;
 
   for (; a > 0; a--)
   {
     if (x <= primes_[a])
       return sum + SIGN;
+
     int128_t x2 = fast_div(x, primes_[a]);
-    sum += primes_[a] * phi_sum_tiny<-SIGN>(x2, a - 1);
+    phi = phi_sum_tiny<-SIGN>(x2, a - 1);
+    phi *= primes_[a];
+    sum += phi;
   }
 
-  sum += SIGN * F(x);
+  sum += F<SIGN>(x);
 
   return sum;
 }
@@ -49,17 +69,21 @@ maxint_t phi_sum(int128_t x,
                  int64_t a,
                  vector<int>& primes)
 {
+  maxint_t phi;
   maxint_t sum = 0;
 
   for (; a > 0; a--)
   {
     if (x <= primes[a])
       return sum + SIGN;
+
     int128_t x2 = fast_div(x, primes[a]);
-    sum += primes[a] * phi_sum<-SIGN>(x2, a - 1, primes);
+    phi = phi_sum<-SIGN>(x2, a - 1, primes);
+    phi *= primes[a];
+    sum += phi;
   }
 
-  sum += SIGN * F(x);
+  sum += F<SIGN>(x);
 
   return sum;
 }
