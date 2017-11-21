@@ -24,9 +24,8 @@ const int primes_[] = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
 template <int SIGN>
 maxint_t F(maxint_t u)
 {
-  maxint_t u1 = u;
-  u1 += 1;
-  u1 *= u;
+  maxint_t u1 = u * u;
+  u1 += u;
   u1 >>= 1;
   return u1;
 }
@@ -34,9 +33,8 @@ maxint_t F(maxint_t u)
 template <>
 maxint_t F<-1>(maxint_t u)
 {
-  maxint_t u1 = u;
-  u1 += 1;
-  u1 *= u;
+  maxint_t u1 = u * u;
+  u1 += u;
   u1 >>= 1;
   u1 = -u1;
   return u1;
