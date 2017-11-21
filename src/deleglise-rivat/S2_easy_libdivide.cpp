@@ -102,7 +102,7 @@ maxint_t S2_easy_OpenMP(uint128_t x,
         int64_t xn = (uint64_t) x2 / fastdiv[l];
         int64_t phi_xn = pi[xn] - b + 2;
         phi = prime_sums[pi[xn]] - prime_sums[b - 1];
-        phi += 1;
+        phi++;
         int64_t xm = (uint64_t) x2 / fastdiv[b + phi_xn - 1];
         xm = max(xm, min_clustered);
         int64_t l2 = pi[xm];
@@ -120,7 +120,7 @@ maxint_t S2_easy_OpenMP(uint128_t x,
       {
         int64_t xn = (uint64_t) x2 / fastdiv[l];
         phi = prime_sums[pi[xn]] - prime_sums[b - 1];
-        phi += 1;
+        phi++;
         phi *= primes[l];
         phi *= prime256;
         s2_easy += phi;
@@ -137,7 +137,7 @@ maxint_t S2_easy_OpenMP(uint128_t x,
         int64_t xn = (int64_t) (x2 / primes[l]);
         int64_t phi_xn = pi[xn] - b + 2;
         phi = prime_sums[pi[xn]] - prime_sums[b - 1];
-        phi += 1;
+        phi++;
         int64_t xm = (int64_t) (x2 / primes[b + phi_xn - 1]);
         xm = max(xm, min_clustered);
         int64_t l2 = pi[xm];
@@ -155,7 +155,7 @@ maxint_t S2_easy_OpenMP(uint128_t x,
       {
         int64_t xn = (int64_t) (x2 / primes[l]);
         phi = prime_sums[pi[xn]] - prime_sums[b - 1];
-        phi += 1;
+        phi++;
         phi *= primes[l];
         phi *= prime256;
         s2_easy += phi;
