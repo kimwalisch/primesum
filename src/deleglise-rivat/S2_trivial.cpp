@@ -42,7 +42,10 @@ maxint_t S2_trivial_OpenMP(int128_t x,
   vector<int128_t> prime_sums = generate_prime_sums<int128_t>(y);
   int64_t sqrtz = isqrt(z);
   int64_t prime_c = nth_prime(c);
+
   maxint_t s2_trivial = 0;
+  maxint_t diff = 0;
+  maxint_t prime256 = 0;
 
   // Find all trivial leaves: n = primes[b] * primes[l]
   // which satisfy phi(x / n), b - 1) = 1
@@ -59,8 +62,10 @@ maxint_t S2_trivial_OpenMP(int128_t x,
     while ((prime = iter.next_prime()) < stop)
     {
       int64_t xn = (int64_t) max(x / (prime * prime), prime);
-      maxint_t diff = prime_sums[pi[y]] - prime_sums[pi[xn]];
-      s2_trivial += prime * diff;
+      prime256 = prime;
+      diff = prime_sums[pi[y]] - prime_sums[pi[xn]];
+      diff *= prime256;
+      s2_trivial += diff;
     }
   }
 
