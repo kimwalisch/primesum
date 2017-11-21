@@ -54,13 +54,18 @@ maxint_t S2_trivial_OpenMP(int128_t x,
     start += thread_interval * i;
     int64_t stop = min(start + thread_interval, y);
     primesieve::iterator iter(start - 1, stop);
+
     int128_t prime;
+    maxint_t prime256;
+    maxint_t diff;
 
     while ((prime = iter.next_prime()) < stop)
     {
       int64_t xn = (int64_t) max(x / (prime * prime), prime);
-      maxint_t diff = prime_sums[pi[y]] - prime_sums[pi[xn]];
-      s2_trivial += prime * diff;
+      prime256 = prime;
+      diff = prime_sums[pi[y]] - prime_sums[pi[xn]];
+      diff *= prime256;
+      s2_trivial += diff;
     }
   }
 

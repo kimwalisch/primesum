@@ -126,7 +126,10 @@ T S2_hard_OpenMP_thread(uint128_t x,
   limit = min(low + segment_size * segments_per_thread, limit);
   int64_t max_b = pi[min3(isqrt(x / low), isqrt(z), y)];
   int64_t pi_sqrty = pi[isqrt(y)];
+
   T s2_hard = 0;
+  maxint_t pmul;
+  maxint_t phi_xn;
 
   if (c > max_b)
     return s2_hard;
@@ -181,11 +184,12 @@ T S2_hard_OpenMP_thread(uint128_t x,
             int64_t xn = (int64_t) fast_div(x2, fm);
             int64_t stop = xn - low;
             sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
-            int128_t phi_xn = phi[b] + sum;
+            phi_xn = phi[b] + sum;
             start = stop + 1;
             int64_t mu_m = factors.mu(m);
-            maxint_t pmul = mu_m * fm * (int128_t) prime;
-            s2_hard -= pmul * phi_xn;
+            pmul = mu_m * fm * (int128_t) prime;
+            phi_xn *= pmul;
+            s2_hard -= phi_xn;
             mu_sum[b] -= pmul;
           }
         }
@@ -216,10 +220,11 @@ T S2_hard_OpenMP_thread(uint128_t x,
           int64_t xn = (int64_t) fast_div(x2, primes[l]);
           int64_t stop = xn - low;
           sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
-          int128_t phi_xn = phi[b] + sum;
+          phi_xn = phi[b] + sum;
           start = stop + 1;
-          maxint_t pmul = primes[l] * (int128_t) prime;
-          s2_hard += pmul * phi_xn;
+          pmul = primes[l] * (int128_t) prime;
+          phi_xn *= pmul;
+          s2_hard += phi_xn;
           mu_sum[b] += pmul;
         }
 
@@ -264,10 +269,11 @@ T S2_hard_OpenMP_thread(uint128_t x,
             int64_t fm = factors.get_number(m);
             int64_t xn = (int64_t) fast_div(x2, fm);
             int128_t sum = sums_query(sums, xn - low);
-            int128_t phi_xn = phi[b] + sum;
+            phi_xn = phi[b] + sum;
             int64_t mu_m = factors.mu(m);
-            maxint_t pmul = mu_m * fm * (int128_t) prime;
-            s2_hard -= pmul * phi_xn;
+            pmul = mu_m * fm * (int128_t) prime;
+            phi_xn *= pmul;
+            s2_hard -= phi_xn;
             mu_sum[b] -= pmul;
           }
         }
@@ -295,9 +301,10 @@ T S2_hard_OpenMP_thread(uint128_t x,
         {
           int64_t xn = (int64_t) fast_div(x2, primes[l]);
           int128_t sum = sums_query(sums, xn - low);
-          int128_t phi_xn = phi[b] + sum;
-          maxint_t pmul = primes[l] * (int128_t) prime;
-          s2_hard += pmul * phi_xn;
+          phi_xn = phi[b] + sum;
+          pmul = primes[l] * (int128_t) prime;
+          phi_xn *= pmul;
+          s2_hard += phi_xn;
           mu_sum[b] += pmul;
         }
 

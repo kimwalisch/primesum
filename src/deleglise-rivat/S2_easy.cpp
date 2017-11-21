@@ -72,6 +72,10 @@ maxint_t S2_easy_OpenMP(uint128_t x,
     int64_t pi_min_clustered = pi[min_clustered];
     int64_t pi_min_sparse = pi[min_sparse];
 
+    maxint_t prime256 = prime;
+    maxint_t phi;
+    maxint_t diff;
+
     // Find all clustered easy leaves:
     // n = primes[b] * primes[l]
     // x / n <= y && phi(x / n, b - 1) == phi(x / m, b - 1)
@@ -80,11 +84,15 @@ maxint_t S2_easy_OpenMP(uint128_t x,
     {
       int64_t xn = (int64_t) fast_div(x2, primes[l]);
       int64_t phi_xn = pi[xn] - b + 2;
-      maxint_t phi_xn_sum = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
+      phi = prime_sums[pi[xn]] - prime_sums[b - 1];
+      phi += 1;
       int64_t xm = (int64_t) fast_div(x2, primes[b + phi_xn - 1]);
       xm = max(xm, min_clustered);
       int64_t l2 = pi[xm];
-      s2_easy += prime * phi_xn_sum * (prime_sums[l] - prime_sums[l2]);
+      diff = prime_sums[l] - prime_sums[l2];
+      phi *= prime256;
+      phi *= diff;
+      s2_easy += phi;
       l = l2;
     }
 
@@ -94,8 +102,11 @@ maxint_t S2_easy_OpenMP(uint128_t x,
     for (; l > pi_min_sparse; l--)
     {
       int64_t xn = (int64_t) fast_div(x2, primes[l]);
-      maxint_t phi = 1 + prime_sums[pi[xn]] - prime_sums[b - 1];
-      s2_easy += prime * (primes[l] * phi);
+      phi = prime_sums[pi[xn]] - prime_sums[b - 1];
+      phi += 1;
+      phi *= primes[l];
+      phi *= prime256;
+      s2_easy += phi;
     }
 
     if (print_status())
