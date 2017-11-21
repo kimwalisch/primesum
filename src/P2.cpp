@@ -82,6 +82,10 @@ T P2_OpenMP_thread(int128_t x,
   int64_t prime = rit.prev_prime();
   T P2_thread = 0;
 
+  maxint_t sum;
+  maxint_t prime256 = prime;
+  maxint_t next256 = next;
+
   while (prime > start && (x_div_prime = (int64_t) (x / prime)) < z)
   {
     // Sum the primes <= x / prime
@@ -90,17 +94,23 @@ T P2_OpenMP_thread(int128_t x,
       if (next > y && 
           next <= sqrtx)
       {
-        P2_thread -= next * prime_sum;
-        correct -= next;
+        sum = prime_sum;
+        sum *= next256;
+        P2_thread -= sum;
+        correct -= next256;
       }
 
-      prime_sum += next;
+      prime_sum += next256;
       next = it.next_prime();
+      next256 = next;
     }
 
-    P2_thread += prime * prime_sum;
-    correct += prime;
+    sum = prime_sum;
+    sum *= prime256;
+    P2_thread += sum;
+    correct += prime256;
     prime = rit.prev_prime();
+    prime256 = prime;
   }
 
   // Sum the primes < z
@@ -109,12 +119,15 @@ T P2_OpenMP_thread(int128_t x,
     if (next > y && 
         next <= sqrtx)
     {
-      P2_thread -= next * prime_sum;
-      correct -= next;
+      sum = prime_sum;
+      sum *= next256;
+      P2_thread -= sum;
+      correct -= next256;
     }
 
-    prime_sum += next;
+    prime_sum += next256;
     next = it.next_prime();
+    next256 = next;
   }
 
   return P2_thread;
