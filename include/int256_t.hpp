@@ -65,17 +65,6 @@ public:
                         prt::numeric_limits<int128_t>::max());
     }
 
-    bool is_zero() const
-    {
-        return low == 0 &&
-               high == 0;
-    }
-
-    bool is_negative() const
-    {
-        return high < 0;
-    }
-
     bool operator==(const int256_t& other) const
     {
         return low == other.low &&
@@ -436,7 +425,7 @@ public:
 
     operator std::int8_t() const
     {
-        return is_negative()
+        return (*this < 0)
             ? -static_cast<std::int8_t>(
                   (low - 1) ^ prt::numeric_limits<uint128_t>::max())
             : static_cast<std::int8_t>(low);
@@ -444,7 +433,7 @@ public:
 
     operator std::int16_t() const
     {
-        return is_negative()
+        return (*this < 0)
             ? -static_cast<std::int16_t>(
                   (low - 1) ^ prt::numeric_limits<uint128_t>::max())
             : static_cast<std::int16_t>(low);
@@ -452,7 +441,7 @@ public:
 
     operator std::int32_t() const
     {
-        return is_negative()
+        return (*this < 0)
             ? -static_cast<std::int32_t>(
                   (low - 1) ^ prt::numeric_limits<uint128_t>::max())
             : static_cast<std::int32_t>(low);
@@ -460,7 +449,7 @@ public:
 
     operator std::int64_t() const
     {
-        return is_negative()
+        return (*this < 0)
             ? -static_cast<std::int64_t>(
                   (low - 1) ^ prt::numeric_limits<uint128_t>::max())
             : static_cast<std::int64_t>(low);
@@ -468,7 +457,7 @@ public:
 
     operator int128_t() const
     {
-        return is_negative()
+        return (*this < 0)
             ? -static_cast<int128_t>(
                   (low - 1) ^ prt::numeric_limits<uint128_t>::max())
             : static_cast<int128_t>(low);
@@ -548,13 +537,13 @@ private:
     std::pair<int256_t, int256_t>
     udiv256(const int256_t& other) const
     {
-        if (other.is_zero())
+        if (other == 0)
         {
-            assert(!other.is_zero());
+            assert(other != 0);
             std::abort();
             return { zero(), zero() };
         }
-        else if (other == one())
+        else if (other == 1)
         {
             return { *this, zero() };
         }
@@ -562,7 +551,7 @@ private:
         {
             return { one(), zero() };
         }
-        else if (is_zero() || (*this != min_value() && *this < other))
+        else if (*this == 0 || (*this != min_value() && *this < other))
         {
             return { zero(), *this };
         }
@@ -595,11 +584,11 @@ private:
     std::pair<int256_t, int256_t>
     div256(const int256_t& other) const
     {
-        if (is_negative())
+        if (*this < 0)
         {
             auto x = -*this;
 
-            if (other.is_negative())
+            if (other < 0)
             {
                 auto res = x.udiv256(-other);
                 return { res.first, -res.second };
@@ -612,7 +601,7 @@ private:
         }
         else
         {
-            if (other.is_negative())
+            if (other < 0)
             {
                 auto res = udiv256(-other);
                 return { -res.first, res.second };
@@ -627,7 +616,7 @@ private:
         auto x = *this;
         int pos = 0;
 
-        while (!x.is_zero())
+        while (x != 0)
         {
             pos++;
             x >>= 1;
@@ -641,7 +630,7 @@ inline std::ostream& operator<<(std::ostream& stream, int256_t n)
 {
     std::string str;
 
-    if (n.is_negative()) {
+    if (n < 0) {
         stream << "-";
         n = -n;
     }
