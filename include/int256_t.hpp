@@ -44,27 +44,6 @@ public:
     {
     }
 
-    static int256_t zero()
-    {
-        return int256_t(0, 0);
-    }
-
-    static int256_t one()
-    {
-        return int256_t(1, 0);
-    }
-
-    static int256_t min_value()
-    {
-        return int256_t(0, prt::numeric_limits<int128_t>::min());
-    }
-
-    static int256_t max_value()
-    {
-        return int256_t(prt::numeric_limits<uint128_t>::max(),
-                        prt::numeric_limits<int128_t>::max());
-    }
-
     bool operator==(const int256_t& other) const
     {
         return low == other.low &&
@@ -500,6 +479,17 @@ private:
     {
     }
 
+    static int256_t min_value()
+    {
+        return int256_t(0, prt::numeric_limits<int128_t>::min());
+    }
+  
+    static int256_t max_value()
+    {
+        return int256_t(prt::numeric_limits<uint128_t>::max(),
+                        prt::numeric_limits<int128_t>::max());
+    }
+
     bool get_bit(std::size_t bit) const
     {
         if (bit >= 128)
@@ -537,23 +527,26 @@ private:
     std::pair<int256_t, int256_t>
     udiv256(const int256_t& other) const
     {
+        int256_t zero = 0;
+        int256_t one = 1;
+
         if (other == 0)
         {
             assert(other != 0);
             std::abort();
-            return { zero(), zero() };
+            return { zero, zero };
         }
         else if (other == 1)
         {
-            return { *this, zero() };
+            return { *this, zero };
         }
         else if (*this == other)
         {
-            return { one(), zero() };
+            return { one, zero };
         }
         else if (*this == 0 || (*this != min_value() && *this < other))
         {
-            return { zero(), *this };
+            return { zero, *this };
         }
         else if (high == 0 && other.high == 0)
         {
@@ -562,8 +555,8 @@ private:
         }
         else
         {
-            auto quotient = zero();
-            auto remainder = zero();
+            int256_t quotient = 0;
+            int256_t remainder = 0;
 
             for (int i = find_most_significant_bit(); i >= 0 && i <= 256; i--)
             {
