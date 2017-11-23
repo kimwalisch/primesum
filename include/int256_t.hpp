@@ -154,19 +154,13 @@ public:
     int256_t operator*(const int256_t& other) const
     {
         auto max64 = prt::numeric_limits<std::uint64_t>::max();
-        auto max128 = prt::numeric_limits<uint128_t>::max();
 
         if (low <= max64 &&
             other.low <= max64 &&
-            (high == 0 || (uint128_t) high == max128) &&
-            (other.high == 0 || (uint128_t) other.high == max128))
+            high == other.high &&
+            (high == 0 || high == -1))
         {
-            int256_t res(low * other.low, 0);
-
-            if (high != other.high)
-                res.high = max128;
-
-            return res;
+            return int256_t(low * other.low, high);
         }
         else
         {
