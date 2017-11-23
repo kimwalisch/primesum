@@ -4,15 +4,13 @@ primesum 256-bit
 [![GitHub license](https://img.shields.io/badge/license-BSD%202-blue.svg)](https://github.com/kimwalisch/primesum/blob/master/COPYING)
 
 primesum 256-bit allows to compute prime sums for values of
-x&nbsp;>&nbsp;10<sup>20</sup>. No binaries are provided, it must be build
-from source. primesum 256-bit has already been used to compute several
-world records.
+x&nbsp;>&nbsp;2<sup>64</sup>, it has already been used to
+compute several world records!
 
 Build instructions (Unix-like OSes)
 -----------------------------------
 You need to have installed a C++ compiler which supports OpenMP 4.0 or
-later (e.g. GCC ≥ 5.0), make, cmake and the
-<a href="http://www.boost.org/">Boost C++ libraries</a>.
+later (e.g. GCC ≥ 5.0), cmake and make.
 
 Download 
 [primesum-256-bit.tar.gz](https://github.com/kimwalisch/primesum/archive/256-bit.tar.gz)
@@ -20,7 +18,7 @@ and build it:
 
 ```sh
 # Ubuntu/Debian prerequisites
-sudo apt-get install g++ make cmake libboost-all-dev
+sudo apt-get install g++ make cmake
 
 cmake .
 make -j8
