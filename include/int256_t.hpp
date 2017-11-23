@@ -157,10 +157,11 @@ public:
 
         if (low <= max64 &&
             other.low <= max64 &&
-            high == other.high &&
-            (high == 0 || high == -1))
+            ((high == 0 || high == -1) &&
+             (other.high == 0 || other.high == -1)))
         {
-            return int256_t(low * other.low, high);
+          return int256_t(low * other.low,
+                          (high == other.high) ? 0 : -1);
         }
         else
         {
