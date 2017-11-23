@@ -6,7 +6,7 @@
 ///        (PiTable & FactorTable) to reduce the memory usage by
 ///        about 10x.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -19,6 +19,7 @@
 #include <fast_div.hpp>
 #include <generate.hpp>
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <min_max.hpp>
 #include <imath.hpp>
 #include <S2.hpp>
@@ -126,10 +127,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
   limit = min(low + segment_size * segments_per_thread, limit);
   int64_t max_b = pi[min3(isqrt(x / low), isqrt(z), y)];
   int64_t pi_sqrty = pi[isqrt(y)];
-
   T s2_hard = 0;
-  maxint_t pmul;
-  maxint_t phi_xn;
 
   if (c > max_b)
     return s2_hard;
@@ -184,12 +182,11 @@ T S2_hard_OpenMP_thread(uint128_t x,
             int64_t xn = (int64_t) fast_div(x2, fm);
             int64_t stop = xn - low;
             sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
-            phi_xn = phi[b] + sum;
+            int128_t phi_xn = phi[b] + sum;
             start = stop + 1;
             int64_t mu_m = factors.mu(m);
-            pmul = mu_m * fm * (int128_t) prime;
-            phi_xn *= pmul;
-            s2_hard -= phi_xn;
+            int256_t pmul = mu_m * fm * (int128_t) prime;
+            s2_hard -= pmul * phi_xn;
             mu_sum[b] -= pmul;
           }
         }
@@ -220,11 +217,10 @@ T S2_hard_OpenMP_thread(uint128_t x,
           int64_t xn = (int64_t) fast_div(x2, primes[l]);
           int64_t stop = xn - low;
           sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
-          phi_xn = phi[b] + sum;
+          int128_t phi_xn = phi[b] + sum;
           start = stop + 1;
-          pmul = primes[l] * (int128_t) prime;
-          phi_xn *= pmul;
-          s2_hard += phi_xn;
+          int256_t pmul = primes[l] * (int128_t) prime;
+          s2_hard += pmul * phi_xn;
           mu_sum[b] += pmul;
         }
 
@@ -269,11 +265,10 @@ T S2_hard_OpenMP_thread(uint128_t x,
             int64_t fm = factors.get_number(m);
             int64_t xn = (int64_t) fast_div(x2, fm);
             int128_t sum = sums_query(sums, xn - low);
-            phi_xn = phi[b] + sum;
+            int128_t phi_xn = phi[b] + sum;
             int64_t mu_m = factors.mu(m);
-            pmul = mu_m * fm * (int128_t) prime;
-            phi_xn *= pmul;
-            s2_hard -= phi_xn;
+            int256_t pmul = mu_m * fm * (int128_t) prime;
+            s2_hard -= pmul * phi_xn;
             mu_sum[b] -= pmul;
           }
         }
@@ -301,10 +296,9 @@ T S2_hard_OpenMP_thread(uint128_t x,
         {
           int64_t xn = (int64_t) fast_div(x2, primes[l]);
           int128_t sum = sums_query(sums, xn - low);
-          phi_xn = phi[b] + sum;
-          pmul = primes[l] * (int128_t) prime;
-          phi_xn *= pmul;
-          s2_hard += phi_xn;
+          int128_t phi_xn = phi[b] + sum;
+          int256_t pmul = primes[l] * (int128_t) prime;
+          s2_hard += pmul * phi_xn;
           mu_sum[b] += pmul;
         }
 
@@ -328,7 +322,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
 /// the segment size and the segments per thread.
 ///
 template <typename FactorTable, typename Primes>
-maxint_t S2_hard_OpenMP_master(int128_t x,
+int256_t S2_hard_OpenMP_master(int128_t x,
                                int64_t y,
                                int64_t z,
                                int64_t c,
@@ -339,7 +333,7 @@ maxint_t S2_hard_OpenMP_master(int128_t x,
 {
   threads = ideal_num_threads(threads, z);
 
-  maxint_t s2_hard = 0;
+  int256_t s2_hard = 0;
   int64_t low = 1;
   int64_t limit = z + 1;
   int64_t max_prime = z / isqrt(y);
@@ -359,7 +353,7 @@ maxint_t S2_hard_OpenMP_master(int128_t x,
     segments_per_thread = in_between(1, segments_per_thread, ceil_div(segments, threads));
 
     aligned_vector<vector<int128_t> > phi(threads);
-    aligned_vector<vector<maxint_t> > mu_sum(threads);
+    aligned_vector<vector<int256_t> > mu_sum(threads);
     aligned_vector<double> timings(threads);
 
     #pragma omp parallel for num_threads(threads) reduction(+: s2_hard)
@@ -380,7 +374,7 @@ maxint_t S2_hard_OpenMP_master(int128_t x,
     {
       for (size_t j = 1; j < phi[i].size(); j++)
       {
-        s2_hard += phi_total[j] * mu_sum[i][j];
+        s2_hard += mu_sum[i][j] * phi_total[j];
         phi_total[j] += phi[i][j];
       }
     }
@@ -396,7 +390,7 @@ maxint_t S2_hard_OpenMP_master(int128_t x,
 
 namespace primesum {
 
-maxint_t S2_hard(int128_t x,
+int256_t S2_hard(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
@@ -414,7 +408,7 @@ maxint_t S2_hard(int128_t x,
   print(x, y, c, threads);
 
   double time = get_wtime();
-  maxint_t s2_hard;
+  int256_t s2_hard;
 
   // uses less memory
   if (y <= FactorTable<uint16_t>::max())

@@ -15,6 +15,7 @@
 #include <imath.hpp>
 #include <PhiTiny.hpp>
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <S1.hpp>
 #include <S2.hpp>
 
@@ -29,17 +30,17 @@ namespace {
 /// Calculate the contribution of the special leaves.
 /// @pre y > 0 && c > 1
 ///
-maxint_t S2(int128_t x,
+int256_t S2(int128_t x,
             int64_t y,
             int64_t z,
             int64_t c,
             double alpha,
             int threads)
 {
-  maxint_t s2_trivial = S2_trivial(x, y, z, c, threads);
-  maxint_t s2_easy = S2_easy(x, y, z, c, threads);
-  maxint_t s2_hard = S2_hard(x, y, z, c, alpha, threads);
-  maxint_t s2 = s2_trivial + s2_easy + s2_hard;
+  int256_t s2_trivial = S2_trivial(x, y, z, c, threads);
+  int256_t s2_easy = S2_easy(x, y, z, c, threads);
+  int256_t s2_hard = S2_hard(x, y, z, c, alpha, threads);
+  int256_t s2 = s2_trivial + s2_easy + s2_hard;
 
   return s2;
 }
@@ -52,7 +53,7 @@ namespace primesum {
 /// Deleglise-Rivat algorithm.
 /// Run time: O(x^(2/3) / (log x)^2) operations, O(x^(1/3) * (log x)^3) space.
 ///
-maxint_t pi_deleglise_rivat_parallel1(int128_t x, int threads)
+int256_t pi_deleglise_rivat_parallel1(int128_t x, int threads)
 {
   if (x < 2)
     return 0;
@@ -72,11 +73,11 @@ maxint_t pi_deleglise_rivat_parallel1(int128_t x, int threads)
   print("pi(x) = S1 + S2 + pi(y) - 1 - P2");
   print(x, y, z, c, alpha, threads);
 
-  maxint_t p2 = P2(x, y, threads);
-  maxint_t s1 = S1(x, y, c, threads);
-  maxint_t s2 = S2(x, y, z, c, alpha, threads);
-  maxint_t phi = s1 + s2;
-  maxint_t sum = phi + prime_sum_tiny(y) - 1 - p2;
+  int256_t p2 = P2(x, y, threads);
+  int256_t s1 = S1(x, y, c, threads);
+  int256_t s2 = S2(x, y, z, c, alpha, threads);
+  int256_t phi = s1 + s2;
+  int256_t sum = phi + prime_sum_tiny(y) - 1 - p2;
 
   return sum;
 }

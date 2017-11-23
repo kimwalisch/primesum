@@ -10,6 +10,7 @@
 #include <print.hpp>
 #include <primesum-internal.hpp>
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <stdint.h>
 
 #include <iostream>
@@ -101,7 +102,7 @@ void print(int128_t x, int64_t y, int64_t c, int threads)
   }
 }
 
-void print(const string& res_str, maxint_t res, double time)
+void print(const string& res_str, int256_t res, double time)
 {
   if (print_status())
   {

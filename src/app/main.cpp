@@ -14,6 +14,7 @@
 #include <primesum.hpp>
 #include <imath.hpp>
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>
 #include <S2.hpp>
@@ -40,7 +41,7 @@ int64_t int64_cast(int128_t x)
   return (int64_t) x;
 }
 
-maxint_t P2(int128_t x, int threads)
+int256_t P2(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -58,7 +59,7 @@ maxint_t P2(int128_t x, int threads)
   return P2(x, y, threads);
 }
 
-maxint_t S1(int128_t x, int threads)
+int256_t S1(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -78,7 +79,7 @@ maxint_t S1(int128_t x, int threads)
   return S1(x, y, c, threads);
 }
 
-maxint_t S2_trivial(int128_t x, int threads)
+int256_t S2_trivial(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -102,7 +103,7 @@ maxint_t S2_trivial(int128_t x, int threads)
     return S2_trivial(x, y, z, c, threads);
 }
 
-maxint_t S2_easy(int128_t x, int threads)
+int256_t S2_easy(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -126,7 +127,7 @@ maxint_t S2_easy(int128_t x, int threads)
     return S2_easy(x, y, z, c, threads);
 }
 
-maxint_t S2_hard(int128_t x, int threads)
+int256_t S2_hard(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -159,7 +160,7 @@ int main (int argc, char* argv[])
   double time = get_wtime();
 
   int128_t x = pco.x;
-  maxint_t res = 0;
+  int256_t res = 0;
   int threads = pco.threads;
 
   try

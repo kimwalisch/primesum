@@ -12,6 +12,7 @@
 #define PRIMESUM_INTERNAL_HPP
 
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <aligned_vector.hpp>
 #include <imath.hpp>
 #include <print.hpp>
@@ -24,7 +25,6 @@
 namespace primesum {
 
 #pragma omp declare reduction(+ : int256_t : omp_out += omp_in)
-#pragma omp declare reduction(+ : uint256_t : omp_out += omp_in)
 
 enum {
   /// Uses all CPU cores.
@@ -62,13 +62,13 @@ int64_t nth_prime(int64_t n);
 ///
 int64_t phi(int64_t x, int64_t a);
 
-maxint_t pi(int128_t x, int threads);
+int256_t pi(int128_t x, int threads);
 
-maxint_t pi(int128_t x);
+int256_t pi(int128_t x);
 
-maxint_t pi_deleglise_rivat(int128_t x, int threads);
+int256_t pi_deleglise_rivat(int128_t x, int threads);
 
-maxint_t pi_deleglise_rivat_parallel1(int128_t x, int threads);
+int256_t pi_deleglise_rivat_parallel1(int128_t x, int threads);
 
 int64_t pi_legendre(int64_t x, int threads);
 
@@ -76,9 +76,9 @@ int64_t pi_lehmer(int64_t x, int threads);
 
 int64_t pi_lehmer2(int64_t x, int threads);
 
-maxint_t pi_lmo(int128_t x, int threads);
+int256_t pi_lmo(int128_t x, int threads);
 
-maxint_t pi_lmo1(int128_t x);
+int256_t pi_lmo1(int128_t x);
 
 int64_t pi_lmo2(int64_t x);
 
@@ -88,9 +88,9 @@ int64_t pi_lmo4(int64_t x);
 
 int64_t pi_lmo5(int64_t x);
 
-maxint_t pi_lmo_parallel1(int128_t x, int threads);
+int256_t pi_lmo_parallel1(int128_t x, int threads);
 
-maxint_t pi_lmo_parallel1(int128_t x, int threads);
+int256_t pi_lmo_parallel1(int128_t x, int threads);
 
 int64_t pi_meissel(int64_t x, int threads);
 
@@ -98,9 +98,9 @@ int64_t pi_primesieve(int64_t x, int threads);
 
 int64_t phi(int64_t x, int64_t a, int threads);
 
-maxint_t phi_sum(int128_t x, int64_t a);
+int256_t phi_sum(int128_t x, int64_t a);
 
-maxint_t P2(int128_t x, int64_t y, int threads);
+int256_t P2(int128_t x, int64_t y, int threads);
 
 int128_t prime_sum_tiny(int64_t x);
 

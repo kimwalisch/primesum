@@ -14,6 +14,7 @@
 #include <primesieve.hpp>
 #include <generate.hpp>
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <min_max.hpp>
 #include <imath.hpp>
 
@@ -82,10 +83,6 @@ T P2_OpenMP_thread(int128_t x,
   int64_t prime = rit.prev_prime();
   T P2_thread = 0;
 
-  maxint_t sum;
-  maxint_t prime256 = prime;
-  maxint_t next256 = next;
-
   while (prime > start && (x_div_prime = (int64_t) (x / prime)) < z)
   {
     // Sum the primes <= x / prime
@@ -94,23 +91,17 @@ T P2_OpenMP_thread(int128_t x,
       if (next > y && 
           next <= sqrtx)
       {
-        sum = prime_sum;
-        sum *= next256;
-        P2_thread -= sum;
-        correct -= next256;
+        P2_thread -= prime_sum * next;
+        correct -= next;
       }
 
-      prime_sum += next256;
+      prime_sum += next;
       next = it.next_prime();
-      next256 = next;
     }
 
-    sum = prime_sum;
-    sum *= prime256;
-    P2_thread += sum;
-    correct += prime256;
+    P2_thread += prime_sum * prime;
+    correct += prime;
     prime = rit.prev_prime();
-    prime256 = prime;
   }
 
   // Sum the primes < z
@@ -119,15 +110,12 @@ T P2_OpenMP_thread(int128_t x,
     if (next > y && 
         next <= sqrtx)
     {
-      sum = prime_sum;
-      sum *= next256;
-      P2_thread -= sum;
-      correct -= next256;
+      P2_thread -= prime_sum * next;
+      correct -= next;
     }
 
-    prime_sum += next256;
+    prime_sum += next;
     next = it.next_prime();
-    next256 = next;
   }
 
   return P2_thread;
@@ -137,7 +125,7 @@ T P2_OpenMP_thread(int128_t x,
 /// factors each exceeding the a-th prime, a = pi(y).
 /// Space complexity: O((x / y)^(1/2)).
 ///
-maxint_t P2_OpenMP_master(int128_t x,
+int256_t P2_OpenMP_master(int128_t x,
                           int64_t y,
                           int threads)
 {
@@ -155,11 +143,11 @@ maxint_t P2_OpenMP_master(int128_t x,
   int64_t min_distance = 1 << 23;
   int64_t thread_distance = min_distance;
 
-  aligned_vector<maxint_t> prime_sums(threads);
-  aligned_vector<maxint_t> correct(threads);
+  aligned_vector<int256_t> prime_sums(threads);
+  aligned_vector<int256_t> correct(threads);
 
-  maxint_t p2 = 0;
-  maxint_t prime_sum = prime_sum_tiny(y);
+  int256_t p2 = 0;
+  int256_t prime_sum = prime_sum_tiny(y);
 
   while (low < z)
   {
@@ -197,7 +185,7 @@ maxint_t P2_OpenMP_master(int128_t x,
 
 namespace primesum {
 
-maxint_t P2(int128_t x, int64_t y, int threads)
+int256_t P2(int128_t x, int64_t y, int threads)
 {
 #ifdef HAVE_MPI
   if (mpi_num_procs() > 1)
@@ -210,7 +198,7 @@ maxint_t P2(int128_t x, int64_t y, int threads)
   print(x, y, threads);
 
   double time = get_wtime();
-  maxint_t p2 = P2_OpenMP_master(x, y, threads);
+  int256_t p2 = P2_OpenMP_master(x, y, threads);
 
   print("P2", p2, time);
   return p2;

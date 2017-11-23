@@ -11,6 +11,7 @@
 #define PRINT_HPP
 
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <stdint.h>
 
 #include <string>
@@ -33,7 +34,7 @@ void print(int128_t x, int64_t y, int64_t c, int threads);
 
 void print(int128_t x, int64_t y, int64_t z, int64_t c, double alpha, int threads);
 
-void print(const std::string& res_name, maxint_t res, double time);
+void print(const std::string& res_name, int256_t res, double time);
 
 void print_seconds(double seconds);
 

@@ -6,7 +6,7 @@
 ///        unsieved elements using POPCNT without using any special
 ///        counting tree data structure.
 ///
-/// Copyright (C) 2015 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -22,6 +22,8 @@
 #include <S1.hpp>
 #include <S2LoadBalancer.hpp>
 #include <Wheel.hpp>
+#include <int128_t.hpp>
+#include <int256_t.hpp>
 
 #include <stdint.h>
 #include <vector>
@@ -121,7 +123,7 @@ T S2_thread(uint128_t x,
           int64_t stop = xn - low;
           for (; i <= stop; i++)
             phi[b] += (low + i) * sieve[i];
-          S2_thread -= mu[m] * m * prime * phi[b];
+          S2_thread -= phi[b] * (mu[m] * m * prime);
           mu_sum[b] -= mu[m] * m * prime;
         }
       }
@@ -151,7 +153,7 @@ T S2_thread(uint128_t x,
         int64_t stop = xn - low;
         for (; i <= stop; i++)
           phi[b] += (low + i) * sieve[i];
-        S2_thread += primes[l] * prime * phi[b];
+        S2_thread += phi[b] * (primes[l] * prime);
         mu_sum[b] += primes[l] * prime;
       }
 
@@ -175,7 +177,7 @@ T S2_thread(uint128_t x,
 /// the segment size and the segments per thread.
 /// @pre y > 0 && c > 1
 ///
-maxint_t S2(uint128_t x,
+int256_t S2(uint128_t x,
             int64_t y,
             int64_t c,
             vector<int32_t>& primes,
@@ -187,7 +189,7 @@ maxint_t S2(uint128_t x,
   print("=== S2(x, y) ===");
   print("Computation of the special leaves");
 
-  maxint_t S2_total = 0;
+  int256_t S2_total = 0;
   int64_t low = 1;
   int64_t limit = x / y + 1;
   threads = ideal_num_threads(threads, limit);
@@ -199,7 +201,7 @@ maxint_t S2(uint128_t x,
 
   double time = get_wtime();
   vector<int32_t> pi = generate_pi(y);
-  vector<maxint_t> phi_total(primes.size(), 0);
+  vector<int256_t> phi_total(primes.size(), 0);
 
   while (low < limit)
   {
@@ -207,8 +209,8 @@ maxint_t S2(uint128_t x,
     threads = in_between(1, threads, segments);
     segments_per_thread = in_between(1, segments_per_thread, ceil_div(segments, threads));
 
-    aligned_vector<vector<maxint_t> > phi(threads);
-    aligned_vector<vector<maxint_t> > mu_sum(threads);
+    aligned_vector<vector<int256_t> > phi(threads);
+    aligned_vector<vector<int256_t> > mu_sum(threads);
     aligned_vector<double> timings(threads);
 
     #pragma omp parallel for num_threads(threads) reduction(+: S2_total)
@@ -229,7 +231,7 @@ maxint_t S2(uint128_t x,
     {
       for (size_t j = 1; j < phi[i].size(); j++)
       {
-        S2_total += phi_total[j] * mu_sum[i][j];
+        S2_total += mu_sum[i][j] * phi_total[j];
         phi_total[j] += phi[i][j];
       }
     }
@@ -250,7 +252,7 @@ namespace primesum {
 /// Lagarias-Miller-Odlyzko algorithm.
 /// Run time: O(x^(2/3) / log x) operations, O(x^(1/3) * (log x)^2) space.
 ///
-maxint_t pi_lmo_parallel1(int128_t x, int threads)
+int256_t pi_lmo_parallel1(int128_t x, int threads)
 {
   if (x < 2)
     return 0;
@@ -266,15 +268,15 @@ maxint_t pi_lmo_parallel1(int128_t x, int threads)
   print("pi(x) = S1 + S2 + pi(y) - 1 - P2");
   print(x, y, z, c, alpha, threads);
 
-  maxint_t p2 = P2(x, y, threads);
+  int256_t p2 = P2(x, y, threads);
   vector<int32_t> mu = generate_moebius(y);
   vector<int32_t> lpf = generate_least_prime_factors(y);
   vector<int32_t> primes = generate_primes(y);
 
-  maxint_t s1 = S1(x, y, c, threads);
-  maxint_t s2 = S2(x, y, c, primes, lpf, mu, threads);
-  maxint_t phi = s1 + s2;
-  maxint_t sum = phi + prime_sum_tiny(y) - 1 - p2;
+  int256_t s1 = S1(x, y, c, threads);
+  int256_t s2 = S2(x, y, c, primes, lpf, mu, threads);
+  int256_t phi = s1 + s2;
+  int256_t sum = phi + prime_sum_tiny(y) - 1 - p2;
 
   return sum;
 }

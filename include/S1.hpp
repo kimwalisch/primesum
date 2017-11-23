@@ -9,11 +9,12 @@
 ///
 
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <stdint.h>
 
 namespace primesum {
 
-maxint_t S1(int128_t x,
+int256_t S1(int128_t x,
             int64_t y,
             int64_t c,
             int threads);

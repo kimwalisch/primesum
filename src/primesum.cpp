@@ -13,6 +13,7 @@
 #include <primesieve.hpp>
 #include <calculator.hpp>
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <imath.hpp>
 
 #include <algorithm>
@@ -43,12 +44,12 @@ double alpha_ = -1;
 
 namespace primesum {
 
-maxint_t pi(int128_t x, int threads)
+int256_t pi(int128_t x, int threads)
 {
   return pi_deleglise_rivat(x, threads);
 }
 
-maxint_t pi(int128_t x)
+int256_t pi(int128_t x)
 {
   return pi(x, get_num_threads());
 }
@@ -68,7 +69,7 @@ string pi(const string& x)
 ///
 string pi(const string& x, int threads)
 {
-  maxint_t pi_x = pi(to_int128(x), threads);
+  int256_t pi_x = pi(to_int128(x), threads);
   ostringstream oss;
   oss << pi_x;
   return oss.str();
@@ -78,7 +79,7 @@ string pi(const string& x, int threads)
 /// Deleglise-Rivat algorithm.
 /// Run time: O(x^(2/3) / (log x)^2) operations, O(x^(1/3) * (log x)^3) space.
 ///
-maxint_t pi_deleglise_rivat(int128_t x, int threads)
+int256_t pi_deleglise_rivat(int128_t x, int threads)
 {
   return pi_deleglise_rivat_parallel1(x, threads);
 }
@@ -95,7 +96,7 @@ int64_t pi_legendre(int64_t x)
 /// prime summing algorithm using OpenMP.
 /// Run time: O(x^(2/3) / log x) operations, O(x^(1/3) * (log x)^2) space.
 ///
-maxint_t pi_lmo(int128_t x, int threads)
+int256_t pi_lmo(int128_t x, int threads)
 {
   return pi_lmo_parallel1(x, threads);
 }

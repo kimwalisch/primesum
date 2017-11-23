@@ -12,13 +12,14 @@
 #define S2_HPP
 
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <stdint.h>
 
 namespace primesum {
 
 /// ------------------------ S2_trivial() ----------------------------
 
-maxint_t S2_trivial(int128_t x,
+int256_t S2_trivial(int128_t x,
                     int64_t y,
                     int64_t z,
                     int64_t c,
@@ -26,7 +27,7 @@ maxint_t S2_trivial(int128_t x,
 
 /// ------------------------ S2_easy() -------------------------------
 
-maxint_t S2_easy(int128_t x,
+int256_t S2_easy(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
@@ -34,7 +35,7 @@ maxint_t S2_easy(int128_t x,
 
 #ifdef HAVE_MPI
 
-maxint_t S2_easy_mpi(int128_t x,
+int256_t S2_easy_mpi(int128_t x,
                      int64_t y,
                      int64_t z,
                      int64_t c,
@@ -44,7 +45,7 @@ maxint_t S2_easy_mpi(int128_t x,
 
 /// ------------------------ S2_hard() -------------------------------
 
-maxint_t S2_hard(int128_t x,
+int256_t S2_hard(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
@@ -53,7 +54,7 @@ maxint_t S2_hard(int128_t x,
 
 #ifdef HAVE_MPI
 
-maxint_t S2_hard_mpi(int128_t x,
+int256_t S2_hard_mpi(int128_t x,
                      int64_t y,
                      int64_t z,
                      int64_t c,

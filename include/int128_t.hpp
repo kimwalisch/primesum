@@ -1,8 +1,7 @@
 ///
 /// @file   int128_t.hpp
 /// @brief  Additional integer types used in primesum:
-///         int128_t, uint128_t, intfast64_t, intfast128_t, maxint_t,
-///         maxuint_t.
+///         int128_t, uint128_t, intfast64_t, intfast128_t.
 ///
 /// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
 ///
@@ -15,20 +14,10 @@
 
 #include <limits>
 #include <stdint.h>
-#include <boost/multiprecision/cpp_int.hpp>
 
 #if __cplusplus >= 201103L
   #include <type_traits>
 #endif
-
-namespace primesum {
-
-typedef boost::multiprecision::int256_t int256_t;
-typedef boost::multiprecision::uint256_t uint256_t;
-typedef boost::multiprecision::int256_t maxint_t;
-typedef boost::multiprecision::uint256_t maxuint_t;
-
-}
 
 #if defined(HAVE___INT128_T)
 
@@ -124,19 +113,15 @@ struct numeric_limits
 template <>
 struct numeric_limits<int128_t>
 {
-  static CONSTEXPR int128_t max()
-  {
-    return ~(((int128_t) 1) << 127);
-  }
+  static CONSTEXPR int128_t min() { return ((int128_t) 1) << 127; }
+  static CONSTEXPR int128_t max() { return ~min(); }
 };
 
 template <>
 struct numeric_limits<uint128_t>
 {
-  static CONSTEXPR uint128_t max()
-  {
-    return ~((uint128_t) 0);
-  }
+  static CONSTEXPR uint128_t min() { return 0; }
+  static CONSTEXPR uint128_t max() { return ~min(); }
 };
 
 #endif

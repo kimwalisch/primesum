@@ -5,7 +5,7 @@
 ///        divides with comparatively cheap multiplication and
 ///        bitshifts.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -15,6 +15,7 @@
 #include <primesum-internal.hpp>
 #include <generate.hpp>
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <min_max.hpp>
 #include <imath.hpp>
 #include <S2Status.hpp>
@@ -52,7 +53,7 @@ libdivide_divisors(Primes& primes)
 /// leaves and the sparse easy leaves.
 ///
 template <typename Primes, typename PrimeSums>
-maxint_t S2_easy_OpenMP(uint128_t x,
+int256_t S2_easy_OpenMP(uint128_t x,
                         int64_t y,
                         int64_t z,
                         int64_t c,
@@ -60,7 +61,7 @@ maxint_t S2_easy_OpenMP(uint128_t x,
                         PrimeSums& prime_sums,
                         int threads)
 {
-  maxint_t s2_easy = 0;
+  int256_t s2_easy = 0;
   int64_t x13 = iroot<3>(x);
   threads = ideal_num_threads(threads, x13, 1000);
   vector<libdivide_u64_t> fastdiv = libdivide_divisors(primes);
@@ -87,10 +88,6 @@ maxint_t S2_easy_OpenMP(uint128_t x,
     int64_t pi_min_clustered = pi[min_clustered];
     int64_t pi_min_sparse = pi[min_sparse];
 
-    maxint_t prime256 = prime;
-    maxint_t phi;
-    maxint_t diff;
-
     if (is_libdivide(x2))
     {
       // Find all clustered easy leaves:
@@ -101,15 +98,11 @@ maxint_t S2_easy_OpenMP(uint128_t x,
       {
         int64_t xn = (uint64_t) x2 / fastdiv[l];
         int64_t phi_xn = pi[xn] - b + 2;
-        phi = prime_sums[pi[xn]] - prime_sums[b - 1];
-        phi++;
+        int256_t phi_xn_sum = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
         int64_t xm = (uint64_t) x2 / fastdiv[b + phi_xn - 1];
         xm = max(xm, min_clustered);
         int64_t l2 = pi[xm];
-        diff = prime_sums[l] - prime_sums[l2];
-        phi *= prime256;
-        phi *= diff;
-        s2_easy += phi;
+        s2_easy += (phi_xn_sum * prime) * (prime_sums[l] - prime_sums[l2]);
         l = l2;
       }
 
@@ -119,11 +112,8 @@ maxint_t S2_easy_OpenMP(uint128_t x,
       for (; l > pi_min_sparse; l--)
       {
         int64_t xn = (uint64_t) x2 / fastdiv[l];
-        phi = prime_sums[pi[xn]] - prime_sums[b - 1];
-        phi++;
-        phi *= primes[l];
-        phi *= prime256;
-        s2_easy += phi;
+        int256_t phi = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
+        s2_easy += (phi * prime) * primes[l];
       }
     }
     else
@@ -136,15 +126,11 @@ maxint_t S2_easy_OpenMP(uint128_t x,
       {
         int64_t xn = (int64_t) (x2 / primes[l]);
         int64_t phi_xn = pi[xn] - b + 2;
-        phi = prime_sums[pi[xn]] - prime_sums[b - 1];
-        phi++;
+        int256_t phi_xn_sum = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
         int64_t xm = (int64_t) (x2 / primes[b + phi_xn - 1]);
         xm = max(xm, min_clustered);
         int64_t l2 = pi[xm];
-        diff = prime_sums[l] - prime_sums[l2];
-        phi *= prime256;
-        phi *= diff;
-        s2_easy += phi;
+        s2_easy += (phi_xn_sum * prime) * (prime_sums[l] - prime_sums[l2]);
         l = l2;
       }
 
@@ -154,11 +140,8 @@ maxint_t S2_easy_OpenMP(uint128_t x,
       for (; l > pi_min_sparse; l--)
       {
         int64_t xn = (int64_t) (x2 / primes[l]);
-        phi = prime_sums[pi[xn]] - prime_sums[b - 1];
-        phi++;
-        phi *= primes[l];
-        phi *= prime256;
-        s2_easy += phi;
+        int256_t phi = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
+        s2_easy += (phi * prime) * primes[l];
       }
     }
 
@@ -173,7 +156,7 @@ maxint_t S2_easy_OpenMP(uint128_t x,
 
 namespace primesum {
 
-maxint_t S2_easy(int128_t x,
+int256_t S2_easy(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
@@ -190,7 +173,7 @@ maxint_t S2_easy(int128_t x,
   print(x, y, c, threads);
 
   double time = get_wtime();
-  maxint_t s2_easy;
+  int256_t s2_easy;
 
   // uses less memory
   if (y <= numeric_limits<uint32_t>::max())

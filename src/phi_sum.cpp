@@ -1,7 +1,7 @@
 ///
 /// @file  phi_sum.cpp
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -11,7 +11,8 @@
 #include <primesum.hpp>
 #include <generate.hpp>
 #include <fast_div.hpp>
-
+#include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <stdint.h>
 
 using namespace std;
@@ -21,30 +22,15 @@ namespace {
 
 const int primes_[] = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
 
-template <int SIGN>
-maxint_t F(maxint_t u)
+int256_t F(int256_t u)
 {
-  maxint_t u1 = u * u;
-  u1 += u;
-  u1 >>= 1;
-  return u1;
-}
-
-template <>
-maxint_t F<-1>(maxint_t u)
-{
-  maxint_t u1 = u * u;
-  u1 += u;
-  u1 >>= 1;
-  u1 = -u1;
-  return u1;
+  return ((u * u) + u) >> 1;
 }
 
 template <int SIGN>
-maxint_t phi_sum_tiny(int128_t x, int64_t a)
+int256_t phi_sum_tiny(int128_t x, int64_t a)
 {
-  maxint_t phi;
-  maxint_t sum = 0;
+  int256_t sum = 0;
 
   for (; a > 0; a--)
   {
@@ -52,23 +38,20 @@ maxint_t phi_sum_tiny(int128_t x, int64_t a)
       return sum + SIGN;
 
     int128_t x2 = fast_div(x, primes_[a]);
-    phi = phi_sum_tiny<-SIGN>(x2, a - 1);
-    phi *= primes_[a];
-    sum += phi;
+    sum += phi_sum_tiny<-SIGN>(x2, a - 1) * primes_[a];
   }
 
-  sum += F<SIGN>(x);
+  sum += F(x) * SIGN;
 
   return sum;
 }
 
 template <int SIGN>
-maxint_t phi_sum(int128_t x,
+int256_t phi_sum(int128_t x,
                  int64_t a,
                  vector<int>& primes)
 {
-  maxint_t phi;
-  maxint_t sum = 0;
+  int256_t sum = 0;
 
   for (; a > 0; a--)
   {
@@ -76,12 +59,10 @@ maxint_t phi_sum(int128_t x,
       return sum + SIGN;
 
     int128_t x2 = fast_div(x, primes[a]);
-    phi = phi_sum<-SIGN>(x2, a - 1, primes);
-    phi *= primes[a];
-    sum += phi;
+    sum += phi_sum<-SIGN>(x2, a - 1, primes) * primes[a];
   }
 
-  sum += F<SIGN>(x);
+  sum += F(x) * SIGN;
 
   return sum;
 }
@@ -90,7 +71,7 @@ maxint_t phi_sum(int128_t x,
 
 namespace primesum {
 
-maxint_t phi_sum(int128_t x, int64_t a)
+int256_t phi_sum(int128_t x, int64_t a)
 {
   if (x < 1)
     return 0;
