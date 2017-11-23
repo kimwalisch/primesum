@@ -4,13 +4,13 @@ primesum 256-bit
 [![GitHub license](https://img.shields.io/badge/license-BSD%202-blue.svg)](https://github.com/kimwalisch/primesum/blob/master/COPYING)
 
 primesum 256-bit allows to compute prime sums for values of
-x&nbsp;>&nbsp;2<sup>64</sup>, it has already been used to
-compute several world records!
+x&nbsp;>&nbsp;2<sup>64</sup>. primesum 256-bit has already been
+used to compute several world records!
 
 Build instructions (Unix-like OSes)
 -----------------------------------
 You need to have installed a C++ compiler which supports OpenMP 4.0 or
-later (e.g. GCC ≥ 5.0), cmake and make.
+later (e.g. GCC ≥ 5.0), make and cmake.
 
 Download 
 [primesum-256-bit.tar.gz](https://github.com/kimwalisch/primesum/archive/256-bit.tar.gz)
