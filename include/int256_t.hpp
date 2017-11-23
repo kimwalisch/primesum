@@ -523,9 +523,22 @@ private:
         }
     }
 
+    int find_most_significant_bit() const
+    {
+        auto x = *this;
+        int pos = 0;
+
+        while (x != 0)
+        {
+            pos++;
+            x >>= 1;
+        }
+
+        return pos;
+    }
+
     /// Unsigned division with remainder
-    std::pair<int256_t, int256_t>
-    udiv256(const int256_t& other) const
+    std::pair<int256_t, int256_t> udiv256(const int256_t& other) const
     {
         int256_t zero = 0;
         int256_t one = 1;
@@ -574,8 +587,7 @@ private:
     }
 
     /// Signed division with remainder
-    std::pair<int256_t, int256_t>
-    div256(const int256_t& other) const
+    std::pair<int256_t, int256_t> div256(const int256_t& other) const
     {
         if (*this < 0)
         {
@@ -602,20 +614,6 @@ private:
             else
                 return udiv256(other);
         }
-    }
-
-    int find_most_significant_bit() const
-    {
-        auto x = *this;
-        int pos = 0;
-
-        while (x != 0)
-        {
-            pos++;
-            x >>= 1;
-        }
-
-        return pos;
     }
 };
 
