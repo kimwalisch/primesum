@@ -424,14 +424,14 @@ public:
               typename = typename std::enable_if<prt::is_integral<T>::value>::type>
     int256_t operator << (T x) const
     {
-        return *this << int256_t(x);
+        return *this << static_cast<std::size_t>(x);
     }
 
     template <typename T,
               typename = typename std::enable_if<prt::is_integral<T>::value>::type>
     int256_t operator >> (T x) const
     {
-        return *this >> int256_t(x);
+        return *this >> static_cast<std::size_t>(x);
     }
 
     operator std::int8_t() const
