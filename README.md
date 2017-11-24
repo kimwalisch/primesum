@@ -23,10 +23,10 @@ POPCNT instruction (2010 or later).
 256-bit binaries
 ----------------
 [primesum 256-bit](https://github.com/kimwalisch/primesum/tree/256-bit)
-allows to compute prime sums for values of x&nbsp;≥&nbsp;2<sup>64</sup>
-but it runs only at about half the speed of the primesum 128-bit
-version due to slower 256-bit integer arithmetic. primesum 256-bit has
-already been used to compute many new prime sum world records!
+allows to compute prime sums for values of x&nbsp;≥&nbsp;2<sup>64</sup>,
+it runs about 30% slower than the primesum 128-bit version due to slower
+256-bit integer arithmetic. primesum 256-bit has already been used to
+compute many new prime sum world records!
 
 * [primesum-1.1-256-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.1-256-bit/primesum-1.1-256-win64.zip), 498 KB
 * [primesum-1.1-256-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.1-256-bit/primesum-1.1-256-linux-x64.tar.gz), 1005 KB
