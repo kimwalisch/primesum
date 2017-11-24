@@ -24,7 +24,7 @@ POPCNT instruction (2010 or later).
 ----------------
 [primesum 256-bit](https://github.com/kimwalisch/primesum/tree/256-bit)
 allows to compute prime sums for values of x&nbsp;≥&nbsp;2<sup>64</sup>,
-it runs about 30% slower than the primesum 128-bit version due to slower
+it runs about 30% slower than the 128-bit primesum version due to slower
 256-bit integer arithmetic. primesum 256-bit has already been used to
 compute many new prime sum world records!
 
