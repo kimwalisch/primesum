@@ -57,8 +57,10 @@ public:
 
     bool operator<(const int256_t& other) const
     {
-        return high < other.high ||
-              (high == other.high && low < other.low);
+        int128_t hi1 = high;
+        int128_t hi2 = other.high;
+
+        return hi1 < hi2 || (hi1 == hi2 && low < other.low);
     }
 
     bool operator<=(const int256_t& other) const
@@ -157,8 +159,8 @@ public:
 
         if (low <= max64 &&
             other.low <= max64 &&
-            ((high == 0 || high == -1) &&
-             (other.high == 0 || other.high == -1)))
+            ((high == 0 || ~high == 0) &&
+             (other.high == 0 || ~other.high == 0)))
         {
           return int256_t(low * other.low,
                           (high == other.high) ? 0 : -1);
@@ -466,9 +468,9 @@ public:
 
 private:
     uint128_t low;
-    int128_t high;
+    uint128_t high;
 
-    int256_t(uint128_t low, int128_t high)
+    int256_t(uint128_t low, uint128_t high)
         : low(low)
         , high(high)
     {
