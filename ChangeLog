@@ -1,11 +1,11 @@
-2017-11-21 Kim Walisch  <kim.walisch@gmail.com>
+2017-11-25 Kim Walisch  <kim.walisch@gmail.com>
 
-  Version 1.2 work in progress.
+  Version 1.2 released.
 
-  This version fixes an integer overflow in the 128-bit version of
-  primesum and speeds up the 256-bit version of primesum by up
-  to 30% due to replacing the Boost multiprecision library with
-  my own highly optimzed int256_t type.
+  This version fixes an integer overflow in primesum 128-bit
+  and speeds up primesum 256-bit by up to 30% due to replacing the
+  Boost multiprecision library with my own highly optimized
+  int256_t type.
 
   * int256_t.hpp: New 256-bit signed integer type.
   * Fix 128-bit integer overflow in phi_sum.cpp.
