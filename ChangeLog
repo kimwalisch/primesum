@@ -1,11 +1,15 @@
-2017-11-21 Kim Walisch  <kim.walisch@gmail.com>
+2017-11-25 Kim Walisch  <kim.walisch@gmail.com>
 
-  Version 1.2 work in progress.
+  Version 1.2 released.
 
-  * Reduce input limit from 10^20 to 2^64-1 to prevent
-    128-bit integer overflows in S1(x).
+  This version fixes an integer overflow in primesum 128-bit
+  and speeds up primesum 256-bit by up to 30% due to replacing the
+  Boost multiprecision library with my own highly optimized
+  int256_t type.
+
+  * int256_t.hpp: New 256-bit signed integer type.
   * Fix 128-bit integer overflow in phi_sum.cpp.
-  * primesum 256-bit runs 10% faster.
+  * Reduce input limit from 10^20 to 2^64-1 in primesum 128-bit.
   * CMakeLists.txt: Silence OpenMP warning.
   * README.md: Update build instructions.
   * .travis.yml: Update to Ubuntu 14.
