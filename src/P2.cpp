@@ -56,8 +56,8 @@ void balanceLoad(int64_t* thread_distance,
   *thread_distance = in_between(min_distance, *thread_distance, max_distance);
 }
 
-template <typename T>
-T P2_OpenMP_thread(int128_t x,
+template <typename T, typename X>
+T P2_OpenMP_thread(X x,
                    int64_t y,
                    int64_t z,
                    int64_t thread_distance,
@@ -125,9 +125,11 @@ T P2_OpenMP_thread(int128_t x,
 /// factors each exceeding the a-th prime, a = pi(y).
 /// Space complexity: O((x / y)^(1/2)).
 ///
-int256_t P2_OpenMP_master(int128_t x,
-                          int64_t y,
-                          int threads)
+template <typename T>
+typename next_larger_type<T>::type
+P2_OpenMP_master(T x,
+                 int64_t y,
+                 int threads)
 {
   if (x < 4)
     return 0;
@@ -143,11 +145,13 @@ int256_t P2_OpenMP_master(int128_t x,
   int64_t min_distance = 1 << 23;
   int64_t thread_distance = min_distance;
 
-  aligned_vector<int256_t> prime_sums(threads);
-  aligned_vector<int256_t> correct(threads);
+  using res_t = typename next_larger_type<T>::type;
 
-  int256_t p2 = 0;
-  int256_t prime_sum = prime_sum_tiny(y);
+  aligned_vector<res_t> prime_sums(threads);
+  aligned_vector<res_t> correct(threads);
+
+  res_t p2 = 0;
+  res_t prime_sum = prime_sum_tiny(y);
 
   while (low < z)
   {
@@ -198,7 +202,13 @@ int256_t P2(int128_t x, int64_t y, int threads)
   print(x, y, threads);
 
   double time = get_wtime();
-  int256_t p2 = P2_OpenMP_master(x, y, threads);
+  int256_t p2;
+
+  // uses less memory
+  if (x <= numeric_limits<int64_t>::max())
+    p2 = P2_OpenMP_master((int64_t) x, y, threads);
+  else
+    p2 = P2_OpenMP_master(x, y, threads);
 
   print("P2", p2, time);
   return p2;

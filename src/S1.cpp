@@ -32,19 +32,22 @@ namespace {
 /// Douglas Staple, "The Combinatorial Algorithm For Computing pi(x)",
 /// arXiv:1503.01839, 6 March 2015.
 ///
-template <int MU, typename P>
-int256_t S1_OpenMP_thread(int128_t x,
-                          int64_t y,
-                          int64_t b,
-                          int64_t c,
-                          int128_t square_free,
-                          vector<P>& primes)
+template <int MU, typename X, typename P>
+typename next_larger_type<X>::type
+S1_OpenMP_thread(X x,
+                 int64_t y,
+                 int64_t b,
+                 int64_t c,
+                 X square_free,
+                 vector<P>& primes)
 {
-  int256_t s1_sum = 0;
+  using res_t = typename next_larger_type<X>::type;
+
+  res_t s1_sum = 0;
 
   for (b += 1; b < (int64_t) primes.size(); b++)
   {
-    int128_t next = square_free * primes[b];
+    X next = square_free * primes[b];
     if (next > y) break;
     s1_sum += phi_sum(x / next, c) * (MU * next);
     s1_sum += S1_OpenMP_thread<-MU>(x, y, b, c, next, primes);
@@ -57,22 +60,23 @@ int256_t S1_OpenMP_thread(int128_t x,
 /// Run time: O(y * log(log(y))) operations.
 /// Space complexity: O(y / log(y)).
 ///
-template <typename Y>
-int256_t S1_OpenMP_master(int128_t x,
-                          Y y,
-                          int64_t c,
-                          int threads)
+template <typename X, typename Y>
+typename next_larger_type<X>::type
+S1_OpenMP_master(X x,
+                 Y y,
+                 int64_t c,
+                 int threads)
 {
   int64_t thread_threshold = ipow(10, 6);
   threads = ideal_num_threads(threads, y, thread_threshold);
   vector<Y> primes = generate_primes<Y>(y);
-  int256_t s1_sum = phi_sum(x, c);
+  auto s1_sum = phi_sum(x, c);
 
   #pragma omp parallel for schedule(static, 1) num_threads(threads) reduction (+: s1_sum)
   for (int64_t b = c + 1; b < (int64_t) primes.size(); b++)
   {
     s1_sum -= phi_sum(x / primes[b], c) * primes[b];
-    s1_sum += S1_OpenMP_thread<1>(x, y, b, c, primes[b], primes);
+    s1_sum += S1_OpenMP_thread<1>(x, y, b, c, (X) primes[b], primes);
   }
 
   return s1_sum;
@@ -97,7 +101,12 @@ int256_t S1(int128_t x,
 
   // uses less memory
   if (y <= numeric_limits<uint32_t>::max())
-    s1_sum = S1_OpenMP_master(x, (uint32_t) y, c, threads);
+  {
+    if (x <= numeric_limits<int64_t>::max())
+      s1_sum = S1_OpenMP_master((int64_t) x, (uint32_t) y, c, threads);
+    else
+      s1_sum = S1_OpenMP_master(x, (uint32_t) y, c, threads);
+  }
   else
     s1_sum = S1_OpenMP_master(x, y, c, threads);
 

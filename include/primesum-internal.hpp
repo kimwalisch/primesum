@@ -98,6 +98,8 @@ int64_t pi_primesieve(int64_t x, int threads);
 
 int64_t phi(int64_t x, int64_t a, int threads);
 
+int128_t phi_sum(int64_t x, int64_t a);
+
 int256_t phi_sum(int128_t x, int64_t a);
 
 int256_t P2(int128_t x, int64_t y, int threads);

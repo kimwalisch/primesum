@@ -636,6 +636,18 @@ inline std::ostream& operator<<(std::ostream& stream, int256_t n)
     return stream;
 }
 
+template <typename T>
+struct next_larger_type
+{
+  typedef typename std::conditional<std::is_same<T, int32_t>::value, int64_t,
+          typename std::conditional<std::is_same<T, uint32_t>::value, uint64_t,
+          typename std::conditional<std::is_same<T, int64_t>::value, int128_t,
+          typename std::conditional<std::is_same<T, uint64_t>::value, uint128_t,
+          typename std::conditional<std::is_same<T, int128_t>::value, int256_t,
+          typename std::conditional<std::is_same<T, uint128_t>::value, int256_t,
+          T>::type>::type>::type>::type>::type>::type type;
+};
+
 } // namespace
 
 #endif

@@ -30,17 +30,18 @@ using namespace primesum;
 
 namespace {
 
+template <typename PrimeSums>
 int256_t S2_trivial_OpenMP(int128_t x,
                            int64_t y,
                            int64_t z,
                            int64_t c,
+                           PrimeSums& prime_sums,
                            int threads)
 {
   int64_t thread_threshold = ipow(10, 7);
   threads = ideal_num_threads(threads, y, thread_threshold);
 
   PiTable pi(y);
-  vector<int128_t> prime_sums = generate_prime_sums<int128_t>(y);
   int64_t sqrtz = isqrt(z);
   int64_t prime_c = nth_prime(c);
   int256_t s2_trivial = 0;
@@ -84,7 +85,19 @@ int256_t S2_trivial(int128_t x,
   print(x, y, c, threads);
 
   double time = get_wtime();
-  int256_t s2_trivial = S2_trivial_OpenMP(x, y, z, c, threads);
+  int256_t s2_trivial;
+
+  // uses less memory
+  if (y <= numeric_limits<uint32_t>::max())
+  {
+    auto prime_sums = generate_prime_sums<uint64_t>(y);
+    s2_trivial = S2_trivial_OpenMP(x, y, z, c, prime_sums, threads);
+  }
+  else
+  {
+    auto prime_sums = generate_prime_sums<int128_t>(y);
+    s2_trivial = S2_trivial_OpenMP(x, y, z, c, prime_sums, threads);
+  }
 
   print("S2_trivial", s2_trivial, time);
   return s2_trivial;
