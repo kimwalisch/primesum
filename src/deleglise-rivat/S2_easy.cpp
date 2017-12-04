@@ -60,6 +60,7 @@ int256_t S2_easy_OpenMP(uint128_t x,
   for (int64_t b = max(c, pi_sqrty) + 1; b <= pi_x13; b++)
   {
     int64_t prime = primes[b];
+    uint128_t prime128 = prime;
     uint128_t x2 = x / prime;
     int64_t min_trivial = min(x2 / prime, y);
     int64_t min_clustered = (int64_t) isqrt(x2);
@@ -85,7 +86,7 @@ int256_t S2_easy_OpenMP(uint128_t x,
       int64_t xm = (int64_t) fast_div(x2, primes[b + phi_xn - 1]);
       xm = max(xm, min_clustered);
       int64_t l2 = pi[xm];
-      s2_easy += prime * phi_xn_sum * (prime_sums[l] - prime_sums[l2]);
+      s2_easy += (phi_xn_sum * prime) * (prime_sums[l] - prime_sums[l2]);
       l = l2;
     }
 
@@ -96,7 +97,7 @@ int256_t S2_easy_OpenMP(uint128_t x,
     {
       int64_t xn = (int64_t) fast_div(x2, primes[l]);
       int256_t phi = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
-      s2_easy += (phi * prime) * primes[l];
+      s2_easy += phi * (prime128 * primes[l]);
     }
 
     if (print_status())
