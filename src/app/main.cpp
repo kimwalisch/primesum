@@ -2,7 +2,7 @@
 /// @file   main.cpp
 /// @brief  primesum console application.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -24,10 +24,6 @@
 #include <iostream>
 #include <limits>
 #include <string>
-
-#ifdef HAVE_MPI
-  #include <mpi.h>
-#endif
 
 using namespace std;
 using namespace primesum;
@@ -152,10 +148,6 @@ int256_t S2_hard(int128_t x, int threads)
 
 int main (int argc, char* argv[])
 {
-#ifdef HAVE_MPI
-  MPI_Init(&argc, &argv);
-#endif
-
   PrimeSumOptions pco = parseOptions(argc, argv);
   double time = get_wtime();
 
@@ -201,18 +193,12 @@ int main (int argc, char* argv[])
   }
   catch (bad_alloc&)
   {
-#ifdef HAVE_MPI
-    MPI_Finalize();
-#endif
     cerr << "Error: failed to allocate memory, your system most likely does" << endl
          << "       not have enough memory to run this computation." << endl;
     return 1;
   }
   catch (exception& e)
   {
-#ifdef HAVE_MPI
-    MPI_Finalize();
-#endif
     cerr << "Error: " << e.what() << endl;
     return 1;
   }
@@ -225,10 +211,6 @@ int main (int argc, char* argv[])
     if (pco.time)
       print_seconds(get_wtime() - time);
   }
-
-#ifdef HAVE_MPI
-    MPI_Finalize();
-#endif
 
   return 0;
 }

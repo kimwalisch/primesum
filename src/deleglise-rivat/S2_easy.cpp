@@ -117,11 +117,6 @@ int256_t S2_easy(int128_t x,
                  int64_t c,
                  int threads)
 {
-#ifdef HAVE_MPI
-  if (mpi_num_procs() > 1)
-    return S2_easy_mpi(x, y, z, c, threads);
-#endif
-
   print("");
   print("=== S2_easy(x, y) ===");
   print("Computation of the easy special leaves");

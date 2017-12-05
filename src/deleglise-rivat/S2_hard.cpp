@@ -272,11 +272,6 @@ int256_t S2_hard(int128_t x,
                  int64_t c,
                  int threads)
 {
-#ifdef HAVE_MPI
-  if (mpi_num_procs() > 1)
-    return S2_hard_mpi(x, y, z, c, threads);
-#endif
-
   print("");
   print("=== S2_hard(x, y) ===");
   print("Computation of the hard special leaves");
