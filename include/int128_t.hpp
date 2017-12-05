@@ -98,8 +98,6 @@ struct numeric_limits<uint128_t>
 
 #endif
 
-#if __cplusplus >= 201103L
-
 template <typename T>
 struct make_signed
 {
@@ -144,7 +142,19 @@ struct is_signed
   };
 };
 
-#endif /* __cplusplus >= 201103L */
+template <typename T>
+struct is_unsigned
+{
+  enum
+  {
+#if !defined(HAVE_INT128_T)
+    value = std::is_unsigned<T>::value
+#else
+    value = std::is_unsigned<T>::value ||
+            std::is_same<T, uint128_t>::value
+#endif
+  };
+};
 
 } // namespace prt
 } // namespace primesum
