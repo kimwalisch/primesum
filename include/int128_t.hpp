@@ -1,9 +1,8 @@
 ///
 /// @file   int128_t.hpp
-/// @brief  Additional integer types used in primesum:
-///         int128_t, uint128_t, intfast64_t, intfast128_t.
+/// @brief  Support for int128_t, uint128_t types.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -12,21 +11,17 @@
 #ifndef INT128_T_HPP
 #define INT128_T_HPP
 
-#include <limits>
 #include <stdint.h>
+#include <limits>
+#include <type_traits>
 
-#if __cplusplus >= 201103L
-  #include <type_traits>
-#endif
-
-#if defined(HAVE___INT128_T)
-
-/// The __int128_t type (GCC/Clang) is not well supported by the C++
-/// standard library (in 2016) so we have to define some functions
-/// ourselves. We also define typedefs so we can use int128_t
-/// instead of __int128_t. Once this is done int128_t can be used
-/// like a regular integer type e.g. int64_t.
+/// The __int128_t type (GCC/Clang) is not well supported by
+/// the C++ standard library (in 2016) so we have to define
+/// some functions ourselves. We also define typedefs so we
+/// can use int128_t instead of __int128_t. Once this is done
+/// int128_t can be used like a regular integer type.
 ///
+#if defined(HAVE___INT128_T)
 #define HAVE_INT128_T
 
 #include <ostream>
@@ -34,8 +29,8 @@
 
 namespace primesum {
 
-typedef __int128_t int128_t;
-typedef __uint128_t uint128_t;
+using int128_t = __int128_t;
+using uint128_t = __uint128_t;
 
 inline std::ostream& operator<<(std::ostream& stream, uint128_t n)
 {
@@ -70,39 +65,16 @@ inline std::ostream& operator<<(std::ostream& stream, int128_t n)
 
 namespace primesum {
 
-/// Fastest 64-bit integer type for division.
-/// On most Intel CPUs before 2015 unsigned 64-bit division is about
-/// 10 percent faster than signed division. It is likely that in a few
-/// years signed and unsigned division will run equally fast.
-///
-typedef uint64_t intfast64_t;
-
-#if defined(HAVE_INT128_T)
-
-/// Fastest 128-bit integer type for division.
-/// On the author's Intel Core-i7 4770 CPU from 2013 using uint128_t
-/// instead of int128_t gives 10 percent better performance.
-///
-typedef uint128_t intfast128_t;
-
-#endif
-
 /// Portable namespace, includes functions which (unlike the versions
 /// form the C++ standard library) work with the int128_t and
 /// uint128_t types (2014).
 ///
 namespace prt {
 
-#if __cplusplus >= 201103L
-  #define CONSTEXPR constexpr
-#else
-  #define CONSTEXPR
-#endif
-
 template <typename T>
 struct numeric_limits
 {
-  static CONSTEXPR T max()
+  static constexpr T max()
   {
     return std::numeric_limits<T>::max();
   }
@@ -113,19 +85,18 @@ struct numeric_limits
 template <>
 struct numeric_limits<int128_t>
 {
-  static CONSTEXPR int128_t min() { return ((int128_t) 1) << 127; }
-  static CONSTEXPR int128_t max() { return ~min(); }
+  static constexpr int128_t min() { return ((int128_t) 1) << 127; }
+  static constexpr int128_t max() { return ~min(); }
 };
 
 template <>
 struct numeric_limits<uint128_t>
 {
-  static CONSTEXPR uint128_t min() { return 0; }
-  static CONSTEXPR uint128_t max() { return ~min(); }
+  static constexpr uint128_t min() { return 0; }
+  static constexpr uint128_t max() { return ~min(); }
 };
 
 #endif
-#undef CONSTEXPR
 
 #if __cplusplus >= 201103L
 
