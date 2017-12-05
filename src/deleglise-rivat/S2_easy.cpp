@@ -100,7 +100,7 @@ res_t S2_easy_OpenMP(uint128_t x,
       s2_easy += phi * ((PS) prime * primes[l]);
     }
 
-    if (print_status())
+    if (is_print())
       status.print(b, pi_x13);
   }
 

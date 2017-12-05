@@ -52,7 +52,7 @@ int256_t P2(int128_t x, int threads)
   if (x > to_int128(limit))
     throw primesum_error("P2(x): x must be <= " + limit);
 
-  if (print_status())
+  if (is_print())
     set_print_variables(true);
 
   int64_t y = (int64_t) (iroot<3>(x) * alpha);
@@ -70,7 +70,7 @@ int256_t S1(int128_t x, int threads)
   if (x > to_int128(limit))
     throw primesum_error("S1(x): x must be <= " + limit);
 
-  if (print_status())
+  if (is_print())
     set_print_variables(true);
 
   int64_t y = (int64_t) (iroot<3>(x) * alpha);
@@ -90,7 +90,7 @@ int256_t S2_trivial(int128_t x, int threads)
   if (x > to_int128(limit))
     throw primesum_error("S2_trivial(x): x must be <= " + limit);
 
-  if (print_status())
+  if (is_print())
     set_print_variables(true);
 
   int64_t y = (int64_t) (iroot<3>(x) * alpha);
@@ -114,7 +114,7 @@ int256_t S2_easy(int128_t x, int threads)
   if (x > to_int128(limit))
     throw primesum_error("S2_easy(x): x must be <= " + limit);
 
-  if (print_status())
+  if (is_print())
     set_print_variables(true);
 
   int64_t y = (int64_t) (iroot<3>(x) * alpha);
@@ -138,7 +138,7 @@ int256_t S2_hard(int128_t x, int threads)
   if (x > to_int128(limit))
     throw primesum_error("S2_hard(x): x must be <= " + limit);
 
-  if (print_status())
+  if (is_print())
     set_print_variables(true);
 
   int64_t y = (int64_t) (iroot<3>(x) * alpha);
@@ -219,7 +219,7 @@ int main (int argc, char* argv[])
 
   if (print_result())
   {
-    if (print_status())
+    if (is_print())
       cout << endl;
     cout << res << endl;
     if (pco.time)

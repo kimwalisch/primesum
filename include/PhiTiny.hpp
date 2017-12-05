@@ -1,7 +1,15 @@
 ///
 /// @file  PhiTiny.hpp
+/// @brief phi(x, a) counts the numbers <= x that are not
+///        divisible by any of the first a primes.
+///        PhiTiny computes phi(x, a) in constant time
+///        for a <= 6 using lookup tables.
 ///
-/// Copyright (C) 2015 Kim Walisch, <kim.walisch@gmail.com>
+///        phi(x, a) = (x / pp) * φ(a) + phi(x % pp, a)
+///        pp = 2 * 3 * ... * prime[a]
+///        φ(a) = \prod_{i=1}^{a} (prime[i] - 1)
+///
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -13,74 +21,65 @@
 #include <int128_t.hpp>
 
 #include <stdint.h>
+#include <array>
 #include <cassert>
 #include <vector>
 
 namespace primesum {
 
-class PhiTiny {
+class PhiTiny
+{
 public:
   PhiTiny();
-  static int64_t max_a() { return 6; }
-  static bool is_tiny(int64_t a) { return a <= max_a(); }
 
-  /// Partial sieve function (a.k.a. Legendre-sum).
-  /// phi(x, a) counts the numbers <= x that are not divisible
-  /// by any of the first a primes.
-  /// @pre is_tiny(a).
-  ///
-  template <typename X, typename A>
-  X phi(X x, A a) const
+  template <typename T>
+  T phi(T x, int64_t a) const
   {
-    assert(is_tiny(a));
-    // phi(x, a) = (x / pp) * φ(pp) + phi(x % pp, a)
-    // with pp = 2 * 3 * ... * prime[a]
-    X pp = prime_products[a];
-    return (x / pp) * totients[a] + phi_cache_[a][x % pp];
+    assert(a <= max_a());
+
+    T pp = prime_products[a];
+    return (x / pp) * totients[a] + phi_[a][x % pp];
   }
 
   static int64_t get_c(int64_t y)
   {
     assert(y >= 0);
 
-    if (y >= primes[max_a()])
+    if (y >= primes.back())
       return max_a();
     else
       return pi[y];
   }
+
+  static int64_t max_a()
+  {
+    return primes.size() - 1;
+  }
+
 private:
-  std::vector<int16_t> phi_cache_[7];
-  static const int pi[20];
-  static const int primes[7];
-  static const int prime_products[7];
-  static const int totients[7];
+  std::array<std::vector<int16_t>, 7> phi_;
+  static const std::array<int, 7> primes;
+  static const std::array<int, 7> prime_products;
+  static const std::array<int, 7> totients;
+  static const std::array<int, 13> pi;
 };
+
+extern const PhiTiny phiTiny;
 
 inline bool is_phi_tiny(int64_t a)
 {
-  return PhiTiny::is_tiny(a);
+  return a <= PhiTiny::max_a();
 }
 
-#if __cplusplus >= 201103L
-
-template <typename X, typename A>
-typename prt::make_signed<X>::type phi_tiny(X x, A a)
+template <typename T>
+typename prt::make_signed<T>::type phi_tiny(T x, int64_t a)
 {
-  extern const PhiTiny phiTiny;
-  return phiTiny.phi(x, a);
+  if (x <= std::numeric_limits<uint32_t>::max())
+    return phiTiny.phi((uint32_t) x, a);
+  else
+    return phiTiny.phi(x, a);
 }
-
-#else /* C++98 */
-
-template <typename X, typename A>
-X phi_tiny(X x, A a)
-{
-  extern const PhiTiny phiTiny;
-  return phiTiny.phi(x, a);
-}
-
-#endif
 
 } // namespace
 
-#endif /* PHITINY_HPP */
+#endif

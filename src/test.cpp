@@ -106,7 +106,7 @@ namespace primesum {
 
 bool test()
 {
-  set_print_status(false); 
+  set_print(false); 
   srand(static_cast<unsigned>(time(0)));
 
   try

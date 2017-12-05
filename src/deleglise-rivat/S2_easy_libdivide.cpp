@@ -146,7 +146,7 @@ res_t S2_easy_OpenMP(uint128_t x,
       }
     }
 
-    if (print_status())
+    if (is_print())
       status.print(b, pi_x13);
   }
 

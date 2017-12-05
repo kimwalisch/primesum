@@ -1,7 +1,7 @@
 ///
 /// @file  print.cpp
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -21,7 +21,7 @@ using namespace std;
 
 namespace {
 
-bool print_status_ = false;
+bool print_ = false;
 
 bool print_variables_ = false;
 
@@ -29,9 +29,9 @@ bool print_variables_ = false;
 
 namespace primesum {
 
-void set_print_status(bool print_status)
+void set_print(bool is_print)
 {
-  print_status_ = print_status;
+  print_ = is_print;
 }
 
 void set_print_variables(bool print_variables)
@@ -44,9 +44,9 @@ bool print_result()
   return !print_variables();
 }
 
-bool print_status()
+bool is_print()
 {
-  return print_status_;
+  return print_;
 }
 
 bool print_variables()
@@ -56,13 +56,13 @@ bool print_variables()
 
 void print(const string& str)
 {
-  if (print_status())
+  if (is_print())
     cout << str << endl;
 }
 
 void print(int128_t x, int64_t y, int64_t z, int64_t c, double alpha, int threads)
 {
-  if (print_status())
+  if (is_print())
   {
     cout << "x = " << x << endl;
     cout << "y = " << y << endl;
@@ -104,7 +104,7 @@ void print(int128_t x, int64_t y, int64_t c, int threads)
 
 void print(const string& res_str, int256_t res, double time)
 {
-  if (print_status())
+  if (is_print())
   {
     cout << "\r" << string(50,' ') << "\r";
     cout << "Status: 100%" << endl;

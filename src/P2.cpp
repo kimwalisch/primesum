@@ -174,7 +174,7 @@ P2_OpenMP_master(T x,
     low += thread_distance * threads;
     balanceLoad(&thread_distance, low, z, threads, time);
 
-    if (print_status())
+    if (is_print())
     {
       double percent = get_percent((double) low, (double) z);
       cout << "\rStatus: " << fixed << setprecision(get_status_precision(x))

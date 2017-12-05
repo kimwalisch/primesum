@@ -130,7 +130,7 @@ PrimeSumOptions parseOptions(int argc, char** argv)
         case OPTION_NUMBER:  numbers.push_back(option.getValue<int128_t>()); break;
         case OPTION_THREADS: pco.threads = option.getValue<int>(); break;
         case OPTION_HELP:    help(); break;
-        case OPTION_STATUS:  set_print_status(true);
+        case OPTION_STATUS:  set_print(true);
                              if (!option.value.empty())
                                 set_status_precision(option.getValue<int>());
                              pco.time = true;

@@ -22,7 +22,7 @@ void set_print_variables(bool print_variables);
 
 bool print_result();
 
-bool print_status();
+bool is_print();
 
 bool print_variables();
 
