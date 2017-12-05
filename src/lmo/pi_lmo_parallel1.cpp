@@ -121,14 +121,14 @@ T S2_thread(uint128_t x,
         {
           int64_t xn = x / (prime * m);
           int64_t stop = xn - low;
-          for (; i <= stop; i++)
+          for (; i <= stop; i += 2)
             phi[b] += (low + i) * sieve[i];
           S2_thread -= phi[b] * (mu[m] * m * prime);
           mu_sum[b] -= mu[m] * m * prime;
         }
       }
 
-      for (; i < high - low; i++)
+      for (; i < high - low; i += 2)
         phi[b] += (low + i) * sieve[i];
 
       cross_off(sieve, low, high, prime, wheel[b]);
@@ -151,13 +151,13 @@ T S2_thread(uint128_t x,
       {
         int64_t xn = x / (prime * primes[l]);
         int64_t stop = xn - low;
-        for (; i <= stop; i++)
+        for (; i <= stop; i += 2)
           phi[b] += (low + i) * sieve[i];
         S2_thread += phi[b] * (primes[l] * prime);
         mu_sum[b] += primes[l] * prime;
       }
 
-      for (; i < high - low; i++)
+      for (; i < high - low; i += 2)
         phi[b] += (low + i) * sieve[i];
 
       cross_off(sieve, low, high, prime, wheel[b]);

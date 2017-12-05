@@ -145,7 +145,7 @@ int256_t S2_hard(int128_t x, int threads)
   int64_t z = (int64_t) (x / y);
   int64_t c = PhiTiny::get_c(y);
 
-  return S2_hard(x, y, z, c, alpha, threads);
+  return S2_hard(x, y, z, c, threads);
 }
 
 } // namespace

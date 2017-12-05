@@ -24,7 +24,6 @@
 #include <imath.hpp>
 #include <S2.hpp>
 #include <S2LoadBalancer.hpp>
-#include <tos_sums.hpp>
 #include <Wheel.hpp>
 
 #include <stdint.h>
@@ -38,34 +37,6 @@ using namespace std;
 using namespace primesum;
 
 namespace {
-
-/// Cross-off the multiples of prime in the sieve array.
-/// For each element that is unmarked the first time update
-/// the special sums tree data structure.
-///
-template <typename T>
-void cross_off(BitSieve& sieve,
-               int64_t low,
-               int64_t high,
-               int64_t prime,
-               WheelItem& w,
-               T& sums)
-{
-  int64_t segment_size = sieve.size();
-  int64_t m = w.next_multiple;
-  int64_t wheel_index = w.wheel_index;
-
-  for (; m < high; m += prime * Wheel::next_multiple_factor(&wheel_index))
-  {
-    if (sieve[m - low])
-    {
-      sieve.unset(m - low);
-      sums_update(sums, m, low, segment_size);
-    }
-  }
-
-  w.set(m, wheel_index);
-}
 
 /// Cross-off the multiples of prime in the sieve array.
 int128_t cross_off(BitSieve& sieve,
@@ -88,17 +59,6 @@ int128_t cross_off(BitSieve& sieve,
   return sum;
 }
 
-/// @return  true if the interval [low, high] contains
-///          few hard special leaves.
-///
-bool few_leaves(int64_t low,
-                int64_t high,
-                int64_t y,
-                double alpha)
-{
-  return (high < y || low > y * alpha);
-}
-
 /// Compute the S2 contribution of the hard special leaves which
 /// require use of a sieve. Each thread processes the interval
 /// [low_thread, low_thread + segments * segment_size[
@@ -116,7 +76,6 @@ T S2_hard_OpenMP_thread(uint128_t x,
                         int64_t thread_num,
                         int64_t low,
                         int64_t limit,
-                        double alpha,
                         FactorTable& factors,
                         PiTable& pi,
                         Primes& primes,
@@ -136,7 +95,6 @@ T S2_hard_OpenMP_thread(uint128_t x,
   Wheel wheel(primes, max_b + 1, low);
   phi.resize(max_b + 1, 0);
   mu_sum.resize(max_b + 1, 0);
-  vector<int128_t> sums;
 
   // Segmented sieve of Eratosthenes
   for (; low < limit; low += segment_size)
@@ -148,163 +106,80 @@ T S2_hard_OpenMP_thread(uint128_t x,
     // pre-sieve the multiples of the first c primes
     sieve.pre_sieve(c, low);
 
-    // If there are relatively few special leaves per segment
-    // we sum the unsieved numbers directly from the sieve array.
-    if (few_leaves(low, high, y, alpha))
+    // sum of unsieved numbers inside [low, high[
+    int128_t sum_low_high = sieve.sum(low, 0, (high - 1) - low);
+
+    // For c + 1 <= b <= pi_sqrty
+    // Find all special leaves: n = primes[b] * m
+    // which satisfy: mu[m] != 0 && primes[b] < lpf[m] && low <= (x / n) < high
+    for (int64_t end = min(pi_sqrty, max_b); b <= end; b++)
     {
-      // sum of unsieved numbers inside [low, high[
-      int128_t sum_low_high = sieve.sum(low, 0, (high - 1) - low);
+      int64_t prime = primes[b];
+      uint128_t x2 =  x / prime;
+      int64_t x2_div_high = min(fast_div(x2, high), y);
+      int64_t min_m = max(x2_div_high, y / prime);
+      int64_t max_m = min(fast_div(x2, low), y);
+      int64_t start = 0;
+      int128_t sum = 0;
 
-      // For c + 1 <= b <= pi_sqrty
-      // Find all special leaves: n = primes[b] * m
-      // which satisfy: mu[m] != 0 && primes[b] < lpf[m] && low <= (x / n) < high
-      for (int64_t end = min(pi_sqrty, max_b); b <= end; b++)
+      if (prime >= max_m)
+        goto next_segment;
+
+      factors.to_index(&min_m);
+      factors.to_index(&max_m);
+
+      for (int64_t m = max_m; m > min_m; m--)
       {
-        int64_t prime = primes[b];
-        uint128_t x2 =  x / prime;
-        int64_t x2_div_high = min(fast_div(x2, high), y);
-        int64_t min_m = max(x2_div_high, y / prime);
-        int64_t max_m = min(fast_div(x2, low), y);
-        int64_t start = 0;
-        int128_t sum = 0;
-
-        if (prime >= max_m)
-          goto next_segment;
-
-        factors.to_index(&min_m);
-        factors.to_index(&max_m);
-
-        for (int64_t m = max_m; m > min_m; m--)
+        if (prime < factors.lpf(m))
         {
-          if (prime < factors.lpf(m))
-          {
-            int64_t fm = factors.get_number(m);
-            int64_t xn = (int64_t) fast_div(x2, fm);
-            int64_t stop = xn - low;
-            sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
-            int128_t phi_xn = phi[b] + sum;
-            start = stop + 1;
-            int64_t mu_m = factors.mu(m);
-            T pmul = mu_m * fm * (int128_t) prime;
-            s2_hard -= pmul * phi_xn;
-            mu_sum[b] -= pmul;
-          }
-        }
-
-        phi[b] += sum_low_high;
-        sum_low_high -= cross_off(sieve, low, high, prime, wheel[b]);
-      }
-
-      // For pi_sqrty <= b <= pi_sqrtz
-      // Find all hard special leaves: n = primes[b] * primes[l]
-      // which satisfy: low <= (x / n) < high
-      for (; b <= max_b; b++)
-      {
-        int64_t prime = primes[b];
-        uint128_t x2 =  x / prime;
-        int64_t x2_div_low = min(fast_div(x2, low), y);
-        int64_t x2_div_high = min(fast_div(x2, high), y);
-        int64_t l = pi[min(x2_div_low, z / prime)];
-        int64_t min_hard = max3(x2_div_high, y / prime, prime);
-        int64_t start = 0;
-        int128_t sum = 0;
-
-        if (prime >= primes[l])
-          goto next_segment;
-
-        for (; primes[l] > min_hard; l--)
-        {
-          int64_t xn = (int64_t) fast_div(x2, primes[l]);
+          int64_t fm = factors.get_number(m);
+          int64_t xn = (int64_t) fast_div(x2, fm);
           int64_t stop = xn - low;
           sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
           int128_t phi_xn = phi[b] + sum;
           start = stop + 1;
-          T pmul = primes[l] * (int128_t) prime;
-          s2_hard += pmul * phi_xn;
-          mu_sum[b] += pmul;
+          int64_t mu_m = factors.mu(m);
+          T pmul = mu_m * fm * (int128_t) prime;
+          s2_hard -= pmul * phi_xn;
+          mu_sum[b] -= pmul;
         }
-
-        phi[b] += sum_low_high;
-        sum_low_high -= cross_off(sieve, low, high, prime, wheel[b]);
       }
+
+      phi[b] += sum_low_high;
+      sum_low_high -= cross_off(sieve, low, high, prime, wheel[b]);
     }
-    else
+
+    // For pi_sqrty <= b <= pi_sqrtz
+    // Find all hard special leaves: n = primes[b] * primes[l]
+    // which satisfy: low <= (x / n) < high
+    for (; b <= max_b; b++)
     {
-      // Calculate the contribution of the hard special leaves using
-      // Tomás Oliveira's O(log(N)) special tree data structure
-      // for summing the unsieved numbers. This algorithm runs fastest
-      // if there are many special leaves per segment.
+      int64_t prime = primes[b];
+      uint128_t x2 =  x / prime;
+      int64_t x2_div_low = min(fast_div(x2, low), y);
+      int64_t x2_div_high = min(fast_div(x2, high), y);
+      int64_t l = pi[min(x2_div_low, z / prime)];
+      int64_t min_hard = max3(x2_div_high, y / prime, prime);
+      int64_t start = 0;
+      int128_t sum = 0;
 
-      // allocate memory upon first usage
-      sums.resize(segment_size);
+      if (prime >= primes[l])
+        goto next_segment;
 
-      // Initialize special tree data structure from sieve
-      sums_finit(sieve, sums, low, segment_size);
-
-      // For c + 1 <= b <= pi_sqrty
-      // Find all special leaves: n = primes[b] * m
-      // which satisfy: mu[m] != 0 && primes[b] < lpf[m] && low <= (x / n) < high
-      for (int64_t end = min(pi_sqrty, max_b); b <= end; b++)
+      for (; primes[l] > min_hard; l--)
       {
-        int64_t prime = primes[b];
-        uint128_t x2 =  x / prime;
-        int64_t x2_div_high = min(fast_div(x2, high), y);
-        int64_t min_m = max(x2_div_high, y / prime);
-        int64_t max_m = min(fast_div(x2, low), y);
-
-        if (prime >= max_m)
-          goto next_segment;
-
-        factors.to_index(&min_m);
-        factors.to_index(&max_m);
-
-        for (int64_t m = max_m; m > min_m; m--)
-        {
-          if (prime < factors.lpf(m))
-          {
-            int64_t fm = factors.get_number(m);
-            int64_t xn = (int64_t) fast_div(x2, fm);
-            int128_t sum = sums_query(sums, xn - low);
-            int128_t phi_xn = phi[b] + sum;
-            int64_t mu_m = factors.mu(m);
-            T pmul = mu_m * fm * (int128_t) prime;
-            s2_hard -= pmul * phi_xn;
-            mu_sum[b] -= pmul;
-          }
-        }
-
-        phi[b] += sums_query(sums, (high - 1) - low);
-        cross_off(sieve, low, high, prime, wheel[b], sums);
+        int64_t xn = (int64_t) fast_div(x2, primes[l]);
+        int64_t stop = xn - low;
+        sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
+        int128_t phi_xn = phi[b] + sum;
+        start = stop + 1;
+        T pmul = primes[l] * (int128_t) prime;
+        s2_hard += pmul * phi_xn;
+        mu_sum[b] += pmul;
       }
 
-      // For pi_sqrty <= b <= pi_sqrtz
-      // Find all hard special leaves: n = primes[b] * primes[l]
-      // which satisfy: low <= (x / n) < high
-      for (; b <= max_b; b++)
-      {
-        int64_t prime = primes[b];
-        uint128_t x2 =  x / prime;
-        int64_t x2_div_low = min(fast_div(x2, low), y);
-        int64_t x2_div_high = min(fast_div(x2, high), y);
-        int64_t l = pi[min(x2_div_low, z / prime)];
-        int64_t min_hard = max3(x2_div_high, y / prime, prime);
-
-        if (prime >= primes[l])
-          goto next_segment;
-
-        for (; primes[l] > min_hard; l--)
-        {
-          int64_t xn = (int64_t) fast_div(x2, primes[l]);
-          int128_t sum = sums_query(sums, xn - low);
-          int128_t phi_xn = phi[b] + sum;
-          T pmul = primes[l] * (int128_t) prime;
-          s2_hard += pmul * phi_xn;
-          mu_sum[b] += pmul;
-        }
-
-        phi[b] += sums_query(sums, (high - 1) - low);
-        cross_off(sieve, low, high, prime, wheel[b], sums);
-      }
+      phi[b] += sum_low_high;
+      sum_low_high -= cross_off(sieve, low, high, prime, wheel[b]);
     }
 
     next_segment:;
@@ -327,7 +202,6 @@ S2_hard_OpenMP_master(X x,
                       int64_t y,
                       int64_t z,
                       int64_t c,
-                      double alpha,
                       Primes& primes,
                       FactorTable& factors,
                       int threads)
@@ -363,11 +237,11 @@ S2_hard_OpenMP_master(X x,
     {
       timings[i] = get_wtime();
       s2_hard += S2_hard_OpenMP_thread(x, y, z, c, segment_size, segments_per_thread,
-          i, low, limit, alpha, factors, pi, primes, mu_sum[i], phi[i]);
+          i, low, limit, factors, pi, primes, mu_sum[i], phi[i]);
       timings[i] = get_wtime() - timings[i];
     }
 
-    // Once all threads have finished reconstruct and add the 
+    // Once all threads have finished reconstruct and add the
     // missing contribution of all special leaves. This must
     // be done in order as each thread (i) requires the sum of
     // the phi values from the previous threads.
@@ -396,7 +270,6 @@ int256_t S2_hard(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
-                 double alpha,
                  int threads)
 {
 #ifdef HAVE_MPI
@@ -420,9 +293,9 @@ int256_t S2_hard(int128_t x,
     auto primes = generate_primes<uint32_t>(max_prime);
 
     if (x <= numeric_limits<int64_t>::max())
-      s2_hard = S2_hard_OpenMP_master((int64_t) x, y, z, c, alpha, primes, factors, threads);
+      s2_hard = S2_hard_OpenMP_master((int64_t) x, y, z, c, primes, factors, threads);
     else
-      s2_hard = S2_hard_OpenMP_master(x, y, z, c, alpha, primes, factors, threads);
+      s2_hard = S2_hard_OpenMP_master(x, y, z, c, primes, factors, threads);
   }
   else
   {
@@ -430,7 +303,7 @@ int256_t S2_hard(int128_t x,
     int64_t max_prime = z / isqrt(y);
     auto primes = generate_primes<int64_t>(max_prime);
 
-    s2_hard = S2_hard_OpenMP_master(x, y, z, c, alpha, primes, factors, threads);
+    s2_hard = S2_hard_OpenMP_master(x, y, z, c, primes, factors, threads);
   }
 
   print("S2_hard", s2_hard, time);
