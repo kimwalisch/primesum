@@ -13,9 +13,9 @@
 #include <string>
 #include <stdint.h>
 
-#define PRIMESUM_VERSION "1.2"
+#define PRIMESUM_VERSION "1.3"
 #define PRIMESUM_VERSION_MAJOR 1
-#define PRIMESUM_VERSION_MINOR 2
+#define PRIMESUM_VERSION_MINOR 3
 
 namespace primesum {
 
