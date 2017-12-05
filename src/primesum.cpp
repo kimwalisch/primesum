@@ -169,7 +169,7 @@ double get_wtime()
 int ideal_num_threads(int threads)
 {
 #ifdef _OPENMP
-  if (threads == MAX_THREADS)
+  if (threads < 0)
     threads = omp_get_max_threads();
   return in_between(1, threads, omp_get_max_threads());
 #else
@@ -263,7 +263,7 @@ void set_num_threads(int threads)
 int get_num_threads()
 {
 #ifdef _OPENMP
-  if (threads_ != -1)
+  if (threads_ > 0)
     return threads_;
   else
     return max(1, omp_get_max_threads());

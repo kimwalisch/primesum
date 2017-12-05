@@ -2,7 +2,7 @@
 /// @file   primesum-internal.hpp
 /// @brief  primesum internal function definitions.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -25,11 +25,6 @@
 namespace primesum {
 
 #pragma omp declare reduction(+ : int256_t : omp_out += omp_in)
-
-enum {
-  /// Uses all CPU cores.
-  MAX_THREADS = -1
-};
 
 /// Silence unused parameter compiler warning
 template<class T>
@@ -72,10 +67,6 @@ int256_t pi_deleglise_rivat_parallel1(int128_t x, int threads);
 
 int64_t pi_legendre(int64_t x, int threads);
 
-int64_t pi_lehmer(int64_t x, int threads);
-
-int64_t pi_lehmer2(int64_t x, int threads);
-
 int256_t pi_lmo(int128_t x, int threads);
 
 int256_t pi_lmo1(int128_t x);
@@ -89,10 +80,6 @@ int64_t pi_lmo4(int64_t x);
 int64_t pi_lmo5(int64_t x);
 
 int256_t pi_lmo_parallel1(int128_t x, int threads);
-
-int256_t pi_lmo_parallel1(int128_t x, int threads);
-
-int64_t pi_meissel(int64_t x, int threads);
 
 int64_t pi_primesieve(int64_t x, int threads);
 
