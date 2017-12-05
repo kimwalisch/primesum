@@ -7,7 +7,7 @@
 ///        Computation, 44 (1985), by J. C. Lagarias, V. S. Miller and
 ///        A. M. Odlyzko.
 ///
-/// Copyright (C) 2015 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -85,7 +85,6 @@ int64_t S2(int64_t x,
 
     // pre-sieve the multiples of the first c primes
     sieve.pre_sieve(c, low);
-    sieve.count((high - 1) - low);
 
     // For c + 1 <= b < pi_sqrty
     // Find all special leaves: n = primes[b] * m
@@ -106,13 +105,13 @@ int64_t S2(int64_t x,
         {
           int64_t xn = x / (prime * m);
           int64_t stop = xn - low;
-          for (; i <= stop; i++)
+          for (; i <= stop; i += 2)
             phi[b] += (low + i) * sieve[i];
           S2_result -= mu[m] * m * prime * phi[b];
         }
       }
 
-      for (; i < high - low; i++)
+      for (; i < high - low; i += 2)
         phi[b] += (low + i) * sieve[i];
       cross_off(sieve, low, high, prime, wheel[b]);
     }
@@ -134,12 +133,12 @@ int64_t S2(int64_t x,
       {
         int64_t xn = x / (prime * primes[l]);
         int64_t stop = xn - low;
-        for (; i <= stop; i++)
+        for (; i <= stop; i+= 2)
           phi[b] += (low + i) * sieve[i];
         S2_result += primes[l]* prime * phi[b];
       }
 
-      for (; i < high - low; i++)
+      for (; i < high - low; i += 2)
         phi[b] += (low + i) * sieve[i];
       cross_off(sieve, low, high, prime, wheel[b]);
     }

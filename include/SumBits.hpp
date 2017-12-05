@@ -3,7 +3,7 @@
 /// @brief Class that returns the sum of the 1 bit indexes
 ///        inside of a 16-bit word.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -25,11 +25,12 @@ public:
     {
       sum_bits_[i] = 0;
       for (int j = i; j != 0; j &= j - 1)
-        sum_bits_[i] += (uint8_t) __builtin_ctzll(j);
+        sum_bits_[i] += (uint8_t) (__builtin_ctzll(j) * 2);
     }
   }
 
-  uint8_t operator[](uint16_t i) const
+  template <typename T>
+  uint8_t operator[](T i) const
   {
     return sum_bits_[i];
   }

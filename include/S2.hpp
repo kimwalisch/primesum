@@ -48,19 +48,7 @@ maxint_t S2_hard(maxint_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
-                 double alpha,
                  int threads);
-
-#ifdef HAVE_MPI
-
-maxint_t S2_hard_mpi(maxint_t x,
-                     int64_t y,
-                     int64_t z,
-                     int64_t c,
-                     double alpha,
-                     int threads);
-
-#endif
 
 } // namespace
 

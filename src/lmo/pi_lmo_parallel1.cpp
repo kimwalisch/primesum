@@ -6,7 +6,7 @@
 ///        unsieved elements using POPCNT without using any special
 ///        counting tree data structure.
 ///
-/// Copyright (C) 2015 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -119,14 +119,14 @@ T S2_thread(T x,
         {
           int64_t xn = x / (prime * m);
           int64_t stop = xn - low;
-          for (; i <= stop; i++)
+          for (; i <= stop; i += 2)
             phi[b] += (low + i) * sieve[i];
           S2_thread -= mu[m] * m * prime * phi[b];
           mu_sum[b] -= mu[m] * m * prime;
         }
       }
 
-      for (; i < high - low; i++)
+      for (; i < high - low; i += 2)
         phi[b] += (low + i) * sieve[i];
 
       cross_off(sieve, low, high, prime, wheel[b]);
@@ -149,13 +149,13 @@ T S2_thread(T x,
       {
         int64_t xn = x / (prime * primes[l]);
         int64_t stop = xn - low;
-        for (; i <= stop; i++)
+        for (; i <= stop; i += 2)
           phi[b] += (low + i) * sieve[i];
         S2_thread += primes[l] * prime * phi[b];
         mu_sum[b] += primes[l] * prime;
       }
 
-      for (; i < high - low; i++)
+      for (; i < high - low; i += 2)
         phi[b] += (low + i) * sieve[i];
 
       cross_off(sieve, low, high, prime, wheel[b]);
