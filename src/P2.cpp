@@ -159,11 +159,9 @@ P2_OpenMP_master(T x,
     threads = in_between(1, threads, segments);
     double time = get_wtime();
 
-    #pragma omp parallel for \
-        num_threads(threads) reduction(+: p2)
+    #pragma omp parallel for num_threads(threads) reduction(+: p2)
     for (int i = 0; i < threads; i++)
-      p2 += P2_OpenMP_thread(x, y, z, thread_distance, 
-         i, low, prime_sums[i], correct[i]);
+      p2 += P2_OpenMP_thread(x, y, z, thread_distance, i, low, prime_sums[i], correct[i]);
 
     for (int i = 0; i < threads; i++)
     {
