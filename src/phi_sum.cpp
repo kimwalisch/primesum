@@ -61,8 +61,7 @@ int128_t phi_sum(int64_t x, int64_t a)
     return ::phi_sum<1>(x, a, small_primes_);
   else
   {
-    vector<int> primes = generate_n_primes(a);
-
+    auto primes = generate_n_primes(a);
     return ::phi_sum<1>(x, a, primes);
   }
 }
@@ -76,8 +75,7 @@ int256_t phi_sum(int128_t x, int64_t a)
     return ::phi_sum<1>(x, a, small_primes_);
   else
   {
-    vector<int> primes = generate_n_primes(a);
-
+    auto primes = generate_n_primes(a);
     return ::phi_sum<1>(x, a, primes);
   }
 }
