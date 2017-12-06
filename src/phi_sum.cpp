@@ -13,20 +13,22 @@
 #include <fast_div.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
+
 #include <stdint.h>
+#include <array>
 
 using namespace std;
 using namespace primesum;
 
 namespace {
 
-const int small_primes_[] = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+const array<int, 10> small_primes_ = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
 
 template <int SIGN, typename T, typename Primes>
 typename next_larger_type<T>::type
 phi_sum(T x,
         int64_t a,
-        Primes& primes)
+        Primes&& primes)
 {
   using res_t = typename next_larger_type<T>::type;
 
@@ -48,7 +50,7 @@ phi_sum(T x,
   return sum;
 }
 
-}
+} // namespace
 
 namespace primesum {
 
@@ -60,10 +62,7 @@ int128_t phi_sum(int64_t x, int64_t a)
   if (a < 10)
     return ::phi_sum<1>(x, a, small_primes_);
   else
-  {
-    auto primes = generate_n_primes(a);
-    return ::phi_sum<1>(x, a, primes);
-  }
+    return ::phi_sum<1>(x, a, generate_n_primes(a));
 }
 
 int256_t phi_sum(int128_t x, int64_t a)
@@ -74,10 +73,7 @@ int256_t phi_sum(int128_t x, int64_t a)
   if (a < 10)
     return ::phi_sum<1>(x, a, small_primes_);
   else
-  {
-    auto primes = generate_n_primes(a);
-    return ::phi_sum<1>(x, a, primes);
-  }
+    return ::phi_sum<1>(x, a, generate_n_primes(a));
 }
 
 } // namespace
