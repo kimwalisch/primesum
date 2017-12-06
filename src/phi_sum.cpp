@@ -24,27 +24,54 @@ namespace {
 
 const array<int, 10> small_primes_ = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
 
-template <int SIGN, typename T, typename Primes>
-typename next_larger_type<T>::type
-phi_sum(T x,
-        int64_t a,
-        Primes&& primes)
+template <int SIGN, typename Primes>
+int128_t phi_sum128(int64_t x,
+                    int64_t a,
+                    Primes&& primes)
 {
-  using res_t = typename next_larger_type<T>::type;
-
-  res_t sum = 0;
+  int128_t sum = 0;
 
   for (; a > 0; a--)
   {
     if (x <= primes[a])
       return sum + SIGN;
 
-    T x2 = fast_div(x, primes[a]);
-    sum += phi_sum<-SIGN>(x2, a - 1, primes) * primes[a];
+    int64_t x2 = fast_div(x, primes[a]);
+    sum += phi_sum128<-SIGN>(x2, a - 1, primes) * primes[a];
   }
 
-  res_t n = x;
-  res_t fx = (n * (n + 1)) >> 1;
+  int128_t n = x;
+  int128_t fx = (n * (n + 1)) >> 1;
+  sum += fx * SIGN;
+
+  return sum;
+}
+
+template <int SIGN, typename Primes>
+int256_t phi_sum256(int128_t x,
+                    int64_t a,
+                    Primes&& primes)
+{
+  int256_t sum = 0;
+
+  for (; a > 0; a--)
+  {
+    if (x <= primes[a])
+      return sum + SIGN;
+
+    int128_t x2 = fast_div(x, primes[a]);
+    int256_t phi_sum;
+
+    if (x2 <= numeric_limits<int64_t>::max())
+      phi_sum = phi_sum128<-SIGN>((int64_t) x2, a - 1, primes);
+    else
+      phi_sum = phi_sum256<-SIGN>(x2, a - 1, primes);
+
+    sum += phi_sum * primes[a];
+  }
+
+  int256_t n = x;
+  int256_t fx = (n * (n + 1)) >> 1;
   sum += fx * SIGN;
 
   return sum;
@@ -60,21 +87,20 @@ int128_t phi_sum(int64_t x, int64_t a)
     return 0;
 
   if (a < 10)
-    return ::phi_sum<1>(x, a, small_primes_);
+    return phi_sum128<1>(x, a, small_primes_);
   else
-    return ::phi_sum<1>(x, a, generate_n_primes(a));
+    return phi_sum128<1>(x, a, generate_n_primes(a));
 }
 
 int256_t phi_sum(int128_t x, int64_t a)
 {
-  // for better performance use 64-bit instead of 128-bit
   if (x <= numeric_limits<int64_t>::max())
     return phi_sum((int64_t) x, a);
 
   if (a < 10)
-    return ::phi_sum<1>(x, a, small_primes_);
+    return phi_sum256<1>(x, a, small_primes_);
   else
-    return ::phi_sum<1>(x, a, generate_n_primes(a));
+    return phi_sum256<1>(x, a, generate_n_primes(a));
 }
 
 } // namespace
