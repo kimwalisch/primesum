@@ -1,18 +1,19 @@
-primesum
-========
+# primesum
+
 [![Build Status](https://travis-ci.org/kimwalisch/primesum.svg)](https://travis-ci.org/kimwalisch/primesum)
 [![Github Releases](https://img.shields.io/github/release/kimwalisch/primesum.svg)](https://github.com/kimwalisch/primesum/releases)
 
 **primesum** is a command-line program that computes the sum of the
 primes below an integer x&nbsp;≤&nbsp;10<sup>31</sup> as quickly as
 possible using a modified version of the combinatorial prime counting
-function algorithm <a href="#references">[1]</a>.
+function algorithm <a href="#references">[1]</a>. primesum has already
+been used to compute many new [prime sum world records](#a046731-world-records)!
 
 **primesum** is a modified version of the author's
 [primecount](https://github.com/kimwalisch/primecount) program.
 
-Binaries
---------
+## Binaries
+
 Below are the latest precompiled binaries for Windows 64-bit and Linux x64.
 These binaries are statically linked and require a CPU which supports the
 POPCNT instruction (2010 or later).
@@ -20,19 +21,18 @@ POPCNT instruction (2010 or later).
 * [primesum-1.2-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.2/primesum-1.2-win64.zip), 392 KB
 * [primesum-1.2-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.2/primesum-1.2-linux-x64.tar.gz), 1 MB
 
-256-bit binaries
-----------------
+## 256-bit binaries
+
 [primesum 256-bit](https://github.com/kimwalisch/primesum/tree/256-bit)
 allows to compute prime sums for values of x&nbsp;≥&nbsp;2<sup>64</sup>,
 it runs about 30% slower than the 128-bit primesum version due to slower
-256-bit integer arithmetic. primesum 256-bit has already been used to
-compute many new prime sum world records!
+256-bit integer arithmetic.
 
 * [primesum-1.2-256-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.2-256-bit/primesum-1.2-256-win64.zip), 407 KB
 * [primesum-1.2-256-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.2-256-bit/primesum-1.2-256-linux-x64.tar.gz), 1 MB
 
-Build instructions
-------------------
+## Build instructions
+
 You need to have installed a C++ compiler, cmake and make. Ideally
 primesum should be compiled using the GCC compiler as GCC supports both
 OpenMP and 128-bit integers.
@@ -43,8 +43,8 @@ make -j
 sudo make install
 ```
 
-Usage examples
---------------
+## Usage examples
+
 Open a terminal and run primesum using e.g.:
 ```sh
 # Sum the primes below 10^14
@@ -57,8 +57,8 @@ Open a terminal and run primesum using e.g.:
 ./primesum 1e14 --threads=4 --time
 ```
 
-Command-line options
---------------------
+## Command-line options
+
 ```
 Usage: primesum x [OPTION]...
 Sum the primes below x <= 10^31 using fast implementations of the
@@ -86,8 +86,8 @@ Advanced Deleglise-Rivat options:
          --S2_hard          Only compute the hard special leaves
 ```
 
-Benchmark
----------
+## Benchmark
+
 <table>
   <tr align="center">
     <td><b>x</b></td>
@@ -150,8 +150,7 @@ The benchmarks above were run on an Intel Core i7-6700 CPU (4 x 3.4 GHz) from
 2015 using a Linux x64 operating system and primesum was compiled using
 GCC 5.2.
 
-[A046731](https://oeis.org/A046731) world records
--------------------------------------------------
+## [A046731](https://oeis.org/A046731) world records
 
 <table>
   <tr align="center">
@@ -197,8 +196,7 @@ computed by Marc Deléglise in 2009 but when he verified the result
 using his program he found a different result (off by 1) so he
 withdrew his result in 2011.
 
-[A099824](https://oeis.org/A099824) world records
--------------------------------------------------
+## [A099824](https://oeis.org/A099824) world records
 
 <table>
   <tr align="center">
@@ -245,6 +243,6 @@ withdrew his result in 2011.
   </tr>
 </table>
 
-References
-----------
+## References
+
 1. M. Deléglise and Jean-Louis Nicolas, Maximal product of primes whose sum is bounded, 3 Jul 2012, http://arxiv.org/abs/1207.0603.
