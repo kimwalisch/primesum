@@ -55,18 +55,42 @@ uint64_t fast_modulo(uint64_t x, uint64_t y)
 
 uint64_t sum_bits(uint64_t bits, uint64_t& low)
 {
-  uint64_t sum = 0;
   uint64_t bits0 = bits & 0xffff;
   uint64_t bits1 = (bits >> 16) & 0xffff;
   uint64_t bits2 = (bits >> 32) & 0xffff;
   uint64_t bits3 = (bits >> 48);
+  uint64_t sum = 0;
 
-  sum += low * popcnt64(bits0) + sumBits[bits0];
-  sum += (low + 32) * popcnt64(bits1) + sumBits[bits1];
-  sum += (low + 64) * popcnt64(bits2) + sumBits[bits2];
-  sum += (low + 96) * popcnt64(bits3) + sumBits[bits3];
+  sum += sumBits[bits0];
+  sum += sumBits[bits1];
+  sum += sumBits[bits2];
+  sum += sumBits[bits3];
 
-  low += 128;
+  sum += low * popcnt64(bits0); low += 32;
+  sum += low * popcnt64(bits1); low += 32;
+  sum += low * popcnt64(bits2); low += 32;
+  sum += low * popcnt64(bits3); low += 32;
+
+  return sum;
+}
+
+uint64_t sum_bits(const uint16_t* bits, uint64_t& low)
+{
+  uint64_t bits0 = bits[0];
+  uint64_t bits1 = bits[1];
+  uint64_t bits2 = bits[2];
+  uint64_t bits3 = bits[3];
+  uint64_t sum = 0;
+
+  sum += sumBits[bits0];
+  sum += sumBits[bits1];
+  sum += sumBits[bits2];
+  sum += sumBits[bits3];
+
+  sum += low * popcnt64(bits0); low += 32;
+  sum += low * popcnt64(bits1); low += 32;
+  sum += low * popcnt64(bits2); low += 32;
+  sum += low * popcnt64(bits3); low += 32;
 
   return sum;
 }
@@ -76,7 +100,7 @@ int128_t sum_bits(const uint64_t* bits, uint64_t size, uint64_t& low)
   int128_t sum = 0;
 
   for (uint64_t i = 0; i < size; i++)
-    sum += sum_bits(bits[i], low);
+    sum += sum_bits((uint16_t*) &bits[i], low);
 
   return sum;
 }
