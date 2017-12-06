@@ -1,10 +1,10 @@
 primesum
 ========
 [![Build Status](https://travis-ci.org/kimwalisch/primesum.svg)](https://travis-ci.org/kimwalisch/primesum)
-[![GitHub license](https://img.shields.io/badge/license-BSD%202-blue.svg)](https://github.com/kimwalisch/primesum/blob/master/COPYING)
+[![Github Releases](https://img.shields.io/github/release/kimwalisch/primesum.svg)](https://github.com/kimwalisch/primesum/releases)
 
 **primesum** is a command-line program that computes the sum of the
-primes below an integer x&nbsp;<&nbsp;2<sup>64</sup> as quickly as
+primes below an integer x&nbsp;≤&nbsp;10<sup>31</sup> as quickly as
 possible using a modified version of the combinatorial prime counting
 function algorithm <a href="#references">[1]</a>.
 
@@ -61,7 +61,7 @@ Command-line options
 --------------------
 ```
 Usage: primesum x [OPTION]...
-Sum the primes below x < 2^64 using fast implementations of the
+Sum the primes below x <= 10^31 using fast implementations of the
 combinatorial prime summing function.
 
 Options:
