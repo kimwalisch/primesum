@@ -11,6 +11,7 @@
 #include <primesum-internal.hpp>
 #include <primesum.hpp>
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 
 #include <stdint.h>
 #include <iostream>
@@ -64,7 +65,7 @@ int get_rand()
   return (rand() % 10000) * 1000 + 1;
 }
 
-void check_equal(const string& f1, int64_t x, int64_t res1, int64_t res2)
+void check_equal(const string& f1, int64_t x, int256_t res1, int256_t res2)
 {
   if (res1 != res2)
   {
@@ -105,7 +106,7 @@ namespace primesum {
 
 bool test()
 {
-  set_print_status(false); 
+  set_print(false); 
   srand(static_cast<unsigned>(time(0)));
 
   try

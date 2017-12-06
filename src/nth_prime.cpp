@@ -12,12 +12,12 @@
 #include <primesum-internal.hpp>
 
 #include <stdint.h>
+#include <array>
 #include <string>
 
 namespace {
 
-// primes[1] = 2, primes[2] = 3, ...
-const int primes[] = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+const std::array<int, 10> primes = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
 
 }
 
@@ -26,12 +26,12 @@ namespace primesum {
 int64_t nth_prime(int64_t n)
 {
   if (n >= 10)
-    throw primesum_error("nth_prime(n): n must be < " + 10);
+    throw primesum_error("nth_prime(n): n must be < 10");
 
   if (n < 2)
     return primes[1];
-
-  return primes[n];
+  else
+    return primes[n];
 }
 
 } // namespace

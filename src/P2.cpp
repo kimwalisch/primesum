@@ -14,6 +14,7 @@
 #include <primesieve.hpp>
 #include <generate.hpp>
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <min_max.hpp>
 #include <imath.hpp>
 
@@ -55,8 +56,8 @@ void balanceLoad(int64_t* thread_distance,
   *thread_distance = in_between(min_distance, *thread_distance, max_distance);
 }
 
-template <typename T>
-T P2_OpenMP_thread(T x,
+template <typename T, typename X>
+T P2_OpenMP_thread(X x,
                    int64_t y,
                    int64_t z,
                    int64_t thread_distance,
@@ -90,7 +91,7 @@ T P2_OpenMP_thread(T x,
       if (next > y && 
           next <= sqrtx)
       {
-        P2_thread -= next * prime_sum;
+        P2_thread -= prime_sum * next;
         correct -= next;
       }
 
@@ -98,7 +99,7 @@ T P2_OpenMP_thread(T x,
       next = it.next_prime();
     }
 
-    P2_thread += prime * prime_sum;
+    P2_thread += prime_sum * prime;
     correct += prime;
     prime = rit.prev_prime();
   }
@@ -109,7 +110,7 @@ T P2_OpenMP_thread(T x,
     if (next > y && 
         next <= sqrtx)
     {
-      P2_thread -= next * prime_sum;
+      P2_thread -= prime_sum * next;
       correct -= next;
     }
 
@@ -125,18 +126,16 @@ T P2_OpenMP_thread(T x,
 /// Space complexity: O((x / y)^(1/2)).
 ///
 template <typename T>
-T P2_OpenMP_master(T x, int64_t y, int threads)
+typename next_larger_type<T>::type
+P2_OpenMP_master(T x,
+                 int64_t y,
+                 int threads)
 {
-#if __cplusplus >= 201103L
-  static_assert(prt::is_signed<T>::value,
-                "P2(T x, ...): T must be signed integer type");
-#endif
-
   if (x < 4)
     return 0;
 
-  T a = pi_legendre(y, threads);
-  T b = pi_legendre((int64_t) isqrt(x), threads);
+  int64_t a = pi_legendre(y, threads);
+  int64_t b = pi_legendre(isqrt(x), threads);
 
   if (a >= b)
     return 0;
@@ -146,11 +145,13 @@ T P2_OpenMP_master(T x, int64_t y, int threads)
   int64_t min_distance = 1 << 23;
   int64_t thread_distance = min_distance;
 
-  aligned_vector<T> prime_sums(threads);
-  aligned_vector<T> correct(threads);
+  using res_t = typename next_larger_type<T>::type;
 
-  T p2 = 0;
-  T prime_sum = prime_sum_tiny(y);
+  aligned_vector<res_t> prime_sums(threads);
+  aligned_vector<res_t> correct(threads);
+
+  res_t p2 = 0;
+  res_t prime_sum = prime_sum_tiny(y);
 
   while (low < z)
   {
@@ -158,11 +159,9 @@ T P2_OpenMP_master(T x, int64_t y, int threads)
     threads = in_between(1, threads, segments);
     double time = get_wtime();
 
-    #pragma omp parallel for \
-        num_threads(threads) reduction(+: p2)
+    #pragma omp parallel for num_threads(threads) reduction(+: p2)
     for (int i = 0; i < threads; i++)
-      p2 += P2_OpenMP_thread(x, y, z, thread_distance, 
-         i, low, prime_sums[i], correct[i]);
+      p2 += P2_OpenMP_thread(x, y, z, thread_distance, i, low, prime_sums[i], correct[i]);
 
     for (int i = 0; i < threads; i++)
     {
@@ -173,7 +172,7 @@ T P2_OpenMP_master(T x, int64_t y, int threads)
     low += thread_distance * threads;
     balanceLoad(&thread_distance, low, z, threads, time);
 
-    if (print_status())
+    if (is_print())
     {
       double percent = get_percent((double) low, (double) z);
       cout << "\rStatus: " << fixed << setprecision(get_status_precision(x))
@@ -188,20 +187,21 @@ T P2_OpenMP_master(T x, int64_t y, int threads)
 
 namespace primesum {
 
-maxint_t P2(maxint_t x, int64_t y, int threads)
+int256_t P2(int128_t x, int64_t y, int threads)
 {
-#ifdef HAVE_MPI
-  if (mpi_num_procs() > 1)
-    return P2_mpi(x, y, threads);
-#endif
-
   print("");
   print("=== P2(x, y) ===");
   print("Computation of the 2nd partial sieve function");
   print(x, y, threads);
 
   double time = get_wtime();
-  maxint_t p2 = P2_OpenMP_master(x, y, threads);
+  int256_t p2;
+
+  // uses less memory
+  if (x <= numeric_limits<int64_t>::max())
+    p2 = P2_OpenMP_master((int64_t) x, y, threads);
+  else
+    p2 = P2_OpenMP_master(x, y, threads);
 
   print("P2", p2, time);
   return p2;

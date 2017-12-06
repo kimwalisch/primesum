@@ -1,3 +1,21 @@
+2017-12-05 Kim Walisch  <kim.walisch@gmail.com>
+
+  Version 1.3 work in progress.
+
+  primesum now supports 256-bit results by default! So now there is
+  only one primesum version for both 128-bit and 256-bit results.
+  This version has been optimized so that it uses 128-bit arithmetic
+  for numbers < 2^63 and 256-bit arithmetic for numbers >= 2^63.
+
+  * S2_hard.cpp: Get rid of binary indexed tree.
+  * P2.cpp: Optimize 128-bit and 256-bit arithmetic.
+  * S1.cpp: Optimize 128-bit and 256-bit arithmetic.
+  * phi_sum.cpp: Optimize 128-bit and 256-bit arithmetic.
+  * S2_easy.cpp: Optimize 128-bit and 256-bit arithmetic.
+  * S2_trivial.cpp: Reduce memory usage.
+  * BitSieve.cpp: Increase bit sieve compression to 16 numbers per
+                  byte (previously 8 numbers per byte).
+
 2017-11-25 Kim Walisch  <kim.walisch@gmail.com>
 
   Version 1.2 released.

@@ -13,9 +13,9 @@
 #include <string>
 #include <stdint.h>
 
-#define PRIMESUM_VERSION "1.2"
+#define PRIMESUM_VERSION "1.3"
 #define PRIMESUM_VERSION_MAJOR 1
-#define PRIMESUM_VERSION_MINOR 2
+#define PRIMESUM_VERSION_MINOR 3
 
 namespace primesum {
 
@@ -35,7 +35,7 @@ public:
 std::string pi(const std::string& x);
 
 /// Enable/disable printing status information during computation.
-void set_print_status(bool print_status);
+void set_print(bool is_print);
 
 /// Set the number of threads.
 void set_num_threads(int num_threads);

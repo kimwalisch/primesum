@@ -16,6 +16,8 @@
 #include <generate.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>
+#include <int128_t.hpp>
+#include <int256_t.hpp>
 
 #include <stdint.h>
 #include <algorithm>
@@ -137,18 +139,18 @@ int64_t pi_lmo3(int64_t x)
   int64_t x13 = iroot<3>(x);
   int64_t y = (int64_t) (x13 * alpha);
   int64_t c = PhiTiny::get_c(y);
-  int64_t p2 = P2(x, y, 1);
+  int256_t p2 = P2(x, y, 1);
 
   vector<int32_t> mu = generate_moebius(y);
   vector<int32_t> lpf = generate_least_prime_factors(y);
   vector<int32_t> primes = generate_primes(y);
 
-  int64_t s1 = S1(x, y, c, 1);
-  int64_t s2 = S2(x, y, c, primes, lpf, mu);
-  int64_t phi = s1 + s2;
-  int64_t sum = phi + prime_sum_tiny(y) - 1 - p2;
+  int256_t s1 = S1(x, y, c, 1);
+  int256_t s2 = S2(x, y, c, primes, lpf, mu);
+  int256_t phi = s1 + s2;
+  int256_t sum = phi + prime_sum_tiny(y) - 1 - p2;
 
-  return sum;
+  return int64_t(sum);
 }
 
 } // namespace

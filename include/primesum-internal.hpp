@@ -2,7 +2,7 @@
 /// @file   primesum-internal.hpp
 /// @brief  primesum internal function definitions.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -12,6 +12,7 @@
 #define PRIMESUM_INTERNAL_HPP
 
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <aligned_vector.hpp>
 #include <imath.hpp>
 #include <print.hpp>
@@ -23,10 +24,7 @@
 
 namespace primesum {
 
-enum {
-  /// Uses all CPU cores.
-  MAX_THREADS = -1
-};
+#pragma omp declare reduction(+ : int256_t : omp_out += omp_in)
 
 /// Silence unused parameter compiler warning
 template<class T>
@@ -59,23 +57,19 @@ int64_t nth_prime(int64_t n);
 ///
 int64_t phi(int64_t x, int64_t a);
 
-maxint_t pi(maxint_t x, int threads);
+int256_t pi(int128_t x, int threads);
 
-maxint_t pi(maxint_t x);
+int256_t pi(int128_t x);
 
-maxint_t pi_deleglise_rivat(maxint_t x, int threads);
+int256_t pi_deleglise_rivat(int128_t x, int threads);
 
-maxint_t pi_deleglise_rivat_parallel1(maxint_t x, int threads);
+int256_t pi_deleglise_rivat_parallel1(int128_t x, int threads);
 
 int64_t pi_legendre(int64_t x, int threads);
 
-int64_t pi_lehmer(int64_t x, int threads);
+int256_t pi_lmo(int128_t x, int threads);
 
-int64_t pi_lehmer2(int64_t x, int threads);
-
-maxint_t pi_lmo(maxint_t x, int threads);
-
-maxint_t pi_lmo1(maxint_t x);
+int256_t pi_lmo1(int128_t x);
 
 int64_t pi_lmo2(int64_t x);
 
@@ -85,41 +79,39 @@ int64_t pi_lmo4(int64_t x);
 
 int64_t pi_lmo5(int64_t x);
 
-maxint_t pi_lmo_parallel1(maxint_t x, int threads);
-
-maxint_t pi_lmo_parallel1(maxint_t x, int threads);
-
-int64_t pi_meissel(int64_t x, int threads);
+int256_t pi_lmo_parallel1(int128_t x, int threads);
 
 int64_t pi_primesieve(int64_t x, int threads);
 
 int64_t phi(int64_t x, int64_t a, int threads);
 
-maxint_t phi_sum(maxint_t x, int64_t a);
+int128_t phi_sum(int64_t x, int64_t a);
 
-maxint_t P2(maxint_t x, int64_t y, int threads);
+int256_t phi_sum(int128_t x, int64_t a);
 
-int64_t prime_sum_tiny(int64_t x);
+int256_t P2(int128_t x, int64_t y, int threads);
+
+int128_t prime_sum_tiny(int64_t x);
 
 void set_status_precision(int precision);
 
-int get_status_precision(maxint_t x);
+int get_status_precision(int128_t x);
 
 void set_alpha(double alpha);
 
 double get_alpha();
 
-double get_alpha(maxint_t x, int64_t y);
+double get_alpha(int128_t x, int64_t y);
 
-double get_alpha_lmo(maxint_t x);
+double get_alpha_lmo(int128_t x);
 
-double get_alpha_deleglise_rivat(maxint_t x);
+double get_alpha_deleglise_rivat(int128_t x);
 
 double get_wtime();
 
 int ideal_num_threads(int threads, int64_t sieve_limit, int64_t thread_threshold = 100000);
 
-maxint_t to_maxint(const std::string& expr);
+int128_t to_int128(const std::string& expr);
 
 template <typename T>
 T get_percent(T low, T limit)
@@ -129,27 +121,6 @@ T get_percent(T low, T limit)
 }
 
 bool test();
-
-#ifdef HAVE_MPI
-
-class PiTable;
-
-std::vector<int64_t> phi_vector(int64_t x, int64_t a, const std::vector<int64_t>& primes, const PiTable& pi, int threads);
-
-bool is_mpi_master_proc();
-int mpi_num_procs();
-int mpi_proc_id();
-int mpi_master_proc_id();
-
-int64_t P2_mpi(int64_t x, int64_t y, int threads);
-
-#ifdef HAVE_INT128_T
-
-int128_t P2_mpi(int128_t x, int64_t y, int threads);
-
-#endif /* HAVE_INT128_T */
-
-#endif /* HAVE_MPI */
 
 } // namespace
 

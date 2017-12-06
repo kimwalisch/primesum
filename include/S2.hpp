@@ -2,7 +2,7 @@
 /// @file  S2.hpp.
 /// @brief S2 function declarations.
 ///
-/// Copyright (C) 2015 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -12,13 +12,14 @@
 #define S2_HPP
 
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <stdint.h>
 
 namespace primesum {
 
 /// ------------------------ S2_trivial() ----------------------------
 
-maxint_t S2_trivial(maxint_t x,
+int256_t S2_trivial(int128_t x,
                     int64_t y,
                     int64_t z,
                     int64_t c,
@@ -26,25 +27,15 @@ maxint_t S2_trivial(maxint_t x,
 
 /// ------------------------ S2_easy() -------------------------------
 
-maxint_t S2_easy(maxint_t x,
+int256_t S2_easy(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,
                  int threads);
 
-#ifdef HAVE_MPI
-
-maxint_t S2_easy_mpi(maxint_t x,
-                     int64_t y,
-                     int64_t z,
-                     int64_t c,
-                     int threads);
-
-#endif
-
 /// ------------------------ S2_hard() -------------------------------
 
-maxint_t S2_hard(maxint_t x,
+int256_t S2_hard(int128_t x,
                  int64_t y,
                  int64_t z,
                  int64_t c,

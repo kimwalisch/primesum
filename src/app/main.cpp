@@ -2,7 +2,7 @@
 /// @file   main.cpp
 /// @brief  primesum console application.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -14,6 +14,7 @@
 #include <primesum.hpp>
 #include <imath.hpp>
 #include <int128_t.hpp>
+#include <int256_t.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>
 #include <S2.hpp>
@@ -24,23 +25,19 @@
 #include <limits>
 #include <string>
 
-#ifdef HAVE_MPI
-  #include <mpi.h>
-#endif
-
 using namespace std;
 using namespace primesum;
 
 namespace primesum {
 
-int64_t int64_cast(maxint_t x)
+int64_t int64_cast(int128_t x)
 {
   if (x > numeric_limits<int64_t>::max())
     throw primesum_error("this is a 63-bit function, x must be < 2^63");
   return (int64_t) x;
 }
 
-maxint_t P2(maxint_t x, int threads)
+int256_t P2(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -48,17 +45,17 @@ maxint_t P2(maxint_t x, int threads)
   double alpha = get_alpha_deleglise_rivat(x);
   string limit = get_max_x(alpha);
 
-  if (x > to_maxint(limit))
+  if (x > to_int128(limit))
     throw primesum_error("P2(x): x must be <= " + limit);
 
-  if (print_status())
+  if (is_print())
     set_print_variables(true);
 
   int64_t y = (int64_t) (iroot<3>(x) * alpha);
   return P2(x, y, threads);
 }
 
-maxint_t S1(maxint_t x, int threads)
+int256_t S1(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -66,10 +63,10 @@ maxint_t S1(maxint_t x, int threads)
   double alpha = get_alpha_deleglise_rivat(x);
   string limit = get_max_x(alpha);
 
-  if (x > to_maxint(limit))
+  if (x > to_int128(limit))
     throw primesum_error("S1(x): x must be <= " + limit);
 
-  if (print_status())
+  if (is_print())
     set_print_variables(true);
 
   int64_t y = (int64_t) (iroot<3>(x) * alpha);
@@ -78,7 +75,7 @@ maxint_t S1(maxint_t x, int threads)
   return S1(x, y, c, threads);
 }
 
-maxint_t S2_trivial(maxint_t x, int threads)
+int256_t S2_trivial(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -86,10 +83,10 @@ maxint_t S2_trivial(maxint_t x, int threads)
   double alpha = get_alpha_deleglise_rivat(x);
   string limit = get_max_x(alpha);
 
-  if (x > to_maxint(limit))
+  if (x > to_int128(limit))
     throw primesum_error("S2_trivial(x): x must be <= " + limit);
 
-  if (print_status())
+  if (is_print())
     set_print_variables(true);
 
   int64_t y = (int64_t) (iroot<3>(x) * alpha);
@@ -102,7 +99,7 @@ maxint_t S2_trivial(maxint_t x, int threads)
     return S2_trivial(x, y, z, c, threads);
 }
 
-maxint_t S2_easy(maxint_t x, int threads)
+int256_t S2_easy(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -110,10 +107,10 @@ maxint_t S2_easy(maxint_t x, int threads)
   double alpha = get_alpha_deleglise_rivat(x);
   string limit = get_max_x(alpha);
 
-  if (x > to_maxint(limit))
+  if (x > to_int128(limit))
     throw primesum_error("S2_easy(x): x must be <= " + limit);
 
-  if (print_status())
+  if (is_print())
     set_print_variables(true);
 
   int64_t y = (int64_t) (iroot<3>(x) * alpha);
@@ -126,7 +123,7 @@ maxint_t S2_easy(maxint_t x, int threads)
     return S2_easy(x, y, z, c, threads);
 }
 
-maxint_t S2_hard(maxint_t x, int threads)
+int256_t S2_hard(int128_t x, int threads)
 {
   if (x < 1)
     return 0;
@@ -134,10 +131,10 @@ maxint_t S2_hard(maxint_t x, int threads)
   double alpha = get_alpha_deleglise_rivat(x);
   string limit = get_max_x(alpha);
 
-  if (x > to_maxint(limit))
+  if (x > to_int128(limit))
     throw primesum_error("S2_hard(x): x must be <= " + limit);
 
-  if (print_status())
+  if (is_print())
     set_print_variables(true);
 
   int64_t y = (int64_t) (iroot<3>(x) * alpha);
@@ -151,22 +148,15 @@ maxint_t S2_hard(maxint_t x, int threads)
 
 int main (int argc, char* argv[])
 {
-#ifdef HAVE_MPI
-  MPI_Init(&argc, &argv);
-#endif
-
   PrimeSumOptions pco = parseOptions(argc, argv);
   double time = get_wtime();
 
-  maxint_t x = pco.x;
-  maxint_t res = 0;
+  int128_t x = pco.x;
+  int256_t res = 0;
   int threads = pco.threads;
 
   try
   {
-    if (x > numeric_limits<uint64_t>::max())
-      throw primesum_error("this primesum version only works up to 2^64-1");
-
     switch (pco.option)
     {
       case OPTION_DELEGLISE_RIVAT:
@@ -203,34 +193,24 @@ int main (int argc, char* argv[])
   }
   catch (bad_alloc&)
   {
-#ifdef HAVE_MPI
-    MPI_Finalize();
-#endif
     cerr << "Error: failed to allocate memory, your system most likely does" << endl
          << "       not have enough memory to run this computation." << endl;
     return 1;
   }
   catch (exception& e)
   {
-#ifdef HAVE_MPI
-    MPI_Finalize();
-#endif
     cerr << "Error: " << e.what() << endl;
     return 1;
   }
 
   if (print_result())
   {
-    if (print_status())
+    if (is_print())
       cout << endl;
     cout << res << endl;
     if (pco.time)
       print_seconds(get_wtime() - time);
   }
-
-#ifdef HAVE_MPI
-    MPI_Finalize();
-#endif
 
   return 0;
 }
