@@ -67,8 +67,9 @@ int128_t phi_sum(int64_t x, int64_t a)
 
 int256_t phi_sum(int128_t x, int64_t a)
 {
-  if (x < 1)
-    return 0;
+  // for better performance use 64-bit instead of 128-bit
+  if (x <= numeric_limits<int64_t>::max())
+    return phi_sum((int64_t) x, a);
 
   if (a < 10)
     return ::phi_sum<1>(x, a, small_primes_);
