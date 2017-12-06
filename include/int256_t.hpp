@@ -618,12 +618,14 @@ inline std::ostream& operator<<(std::ostream& stream, int256_t n)
 {
     std::string str;
 
-    if (n < 0) {
+    if (n < 0)
+    {
         stream << "-";
         n = -n;
     }
 
-    while (n > 0) {
+    while (n > 0)
+    {
         str += '0' + std::int8_t(n % 10);
         n /= 10;
     }
@@ -647,5 +649,16 @@ struct next_larger_type
 };
 
 } // namespace
+
+#ifdef _OPENMP
+
+namespace primesum {
+
+/// Requires OpenMP >= 4.0
+#pragma omp declare reduction(+ : int256_t : omp_out += omp_in)
+
+} // namespace
+
+#endif
 
 #endif

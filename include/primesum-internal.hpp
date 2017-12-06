@@ -24,8 +24,6 @@
 
 namespace primesum {
 
-#pragma omp declare reduction(+ : int256_t : omp_out += omp_in)
-
 /// Silence unused parameter compiler warning
 template<class T>
 void unused_param(const T&)
