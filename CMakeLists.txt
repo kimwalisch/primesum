@@ -81,10 +81,11 @@ endif()
 
 # Check if int128_t type exists ######################################
 
-check_type_size("int128_t" INT128_T)
-if(NOT HAVE_INT128_T)
-    check_type_size("__int128_t" __INT128_T)
-    if(NOT HAVE___INT128_T)
+check_type_size("__int128_t" __INT128_T)
+if(NOT HAVE___INT128_T)
+
+    check_type_size("int128_t" INT128_T)
+    if(NOT HAVE_INT128_T)
         message(FATAL_ERROR "Compiler does not support int128_t!")
     endif()
 endif()
