@@ -24,6 +24,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(CheckTypeSize)
 include(CheckCXXCompilerFlag)
 include(CMakePushCheckState)
+include(CheckCXXSourceCompiles)
 
 # primesum binary source files #######################################
 
@@ -65,16 +66,6 @@ set(BUILD_TESTS OFF CACHE BOOL "Build primesieve tests" FORCE)
 
 add_subdirectory(lib/primesieve)
 
-# Check for OpenMP ###################################################
-
-if(WITH_OPENMP)
-    find_package(OpenMP QUIET)
-    if(OPENMP_FOUND)
-        message(STATUS "Found OpenMP: ${OpenMP_CXX_FLAGS}")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    endif()
-endif()
-
 # Check -mpopcnt compiler flag #######################################
 
 if(WITH_POPCNT)
@@ -91,15 +82,42 @@ endif()
 # Check if int128_t type exists ######################################
 
 check_type_size("int128_t" INT128_T)
-if(HAVE_INT128_T)
-    add_definitions(-DHAVE_INT128_T)
-else()
+if(NOT HAVE_INT128_T)
     check_type_size("__int128_t" __INT128_T)
-    if(HAVE___INT128_T)
-        add_definitions(-DHAVE___INT128_T)
-    else()
-        message(FATAL_ERROR 
-                "Your compiler does not support __int128_t!")
+    if(NOT HAVE___INT128_T)
+        message(FATAL_ERROR "Compiler does not support int128_t!")
+    endif()
+endif()
+
+# Check for OpenMP ###################################################
+
+if(WITH_OPENMP)
+    find_package(OpenMP QUIET)
+
+    if(OPENMP_FOUND)
+        message(STATUS "Found OpenMP: ${OpenMP_CXX_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+
+        cmake_push_check_state()
+        set(CMAKE_REQUIRED_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+        check_cxx_source_compiles("
+            #include <omp.h>
+            #include <int256_t.hpp>
+            int main() {
+                primesum::int256_t sum;
+                #pragma omp parallel for reduction(+: sum)
+                for (int i = 0; i < 100; i++)
+                    sum += i;
+                return 0;
+            }"
+            omp_declare_reduction)
+
+        if(NOT omp_declare_reduction)
+            message(FATAL_ERROR "Compiler does not support OpenMP 4.0 or later!")
+        endif()
+
+        cmake_pop_check_state()
     endif()
 endif()
 

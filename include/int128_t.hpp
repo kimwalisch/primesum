@@ -21,8 +21,8 @@
 /// can use int128_t instead of __int128_t. Once this is done
 /// int128_t can be used like a regular integer type.
 ///
-#if defined(HAVE___INT128_T)
-#define HAVE_INT128_T
+#if !defined(INT128_MAX) && \
+     defined(__SIZEOF_INT128__)
 
 #include <ostream>
 #include <string>
@@ -61,7 +61,7 @@ inline std::ostream& operator<<(std::ostream& stream, int128_t n)
 
 } // namespace
 
-#endif /* HAVE_INT128_T */
+#endif
 
 namespace primesum {
 
@@ -80,8 +80,6 @@ struct numeric_limits
   }
 };
 
-#if defined(HAVE_INT128_T)
-
 template <>
 struct numeric_limits<int128_t>
 {
@@ -96,21 +94,15 @@ struct numeric_limits<uint128_t>
   static constexpr uint128_t max() { return ~min(); }
 };
 
-#endif
-
 template <typename T>
 struct make_signed
 {
-#if !defined(HAVE_INT128_T)
-  typedef typename std::make_signed<T>::type type;
-#else
   typedef typename std::conditional<std::is_same<T, uint8_t>::value, int8_t,
           typename std::conditional<std::is_same<T, uint16_t>::value, int16_t,
           typename std::conditional<std::is_same<T, uint32_t>::value, int32_t,
           typename std::conditional<std::is_same<T, uint64_t>::value, int64_t,
           typename std::conditional<std::is_same<T, uint128_t>::value, int128_t,
           T>::type>::type>::type>::type>::type type;
-#endif
 };
 
 template <typename T>
@@ -118,13 +110,9 @@ struct is_integral
 {
   enum
   {
-#if !defined(HAVE_INT128_T)
-    value = std::is_integral<T>::value
-#else
     value = std::is_integral<T>::value ||
             std::is_same<T, int128_t>::value ||
             std::is_same<T, uint128_t>::value
-#endif
   };
 };
 
@@ -133,12 +121,8 @@ struct is_signed
 {
   enum
   {
-#if !defined(HAVE_INT128_T)
-    value = std::is_signed<T>::value
-#else
     value = std::is_signed<T>::value ||
             std::is_same<T, int128_t>::value
-#endif
   };
 };
 
@@ -147,16 +131,12 @@ struct is_unsigned
 {
   enum
   {
-#if !defined(HAVE_INT128_T)
-    value = std::is_unsigned<T>::value
-#else
     value = std::is_unsigned<T>::value ||
             std::is_same<T, uint128_t>::value
-#endif
   };
 };
 
 } // namespace prt
 } // namespace primesum
 
-#endif /* INT128_T_HPP */
+#endif

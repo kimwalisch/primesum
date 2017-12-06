@@ -139,7 +139,6 @@ string get_max_x(double alpha)
 {
   ostringstream oss;
 
-#ifdef HAVE_INT128_T
   // primesum is limited by:
   // z < 2^62, with z = x^(2/3) / alpha
   // x^(2/3) / alpha < 2^62
@@ -148,10 +147,6 @@ string get_max_x(double alpha)
   // safety buffer: use 61 instead of 62 
   double max_x = pow(pow(2.0, 61.0) * alpha, 3.0 / 2.0);
   oss << (int128_t) max_x; 
-#else
-  unused_param(alpha); 
-  oss << numeric_limits<int64_t>::max();
-#endif
 
   return oss.str();
 }
