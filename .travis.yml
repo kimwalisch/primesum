@@ -11,11 +11,13 @@ env:
     - OMP_NUM_THREADS=4
 
 before_install:
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
 
 # Install cmake cppcheck
 install:
-  - sudo apt-get install -y cmake cppcheck valgrind
+  - sudo apt-get install -y gcc-5 g++-5 make cmake cppcheck valgrind
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
 
 # Test build.sh script
 before_script:
