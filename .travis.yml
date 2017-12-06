@@ -11,7 +11,7 @@ env:
     - OMP_NUM_THREADS=4
 
 before_install:
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -qq
 
 # Install cmake cppcheck
