@@ -14,12 +14,14 @@ before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -qq
 
-# Install cmake cppcheck
 install:
   - sudo apt-get install -y gcc-5 g++-5 make cmake cppcheck valgrind
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
+  - sudo rm -f /usr/bin/gcc
+  - sudo rm -f /usr/bin/g++
+  - sudo ln -s /usr/bin/gcc-5 /usr/bin/gcc
+  - sudo ln -s /usr/bin/g++-5 /usr/bin/g++
 
-# Test build.sh script
+# Run cmake
 before_script:
   - if [ "$CXX" = "g++" ]; then cmake .; fi
   - if [ "$CXX" = "clang++" ]; then cmake . -DWITH_OPENMP=OFF; fi
@@ -27,7 +29,7 @@ before_script:
   - ldd primesum
   - cppcheck src include --error-exitcode=1 -ilib
 
-# Run primecount tests
+# Run primesum tests
 script:
   - ./primesum --test
   - valgrind --error-exitcode=1 ./primesum 1e14
