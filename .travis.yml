@@ -7,7 +7,7 @@ compiler:
 
 env:
   global:
-    - CXXFLAGS="-O2 -pedantic -Wall -Wextra -Werror -Wno-long-long -Wno-unused-parameter -Wno-strict-aliasing -Wno-unknown-pragmas"
+    - CXXFLAGS="-O2 -pedantic -Wall -Wextra -Werror -Wno-missing-braces -Wno-long-long -Wno-unused-parameter -Wno-strict-aliasing -Wno-unknown-pragmas"
     - OMP_NUM_THREADS=4
 
 before_install:
@@ -15,7 +15,7 @@ before_install:
 
 # Install cmake cppcheck
 install:
-  - sudo apt-get install -y cmake cppcheck
+  - sudo apt-get install -y cmake cppcheck valgrind
 
 # Test build.sh script
 before_script:
@@ -28,3 +28,4 @@ before_script:
 # Run primecount tests
 script:
   - ./primesum --test
+  - valgrind --error-exitcode=1 ./primesum 1e14
