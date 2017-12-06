@@ -21,8 +21,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Include Check* #####################################################
 
-include(CheckCXXCompilerFlag)
 include(CheckTypeSize)
+include(CheckCXXCompilerFlag)
+include(CMakePushCheckState)
 
 # primesum binary source files #######################################
 
@@ -77,10 +78,11 @@ endif()
 # Check -mpopcnt compiler flag #######################################
 
 if(WITH_POPCNT)
-    set(COPY_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    set(CMAKE_CXX_FLAGS -Werror)
+    cmake_push_check_state()
+    set(CMAKE_REQUIRED_FLAGS -Werror)
     check_cxx_compiler_flag(-mpopcnt mpopcnt)
-    set(CMAKE_CXX_FLAGS "${COPY_CXX_FLAGS}")
+    cmake_pop_check_state()
+
     if(mpopcnt)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mpopcnt")
     endif()
