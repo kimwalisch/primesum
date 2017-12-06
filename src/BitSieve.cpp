@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <algorithm>
 #include <cassert>
+#include <array>
 #include <vector>
 
 using namespace std;
@@ -28,10 +29,10 @@ namespace {
 
 const SumBits sumBits;
 
-const uint64_t primes[] = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+const array<uint64_t, 10> primes = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
 
 /// bitmasks with multiples of the i-th prime
-const uint64_t masks[] =
+const array<uint64_t, 10> masks =
 {
   0x0000000000000000ull,
   0x5555555555555555ull, // 2
@@ -84,7 +85,7 @@ int128_t sum_bits(const uint64_t* bits, uint64_t size, uint64_t& low)
 
 namespace primesum {
 
-const uint64_t BitSieve::set_bit_[128] =
+const array<uint64_t, 128> BitSieve::set_bit_ =
 {
   (1ull <<  0), (1ull <<  0), (1ull <<  1), (1ull <<  1),
   (1ull <<  2), (1ull <<  2), (1ull <<  3), (1ull <<  3),

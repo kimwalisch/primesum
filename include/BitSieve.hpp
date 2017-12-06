@@ -13,11 +13,13 @@
 #ifndef BITSIEVE_HPP
 #define BITSIEVE_HPP
 
-#include <cassert>
-#include <cstddef>
-#include <vector>
 #include <int128_t.hpp>
 #include <stdint.h>
+
+#include <cassert>
+#include <cstddef>
+#include <array>
+#include <vector>
 
 namespace primesum {
 
@@ -85,7 +87,7 @@ public:
   }
 
 private:
-  static const uint64_t set_bit_[128];
+  static const std::array<uint64_t, 128> set_bit_;
   std::vector<uint64_t> sieve_;
   std::size_t size_;
 };
