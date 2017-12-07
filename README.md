@@ -128,23 +128,23 @@ Advanced Deleglise-Rivat options:
   <tr align="right">
     <td>10<sup>18</sup></td>
     <td>12,212,914,292,949,226,570,880,576,733,896,687</td>
-    <td>83.41s</td>
+    <td>81.79s</td>
   </tr>
   <tr align="right">
     <td>10<sup>19</sup></td>
     <td>1,156,251,260,549,368,082,781,614,413,945,980,126</td>
-    <td>421.29s</td>
+    <td>414.13s</td>
   </tr>
   <tr align="right">
     <td>10<sup>20</sup></td>
     <td>109,778,913,483,063,648,128,485,839,045,703,833,541</td>
-    <td>2081.12s</td>
+    <td>1953.98s</td>
   </tr>
 </table>
 
 The benchmarks above were run on an Intel Core i7-6700 CPU (4 x 3.4 GHz) from
 2015 using a Linux x64 operating system and primesum was compiled using
-GCC 5.2.
+GCC 6.4.
 
 ## [A046731](https://oeis.org/A046731) world records
 
