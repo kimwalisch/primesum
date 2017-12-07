@@ -2,7 +2,7 @@
 /// @file   primesum.cpp
 /// @brief  primesum C++ API
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -33,7 +33,7 @@ using namespace std;
 namespace {
 
 #ifdef _OPENMP
-  int threads_ = -1;
+  int threads_ = 0;
 #endif
 
 int status_precision_ = -1;
@@ -161,18 +161,6 @@ double get_wtime()
 #endif
 }
 
-int ideal_num_threads(int threads)
-{
-#ifdef _OPENMP
-  if (threads < 0)
-    threads = omp_get_max_threads();
-  return in_between(1, threads, omp_get_max_threads());
-#else
-  threads = 1;
-  return threads; 
-#endif
-}
-
 int ideal_num_threads(int threads, int64_t sieve_limit, int64_t thread_threshold)
 {
   thread_threshold = max((int64_t) 1, thread_threshold);
@@ -234,10 +222,10 @@ double get_alpha_deleglise_rivat(int128_t x)
   // use default alpha if no command-line alpha provided
   if (alpha < 1)
   {
-    double a = 0.00261288;
-    double b = -0.0975921;
-    double c = 0.964706;
-    double d = -0.5712;
+    double a = 0.000356618;
+    double b = 0.00263762;
+    double c = -0.125227;
+    double d = 1.39952;
     double logx = log(x2);
 
     alpha = a * pow(logx, 3) + b * pow(logx, 2) + c * logx + d;
@@ -258,7 +246,7 @@ void set_num_threads(int threads)
 int get_num_threads()
 {
 #ifdef _OPENMP
-  if (threads_ > 0)
+  if (threads_)
     return threads_;
   else
     return max(1, omp_get_max_threads());
