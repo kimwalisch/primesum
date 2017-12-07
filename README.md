@@ -14,22 +14,13 @@ been used to compute many new [prime sum world records](#a046731-world-records)!
 
 ## Binaries
 
-Below are the latest precompiled binaries for Windows 64-bit and Linux x64.
+Below are the latest precompiled binaries for Windows, Linux and macOS.
 These binaries are statically linked and require a CPU which supports the
 POPCNT instruction (2010 or later).
 
-* [primesum-1.2-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.2/primesum-1.2-win64.zip), 392 KB
-* [primesum-1.2-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.2/primesum-1.2-linux-x64.tar.gz), 1 MB
-
-## 256-bit binaries
-
-[primesum 256-bit](https://github.com/kimwalisch/primesum/tree/256-bit)
-allows to compute prime sums for values of x&nbsp;≥&nbsp;2<sup>64</sup>,
-it runs about 30% slower than the 128-bit primesum version due to slower
-256-bit integer arithmetic.
-
-* [primesum-1.2-256-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.2-256-bit/primesum-1.2-256-win64.zip), 407 KB
-* [primesum-1.2-256-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.2-256-bit/primesum-1.2-256-linux-x64.tar.gz), 1 MB
+* [primesum-1.3-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.3/primesum-1.3-win64.zip), 529 KB
+* [primesum-1.3-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.3/primesum-1.3-linux-x64.tar.gz), 1.1 MB
+* [primesum-1.3-macOS-x64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.3/primesum-1.3-macOS-x64.zip), 956 KB
 
 ## Build instructions
 
