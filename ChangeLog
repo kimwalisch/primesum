@@ -1,3 +1,19 @@
+2017-12-19 Kim Walisch  <kim.walisch@gmail.com>
+
+  Version 1.4 work in progress.
+
+  This version brings back the binary indexed tree data structure
+  for computing the sum of the unsieved elements in the
+  computation of the hard special leaves (S2_hard). Initially I
+  thought the binary indexed tree was not needed so I removed it in
+  version 1.3. But later when running extensive benchmarks I realized
+  primesum-1.3 had severe scaling issues because of the missing
+  binary indexed tree.
+
+  * S2_hard.cpp: Bring back binary indexed tree.
+  * BinaryIndexedTree.hpp: Reduce memory usage by 50% by storing
+    only odd numbers.
+
 2017-12-07 Kim Walisch  <kim.walisch@gmail.com>
 
   Version 1.3 released.
