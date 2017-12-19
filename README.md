@@ -93,52 +93,52 @@ Advanced Deleglise-Rivat options:
   <tr align="right">
     <td>10<sup>11</sup></td>
     <td>201,467,077,743,744,681,014</td>
-    <td>0.03s</td>
+    <td>0.02s</td>
   </tr>
   <tr align="right">
     <td>10<sup>12</sup></td>
     <td>18,435,588,552,550,705,911,377</td>
-    <td>0.07s</td>
+    <td>0.04s</td>
   </tr>
   <tr align="right">
     <td>10<sup>13</sup></td>
     <td>1,699,246,443,377,779,418,889,494</td>
-    <td>0.13s</td>
+    <td>0.11s</td>
   </tr>
   <tr align="right">
     <td>10<sup>14</sup></td>
     <td>157,589,260,710,736,940,541,561,021</td>
-    <td>0.40s</td>
+    <td>0.36s</td>
   </tr>
   <tr align="right">
     <td>10<sup>15</sup></td>
     <td>14,692,398,516,908,006,398,225,702,366</td>
-    <td>1.23s</td>
+    <td>1.16s</td>
   </tr>
   <tr align="right">
     <td>10<sup>16</sup></td>
     <td>1,376,110,854,313,351,899,159,632,866,552</td>
-    <td>4.33s</td>
+    <td>3.66s</td>
   </tr>
   <tr align="right">
     <td>10<sup>17</sup></td>
     <td>129,408,626,276,669,278,966,252,031,311,350</td>
-    <td>18.20s</td>
+    <td>14.60s</td>
   </tr>
   <tr align="right">
     <td>10<sup>18</sup></td>
     <td>12,212,914,292,949,226,570,880,576,733,896,687</td>
-    <td>81.79s</td>
+    <td>66.66s</td>
   </tr>
   <tr align="right">
     <td>10<sup>19</sup></td>
     <td>1,156,251,260,549,368,082,781,614,413,945,980,126</td>
-    <td>414.13s</td>
+    <td>330.01s</td>
   </tr>
   <tr align="right">
     <td>10<sup>20</sup></td>
     <td>109,778,913,483,063,648,128,485,839,045,703,833,541</td>
-    <td>1953.98s</td>
+    <td>1486.87s</td>
   </tr>
 </table>
 
