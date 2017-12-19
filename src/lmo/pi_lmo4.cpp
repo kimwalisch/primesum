@@ -41,7 +41,6 @@ void cross_off(int64_t prime,
                T& sieve,
                BinaryIndexedTree& tree)
 {
-  int64_t segment_size = sieve.size();
   int64_t m = next_multiple;
 
   for (; m < high; m += prime * 2)

@@ -71,7 +71,6 @@ void cross_off(BitSieve& sieve,
                WheelItem& w,
                BinaryIndexedTree& tree)
 {
-  int64_t segment_size = sieve.size();
   int64_t m = w.next_multiple;
   int64_t wheel_index = w.wheel_index;
 
