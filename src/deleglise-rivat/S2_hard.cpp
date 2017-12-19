@@ -94,7 +94,8 @@ bool few_leaves(int64_t low,
                 int64_t y,
                 double alpha)
 {
-  return (high < y || low > y * alpha);
+  double threshold = y * alpha * 3;
+  return (high < y || low > threshold);
 }
 
 /// Compute the S2 contribution of the hard special leaves which
