@@ -94,7 +94,7 @@ bool few_leaves(int64_t low,
                 int64_t y,
                 double alpha)
 {
-  double threshold = y * alpha * 3;
+  double threshold = y * alpha * sqrt(alpha);
   return (high < y || low > threshold);
 }
 
