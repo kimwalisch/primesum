@@ -133,7 +133,9 @@ T S2_hard_OpenMP_thread(uint128_t x,
 
   BitSieve sieve(segment_size);
   Wheel wheel(primes, max_b + 1, low);
+  phi.clear();
   phi.resize(max_b + 1, 0);
+  mu_sum.clear();
   mu_sum.resize(max_b + 1, 0);
   BinaryIndexedTree tree;
 
@@ -339,46 +341,58 @@ S2_hard_OpenMP_master(X x,
   int64_t min_segment_size = loadBalancer.get_min_segment_size();
   int64_t segment_size = min_segment_size;
   int64_t segments_per_thread = 1;
+  int64_t segments = 0;
+
+  aligned_vector<vector<int128_t>> phi(threads);
+  aligned_vector<vector<res_t>> mu_sum(threads);
+  aligned_vector<double> timings(threads);
 
   PiTable pi(max_prime);
   vector<int128_t> phi_total(pi[isqrt(z)] + 1, 0);
   double alpha = get_alpha(x, y);
 
-  while (low < limit)
+  #pragma omp parallel num_threads(threads) reduction(+: s2_hard)
   {
-    int64_t segments = ceil_div(limit - low, segment_size);
-    threads = in_between(1, threads, segments);
-    segments_per_thread = in_between(1, segments_per_thread, ceil_div(segments, threads));
+    int t = omp_get_thread_num();
 
-    aligned_vector<vector<int128_t>> phi(threads);
-    aligned_vector<vector<res_t>> mu_sum(threads);
-    aligned_vector<double> timings(threads);
-
-    #pragma omp parallel for num_threads(threads) reduction(+: s2_hard)
-    for (int i = 0; i < threads; i++)
+    while (low < limit)
     {
-      timings[i] = get_wtime();
-      s2_hard += S2_hard_OpenMP_thread(x, y, z, c, segment_size, segments_per_thread,
-          i, low, limit, alpha, factors, pi, primes, mu_sum[i], phi[i]);
-      timings[i] = get_wtime() - timings[i];
-    }
-
-    // Once all threads have finished reconstruct and add the
-    // missing contribution of all special leaves. This must
-    // be done in order as each thread (i) requires the sum of
-    // the phi values from the previous threads.
-    //
-    for (int i = 0; i < threads; i++)
-    {
-      for (size_t j = 1; j < phi[i].size(); j++)
+      #pragma omp single
       {
-        s2_hard += mu_sum[i][j] * phi_total[j];
-        phi_total[j] += phi[i][j];
+        segments = ceil_div(limit - low, segment_size);
+        threads = in_between(1, threads, segments);
+        segments_per_thread = in_between(1, segments_per_thread, ceil_div(segments, threads));
+      }
+
+      if (t < threads)
+      {
+        timings[t] = get_wtime();
+        s2_hard += S2_hard_OpenMP_thread(x, y, z, c, segment_size, segments_per_thread,
+            t, low, limit, alpha, factors, pi, primes, mu_sum[t], phi[t]);
+        timings[t] = get_wtime() - timings[t];
+      }
+
+      #pragma omp barrier
+      #pragma omp single
+      {
+        // Once all threads have finished reconstruct and add the
+        // missing contribution of all special leaves. This must
+        // be done in order as each thread requires the sum of the
+        // phi values from the previous threads.
+        //
+        for (int i = 0; i < threads; i++)
+        {
+          for (size_t j = 1; j < phi[i].size(); j++)
+          {
+            s2_hard += mu_sum[i][j] * phi_total[j];
+            phi_total[j] += phi[i][j];
+          }
+        }
+
+        low += segments_per_thread * threads * segment_size;
+        loadBalancer.update(low, threads, &segment_size, &segments_per_thread, timings);
       }
     }
-
-    low += segments_per_thread * threads * segment_size;
-    loadBalancer.update(low, threads, &segment_size, &segments_per_thread, timings);
   }
 
   return s2_hard;
