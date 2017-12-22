@@ -1,6 +1,6 @@
-2017-12-19 Kim Walisch  <kim.walisch@gmail.com>
+2017-12-22 Kim Walisch  <kim.walisch@gmail.com>
 
-  Version 1.4 work in progress.
+  Version 1.4 released.
 
   This version brings back the binary indexed tree data structure
   for computing the sum of the unsieved elements in the
