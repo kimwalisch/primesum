@@ -18,9 +18,9 @@ Below are the latest precompiled binaries for Windows, Linux and macOS.
 These binaries are statically linked and require a CPU which supports the
 POPCNT instruction (2010 or later).
 
-* [primesum-1.3-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.3/primesum-1.3-win64.zip), 529 KB
-* [primesum-1.3-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.3/primesum-1.3-linux-x64.tar.gz), 1.1 MB
-* [primesum-1.3-macOS-x64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.3/primesum-1.3-macOS-x64.zip), 956 KB
+* [primesum-1.4-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.4/primesum-1.4-win64.zip), 538 KB
+* [primesum-1.4-linux-x64.tar.gz](https://github.com/kimwalisch/primesum/releases/download/v1.4/primesum-1.4-linux-x64.tar.gz), 1.1 MB
+* [primesum-1.4-macOS-x64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.4/primesum-1.4-macOS-x64.zip), 963 KB
 
 ## Build instructions
 
