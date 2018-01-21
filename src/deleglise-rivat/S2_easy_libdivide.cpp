@@ -40,13 +40,17 @@ bool is_libdivide(T x)
   return x <= numeric_limits<uint64_t>::max();
 }
 
-typedef libdivide::divider<uint64_t, libdivide::BRANCHFREE> libdivide_u64_t;
+using fastdiv_t = libdivide::branchfree_divider<uint64_t>;
 
 template <typename Primes>
-vector<libdivide_u64_t>
+vector<fastdiv_t>
 libdivide_divisors(Primes& primes)
 {
-  return vector<libdivide_u64_t>(primes.begin(), primes.end());
+  // branchfree divider must be >= 2
+  uint64_t min_divisor = 2;
+  vector<fastdiv_t> fastdiv(1, min_divisor);
+  fastdiv.insert(fastdiv.end(), primes.begin() + 1, primes.end());
+  return fastdiv;
 }
 
 /// Calculate the contribution of the clustered easy
@@ -64,7 +68,7 @@ res_t S2_easy_OpenMP(uint128_t x,
   res_t s2_easy = 0;
   int64_t x13 = iroot<3>(x);
   threads = ideal_num_threads(threads, x13, 1000);
-  vector<libdivide_u64_t> fastdiv = libdivide_divisors(primes);
+  vector<fastdiv_t> fastdiv = libdivide_divisors(primes);
   using PS = typename PrimeSums::value_type;
 
   PiTable pi(y);
