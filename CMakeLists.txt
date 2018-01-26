@@ -3,7 +3,7 @@ project(primesum)
 set(PRIMESUM_VERSION_MAJOR 1)
 set(PRIMESUM_VERSION_MINOR 4)
 set(PRIMESUM_VERSION "${PRIMESUM_VERSION_MAJOR}.${PRIMESUM_VERSION_MINOR}")
-include_directories(include src/primesieve/include)
+include_directories(include)
 set(CMAKE_BUILD_TYPE Release)
 
 # Build options ######################################################
