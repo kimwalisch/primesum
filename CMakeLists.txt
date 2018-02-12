@@ -3,7 +3,6 @@ project(primesum)
 set(PRIMESUM_VERSION_MAJOR 1)
 set(PRIMESUM_VERSION_MINOR 4)
 set(PRIMESUM_VERSION "${PRIMESUM_VERSION_MAJOR}.${PRIMESUM_VERSION_MINOR}")
-include_directories(include)
 
 # Build options ######################################################
 
@@ -159,4 +158,5 @@ endif()
 
 add_executable(primesum ${SRC})
 target_link_libraries(primesum libprimesieve)
-install(TARGETS primesum DESTINATION bin)
+target_include_directories(primesum PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+install(TARGETS primesum DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
