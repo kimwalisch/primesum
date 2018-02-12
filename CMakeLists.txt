@@ -4,7 +4,6 @@ set(PRIMESUM_VERSION_MAJOR 1)
 set(PRIMESUM_VERSION_MINOR 4)
 set(PRIMESUM_VERSION "${PRIMESUM_VERSION_MAJOR}.${PRIMESUM_VERSION_MINOR}")
 include_directories(include)
-set(CMAKE_BUILD_TYPE Release)
 
 # Build options ######################################################
 
@@ -13,18 +12,6 @@ option(WITH_LIBDIVIDE    "Use libdivide.h"                ON)
 option(WITH_OPENMP       "Enable OpenMP support"          ON)
 option(BUILD_STATIC_LIBS "Build static libprimesieve"     ON)
 option(BUILD_SHARED_LIBS "Build shared libprimesieve"     OFF)
-
-# Compiler must support C++11 or later ###############################
-
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Include Check* #####################################################
-
-include(CheckTypeSize)
-include(CheckCXXCompilerFlag)
-include(CMakePushCheckState)
-include(CheckCXXSourceCompiles)
 
 # primesum binary source files #######################################
 
@@ -58,6 +45,26 @@ set(SRC src/app/cmdoptions.cpp
         src/lmo/pi_lmo4.cpp
         src/lmo/pi_lmo5.cpp
         src/lmo/pi_lmo_parallel1.cpp)
+
+# Compiler must support C++11 or later ###############################
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Include Check* #####################################################
+
+include(CheckTypeSize)
+include(CheckCXXCompilerFlag)
+include(CMakePushCheckState)
+include(CheckCXXSourceCompiles)
+
+# Set default build type to Release ##################################
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+        FORCE)
+endif()
 
 # libprimesieve ######################################################
 
