@@ -131,7 +131,7 @@ if(WITH_OPENMP)
             #include <omp.h>
             #include <int256_t.hpp>
             int main() {
-                primesum::int256_t sum;
+                primesum::int256_t sum = 0;
                 #pragma omp parallel for reduction(+: sum)
                 for (int i = 0; i < 100; i++)
                     sum += i;
