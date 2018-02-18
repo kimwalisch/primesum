@@ -25,7 +25,7 @@ before_script:
   - if [ "$CXX" = "clang++" ]; then cmake . -DWITH_OPENMP=OFF; fi
   - make -j4
   - ldd primesum
-  - cppcheck src include --error-exitcode=1 -ilib
+  - cppcheck src include --error-exitcode=1
 
 # Run primesum tests
 script:
