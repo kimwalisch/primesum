@@ -52,7 +52,7 @@ const string helpMenu(
 const string versionInfo(
   "primesum " PRIMESUM_VERSION ", <https://github.com/kimwalisch/primesum>\n"
   "Copyright (C) 2016 - 2018 Kim Walisch\n"
-  "BSD 2-Clause License <http://opensource.org/licenses/BSD-2-Clause>"
+  "BSD 2-Clause License <https://opensource.org/licenses/BSD-2-Clause>"
 );
 
 } // end namespace

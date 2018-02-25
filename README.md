@@ -241,4 +241,4 @@ withdrew his result in 2011.
 
 ## References
 
-1. M. Deléglise and Jean-Louis Nicolas, Maximal product of primes whose sum is bounded, 3 Jul 2012, http://arxiv.org/abs/1207.0603.
+1. M. Deléglise and Jean-Louis Nicolas, Maximal product of primes whose sum is bounded, 3 Jul 2012, https://arxiv.org/abs/1207.0603.
