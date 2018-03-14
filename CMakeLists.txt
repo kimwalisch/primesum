@@ -119,13 +119,11 @@ if(WITH_OPENMP)
 
     if(OPENMP_FOUND)
         message(STATUS "Found OpenMP: ${OpenMP_CXX_FLAGS}")
-
-        target_compile_options(primesum PRIVATE "${OpenMP_CXX_FLAGS}")
-        target_link_libraries(primesum PRIVATE "${OpenMP_CXX_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
         cmake_push_check_state()
         set(CMAKE_REQUIRED_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include")
-        set(CMAKE_REQUIRED_FLAGS "${OpenMP_CXX_FLAGS} ${CMAKE_CXX11_STANDARD_COMPILE_OPTION}")
+        set(CMAKE_REQUIRED_FLAGS "${CMAKE_CXX11_STANDARD_COMPILE_OPTION}")
 
         check_cxx_source_compiles("
             #include <omp.h>
