@@ -1,9 +1,10 @@
-2018-02-18 Kim Walisch  <kim.walisch@gmail.com>
+2018-03-16 Kim Walisch  <kim.walisch@gmail.com>
 
-  Version 1.5 unreleased.
+  Version 1.5 released.
 
   * libdivide.h: Update to version 1.0.
   * Required CMake version is now 3.4 (previously 3.1).
+  * CMakeLists.txt: Fix make install issue.
   * CMakeLists.txt: Do not check for C compiler.
   * Add int256_t tests.
 
