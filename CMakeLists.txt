@@ -62,6 +62,10 @@ if(NOT CMAKE_BUILD_TYPE)
         FORCE)
 endif()
 
+# libprimesieve ######################################################
+
+add_subdirectory(lib/primesieve)
+
 # Check if int128_t type exists ######################################
 
 check_type_size("__int128_t" __INT128_T LANGUAGE CXX)
@@ -157,7 +161,3 @@ if(WITH_POPCNT)
         target_compile_options(primesum PRIVATE -mpopcnt)
     endif()
 endif()
-
-# libprimesieve ######################################################
-
-add_subdirectory(lib/primesieve)
