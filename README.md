@@ -239,6 +239,77 @@ withdrew his result in 2011.
   </tr>
 </table>
 
+## [A130739](http://oeis.org/A130739) world records
+
+<table>
+  <tr align="center">
+    <td><b>n</b></td>
+    <td><b>Sum of the primes < 2^n</b></td>
+    <td><b>Date</b></td>
+    <td><b>Computed by</b></td>
+  </tr>
+  <tr align="right">
+    <td>2<sup>71</sup></td>
+    <td>57230460176857192458791870659870195302414</td>
+    <td>Dec. 26, 2017</td>
+    <td>Kim Walisch</td>
+  </tr>
+  <tr align="right">
+    <td>2<sup>72</sup></td>
+    <td>225709510085333603256262210540764048485810</td>
+    <td>Dec. 26, 2017</td>
+    <td>Kim Walisch</td>
+  </tr>
+  <tr align="right">
+    <td>2<sup>73</sup></td>
+    <td>890344379866902468590503993853978913148982</td>
+    <td>Dec. 26, 2017</td>
+    <td>Kim Walisch</td>
+  </tr>
+  <tr align="right">
+    <td>2<sup>74</sup></td>
+    <td>3512767258692956754932236839569828523905141</td>
+    <td>Dec. 26, 2017</td>
+    <td>Kim Walisch</td>
+  </tr>
+  <tr align="right">
+    <td>2<sup>75</sup></td>
+    <td>13861865005427848960138734445963535022604898</td>
+    <td>Dec. 26, 2017</td>
+    <td>Kim Walisch</td>
+  </tr>
+  <tr align="right">
+    <td>2<sup>76</sup></td>
+    <td>54710756810055087402063527107893581408200826</td>
+    <td>Dec. 26, 2017</td>
+    <td>Kim Walisch</td>
+  </tr>
+  <tr align="right">
+    <td>2<sup>77</sup></td>
+    <td>215973500680654121229780243886194476543303643</td>
+    <td>Dec. 26, 2017</td>
+    <td>Kim Walisch</td>
+  </tr>
+  <tr align="right">
+    <td>2<sup>78</sup></td>
+    <td>852713035956963663153441533770552801919275705</td>
+    <td>Dec. 26, 2017</td>
+    <td>Kim Walisch</td>
+  </tr>
+  <tr align="right">
+    <td>2<sup>79</sup></td>
+    <td>3367271267053300856599603567833163229921782198</td>
+    <td>Dec. 26, 2017</td>
+    <td>Kim Walisch</td>
+  </tr>
+  <tr align="right">
+    <td>2<sup>80</sup></td>
+    <td>13299160452380363326976224185417674340116996121</td>
+    <td>Dec. 26, 2017</td>
+    <td>Kim Walisch</td>
+  </tr>
+</table>
+
 ## References
 
 1. M. Deléglise and Jean-Louis Nicolas, Maximal product of primes whose sum is bounded, 3 Jul 2012, https://arxiv.org/abs/1207.0603.
