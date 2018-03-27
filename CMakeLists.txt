@@ -104,7 +104,7 @@ endif()
 # Build binary #######################################################
 
 add_executable(primesum ${SRC})
-target_link_libraries(primesum PRIVATE libprimesieve)
+target_link_libraries(primesum PRIVATE primesieve::primesieve)
 target_include_directories(primesum PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 install(TARGETS primesum DESTINATION ${CMAKE_INSTALL_BINDIR})
 
