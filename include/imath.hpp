@@ -2,7 +2,7 @@
 /// @file  imath.hpp
 /// @brief Integer math functions used in primesum.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -16,6 +16,7 @@
 #include <stdint.h>
 #include <algorithm>
 #include <cassert>
+#include <climits>
 #include <cmath>
 #include <vector>
 
@@ -36,7 +37,8 @@ inline A ceil_div(A a, B b)
 template <typename T>
 inline T number_of_bits(T)
 {
-  return (T) (sizeof(T) * 8);
+  static_assert(sizeof(uint64_t) * CHAR_BIT == 64, "number_of_bits() is broken");
+  return (T) (sizeof(T) * CHAR_BIT);
 }
 
 template <typename T>
