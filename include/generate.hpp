@@ -1,7 +1,7 @@
 ///
 /// @file  generate.hpp
 ///
-/// Copyright (C) 2014 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -23,8 +23,7 @@ namespace primesum {
 template <typename T>
 std::vector<T> generate_primes(int64_t max)
 {
-  std::vector<T> primes;
-  primes.push_back(0);
+  std::vector<T> primes = { 0 };
   primesieve::generate_primes(max, &primes);
   return primes;
 }
@@ -35,8 +34,7 @@ std::vector<T> generate_primes(int64_t max)
 template <typename T>
 std::vector<T> generate_prime_sums(int64_t max)
 {
-  std::vector<T> primes;
-  primes.push_back(0);
+  std::vector<T> primes = { 0 };
   primesieve::generate_primes(max, &primes);
 
   for (uint64_t i = 1; i < primes.size(); i++)
