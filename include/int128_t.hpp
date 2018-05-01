@@ -2,7 +2,7 @@
 /// @file   int128_t.hpp
 /// @brief  Support for int128_t, uint128_t types.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -97,12 +97,9 @@ struct numeric_limits<uint128_t>
 template <typename T>
 struct make_signed
 {
-  typedef typename std::conditional<std::is_same<T, uint8_t>::value, int8_t,
-          typename std::conditional<std::is_same<T, uint16_t>::value, int16_t,
-          typename std::conditional<std::is_same<T, uint32_t>::value, int32_t,
-          typename std::conditional<std::is_same<T, uint64_t>::value, int64_t,
+  typedef typename std::conditional<std::is_same<T, int128_t>::value, int128_t,
           typename std::conditional<std::is_same<T, uint128_t>::value, int128_t,
-          T>::type>::type>::type>::type>::type type;
+          typename std::make_signed<T>::type>::type>::type type;
 };
 
 template <typename T>
