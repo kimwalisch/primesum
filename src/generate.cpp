@@ -1,7 +1,7 @@
 ///
 /// @file  generate.cpp
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -24,8 +24,7 @@ namespace primesum {
 ///
 vector<int32_t> generate_primes(int64_t max)
 {
-  vector<int32_t> primes;
-  primes.push_back(0);
+  vector<int32_t> primes = { 0 };
   primesieve::generate_primes(max, &primes);
   return primes;
 }
@@ -35,8 +34,7 @@ vector<int32_t> generate_primes(int64_t max)
 ///
 vector<int32_t> generate_n_primes(int64_t n)
 {
-  vector<int32_t> primes;
-  primes.push_back(0);
+  vector<int32_t> primes = { 0 };
   primesieve::generate_n_primes(n, &primes);
   return primes;
 }
