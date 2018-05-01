@@ -73,8 +73,6 @@ int64_t pi_lmo5(int64_t x);
 
 int256_t pi_lmo_parallel1(int128_t x, int threads);
 
-int64_t pi_primesieve(int64_t x, int threads);
-
 int64_t phi(int64_t x, int64_t a, int threads);
 
 int128_t phi_sum(int64_t x, int64_t a);

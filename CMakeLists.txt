@@ -27,7 +27,6 @@ set(SRC src/app/cmdoptions.cpp
         src/PiTable.cpp
         src/phi.cpp
         src/phi_sum.cpp
-        src/pi_primesieve.cpp
         src/pi_legendre.cpp
         src/primesum.cpp
         src/print.cpp
@@ -110,11 +109,9 @@ install(TARGETS primesum DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 target_compile_features(primesum
 PRIVATE
-    cxx_auto_type
+    cxx_constexpr
     cxx_lambdas
-    cxx_nullptr
-    cxx_range_for
-    cxx_uniform_initialization)
+    cxx_range_for)
 
 # Check for OpenMP ###################################################
 
@@ -149,15 +146,28 @@ if(WITH_OPENMP)
     endif()
 endif()
 
-# Check -mpopcnt compiler flag #######################################
+# Find POPCNT compiler flag ##########################################
 
 if(WITH_POPCNT)
-    cmake_push_check_state()
-    set(CMAKE_REQUIRED_FLAGS -Werror)
-    check_cxx_compiler_flag(-mpopcnt mpopcnt)
-    cmake_pop_check_state()
+    include(CMakePushCheckState)
 
-    if(mpopcnt)
-        target_compile_options(primesum PRIVATE -mpopcnt)
+    if("${CMAKE_CXX_COMPILER}" MATCHES "icpc")
+        cmake_push_check_state()
+        set(CMAKE_REQUIRED_FLAGS -Werror)
+        check_cxx_compiler_flag(-msse4.2 msse42)
+        cmake_pop_check_state()
+
+        if(msse42)
+            target_compile_options(primesum PRIVATE -msse4.2)
+        endif()
+    else()
+        cmake_push_check_state()
+        set(CMAKE_REQUIRED_FLAGS -Werror)
+        check_cxx_compiler_flag(-mpopcnt mpopcnt)
+        cmake_pop_check_state()
+
+        if(mpopcnt)
+            target_compile_options(primesum PRIVATE -mpopcnt)
+        endif()
     endif()
 endif()
