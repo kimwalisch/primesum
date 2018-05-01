@@ -15,7 +15,7 @@
 ///         Revista do DETUA, vol. 4, no. 6, March 2006, pp. 767-768.
 ///         http://sweet.ua.pt/tos/bib/5.4.pdf
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -33,10 +33,6 @@ namespace primesum {
 class BinaryIndexedTree
 {
 public:
-  BinaryIndexedTree() :
-    size_(0)
-  { }
-
   /// Initialize binary indexed tree from sieve array
   template <typename T>
   void init(const T& sieve, int64_t low)
@@ -63,8 +59,7 @@ public:
   {
     int64_t pos = n - low;
     pos >>= 1;
-    do
-    {
+    do {
       tree_[pos] -= n;
       pos |= pos + 1;
     }
@@ -75,17 +70,18 @@ public:
   /// in the current segment (sieve array).
   /// Runtime: O(log N)
   ///
-  int128_t sum(int64_t pos)
+  int128_t sum(int64_t pos) const
   {
     pos >>= 1;
     int128_t sum = tree_[pos++];
-    for (; pos &= pos - 1; sum += tree_[pos - 1]);
+    while ((pos &= pos - 1) != 0)
+      sum += tree_[pos - 1];
     return sum;
   }
 
 private:
   std::vector<int128_t> tree_;
-  int64_t size_;
+  int64_t size_ = 0;
 };
 
 } // namespace
