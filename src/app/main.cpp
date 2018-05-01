@@ -2,7 +2,7 @@
 /// @file   main.cpp
 /// @brief  primesum console application.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -149,11 +149,11 @@ int256_t S2_hard(int128_t x, int threads)
 int main (int argc, char* argv[])
 {
   PrimeSumOptions pco = parseOptions(argc, argv);
-  double time = get_wtime();
+  double time = get_time();
 
   int128_t x = pco.x;
   int256_t res = 0;
-  int threads = pco.threads;
+  int threads = get_num_threads();
 
   try
   {
@@ -209,7 +209,7 @@ int main (int argc, char* argv[])
       cout << endl;
     cout << res << endl;
     if (pco.time)
-      print_seconds(get_wtime() - time);
+      print_seconds(get_time() - time);
   }
 
   return 0;

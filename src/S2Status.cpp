@@ -70,7 +70,7 @@ bool S2Status::is_print(double time, double percent) const
 
 void S2Status::print(int128_t n, int128_t limit)
 {
-  double time = get_wtime();
+  double time = get_time();
   double percent = skewed_percent(n, limit);
 
   if (is_print(time, percent))
@@ -94,7 +94,7 @@ void S2Status::print(int128_t n, int128_t limit)
 
 void S2Status::print(int128_t n, int128_t limit, double rsd)
 {
-  double time = get_wtime();
+  double time = get_time();
 
   if (is_print(time))
   {

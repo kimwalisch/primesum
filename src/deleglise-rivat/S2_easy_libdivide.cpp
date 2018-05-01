@@ -170,7 +170,7 @@ int256_t S2_easy(int128_t x,
   print("Computation of the easy special leaves");
   print(x, y, c, threads);
 
-  double time = get_wtime();
+  double time = get_time();
   int256_t s2_easy;
 
   // uses less memory

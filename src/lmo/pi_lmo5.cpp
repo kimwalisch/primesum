@@ -65,7 +65,7 @@ int64_t S2(int64_t x,
   print("=== S2(x, y) ===");
   print("Computation of the special leaves");
 
-  double time = get_wtime();
+  double time = get_time();
   int64_t limit = x / y + 1;
   int64_t segment_size = next_power_of_2(isqrt(limit));
 

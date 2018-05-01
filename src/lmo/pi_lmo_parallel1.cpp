@@ -199,7 +199,7 @@ int256_t S2(uint128_t x,
   int64_t segment_size = min_segment_size;
   int64_t segments_per_thread = 1;
 
-  double time = get_wtime();
+  double time = get_time();
   vector<int32_t> pi = generate_pi(y);
   vector<int256_t> phi_total(primes.size(), 0);
 
@@ -216,10 +216,10 @@ int256_t S2(uint128_t x,
     #pragma omp parallel for num_threads(threads) reduction(+: S2_total)
     for (int i = 0; i < threads; i++)
     {
-      timings[i] = get_wtime();
+      timings[i] = get_time();
       S2_total += S2_thread(x, y, c, segment_size, segments_per_thread,
           i, low, limit, pi, primes, lpf, mu, mu_sum[i], phi[i]);
-      timings[i] = get_wtime() - timings[i];
+      timings[i] = get_time() - timings[i];
     }
 
     // Once all threads have finished reconstruct and add the 

@@ -96,7 +96,7 @@ int256_t S1(int128_t x,
   print("Computation of the ordinary leaves");
   print(x, y, c, threads);
 
-  double time = get_wtime();
+  double time = get_time();
   int256_t s1_sum;
 
   // uses less memory

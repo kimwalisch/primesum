@@ -357,10 +357,10 @@ S2_hard_OpenMP_master(X x,
     #pragma omp parallel for num_threads(threads) reduction(+: s2_hard)
     for (int i = 0; i < threads; i++)
     {
-      timings[i] = get_wtime();
+      timings[i] = get_time();
       s2_hard += S2_hard_OpenMP_thread(x, y, z, c, segment_size, segments_per_thread,
           i, low, limit, alpha, factors, pi, primes, mu_sum[i], phi[i]);
-      timings[i] = get_wtime() - timings[i];
+      timings[i] = get_time() - timings[i];
     }
 
     // Once all threads have finished reconstruct and add the
@@ -399,7 +399,7 @@ int256_t S2_hard(int128_t x,
   print("Computation of the hard special leaves");
   print(x, y, c, threads);
 
-  double time = get_wtime();
+  double time = get_time();
   int256_t s2_hard;
 
   // uses less memory

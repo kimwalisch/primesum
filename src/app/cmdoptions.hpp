@@ -1,7 +1,7 @@
 ///
 /// @file  cmdoptions.hpp
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -45,16 +45,9 @@ enum OptionValues
 
 struct PrimeSumOptions
 {
-  int128_t x;
-  int64_t option;
-  bool time;
-  int threads;
-  PrimeSumOptions() :
-    x(-1),
-    option(OPTION_PI),
-    time(false),
-    threads(get_num_threads())
-  { }
+  int128_t x = -1;
+  int64_t option = OPTION_PI;
+  bool time = false;
 };
 
 PrimeSumOptions parseOptions(int, char**);

@@ -2,7 +2,7 @@
 /// @file   primesum-internal.hpp
 /// @brief  primesum internal function definitions.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -35,12 +35,6 @@ std::string pi(const std::string& x, int threads);
 /// Run time: O(x) operations, O(x^(1/2)) space.
 ///
 int64_t pi_legendre(int64_t x);
-
-/// Calculate the number of primes below x using an optimized 
-/// segmented sieve of Eratosthenes implementation.
-/// Run time: O(x log log x) operations, O(x^(1/2)) space.
-///
-int64_t pi_primesieve(int64_t x);
 
 /// Calculate the nth prime using a combination of the counting
 /// function and the sieve of Eratosthenes.
@@ -105,7 +99,7 @@ double get_alpha_lmo(int128_t x);
 
 double get_alpha_deleglise_rivat(int128_t x);
 
-double get_wtime();
+double get_time();
 
 int ideal_num_threads(int threads, int64_t sieve_limit, int64_t thread_threshold = 100000);
 

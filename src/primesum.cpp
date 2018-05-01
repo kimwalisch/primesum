@@ -17,7 +17,7 @@
 #include <imath.hpp>
 
 #include <algorithm>
-#include <ctime>
+#include <chrono>
 #include <cmath>
 #include <limits>
 #include <sstream>
@@ -101,15 +101,6 @@ int256_t pi_lmo(int128_t x, int threads)
   return pi_lmo_parallel1(x, threads);
 }
 
-/// Calculate the number of primes below x using an optimized 
-/// segmented sieve of Eratosthenes implementation.
-/// Run time: O(x log log x) operations, O(x^(1/2)) space.
-///
-int64_t pi_primesieve(int64_t x)
-{
-  return pi_primesieve(x, get_num_threads());
-}
-
 /// Partial sieve function (a.k.a. Legendre-sum).
 /// phi(x, a) counts the numbers <= x that are not divisible
 /// by any of the first a primes.
@@ -122,13 +113,13 @@ int64_t phi(int64_t x, int64_t a)
 int128_t prime_sum_tiny(int64_t x)
 {
   int64_t prime = 0;
-  int128_t prime_sum = 0;
+  int128_t sum = 0;
   primesieve::iterator iter(0, x);
 
   while ((prime = iter.next_prime()) <= x)
-    prime_sum += prime;
+    sum += prime;
 
-  return prime_sum;
+  return sum;
 }
 
 /// Returns the largest integer that can be used with
@@ -151,14 +142,13 @@ string get_max_x(double alpha)
   return oss.str();
 }
 
-/// Get the wall time in seconds.
-double get_wtime()
+/// Get the time in seconds
+double get_time()
 {
-#ifdef _OPENMP
-  return omp_get_wtime();
-#else
-  return static_cast<double>(std::clock()) / CLOCKS_PER_SEC;
-#endif
+  auto now = chrono::steady_clock::now();
+  auto time = now.time_since_epoch();
+  auto micro = chrono::duration_cast<chrono::microseconds>(time);
+  return (double) micro.count() / 1e6;
 }
 
 int ideal_num_threads(int threads, int64_t sieve_limit, int64_t thread_threshold)
@@ -238,6 +228,7 @@ void set_num_threads(int threads)
 {
 #ifdef _OPENMP
   threads_ = in_between(1, threads, omp_get_max_threads());
+  primesieve::set_num_threads(threads_);
 #else
   unused_param(threads);
 #endif

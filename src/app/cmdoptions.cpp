@@ -3,7 +3,7 @@
 /// @brief  Parse command-line options for the primesum console
 ///         (terminal) application.
 ///
-/// Copyright (C) 2015 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -20,7 +20,6 @@
 #include <map>
 #include <exception>
 #include <cstdlib>
-#include <cstddef>
 
 using std::string;
 using std::istringstream;
@@ -45,8 +44,9 @@ struct Option
 {
   string id;
   string value;
+
   template <typename T>
-  T getValue() const
+  T to() const
   {
     return (T) to_int128(value);
   }
@@ -127,12 +127,12 @@ PrimeSumOptions parseOptions(int argc, char** argv)
       switch (optionMap[option.id])
       {
         case OPTION_ALPHA:   set_alpha(to_double(option.value)); break;
-        case OPTION_NUMBER:  numbers.push_back(option.getValue<int128_t>()); break;
-        case OPTION_THREADS: pco.threads = option.getValue<int>(); break;
+        case OPTION_NUMBER:  numbers.push_back(option.to<int128_t>()); break;
+        case OPTION_THREADS: set_num_threads(option.to<int>()); break;
         case OPTION_HELP:    help(); break;
         case OPTION_STATUS:  set_print(true);
                              if (!option.value.empty())
-                                set_status_precision(option.getValue<int>());
+                                set_status_precision(option.to<int>());
                              pco.time = true;
                              break;
         case OPTION_TIME:    pco.time = true; break;
