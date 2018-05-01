@@ -6,7 +6,7 @@
 ///        unsieved elements using POPCNT without using any special
 ///        counting tree data structure.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -209,8 +209,8 @@ int256_t S2(uint128_t x,
     threads = in_between(1, threads, segments);
     segments_per_thread = in_between(1, segments_per_thread, ceil_div(segments, threads));
 
-    aligned_vector<vector<int256_t> > phi(threads);
-    aligned_vector<vector<int256_t> > mu_sum(threads);
+    aligned_vector<vector<int256_t>> phi(threads);
+    aligned_vector<vector<int256_t>> mu_sum(threads);
     aligned_vector<double> timings(threads);
 
     #pragma omp parallel for num_threads(threads) reduction(+: S2_total)
