@@ -100,31 +100,24 @@ else()
     set(SRC ${SRC} src/deleglise-rivat/S2_easy.cpp)
 endif()
 
-# Build binary #######################################################
-
-add_executable(primesum ${SRC})
-target_link_libraries(primesum PRIVATE primesieve::primesieve)
-target_include_directories(primesum PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-install(TARGETS primesum DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-target_compile_features(primesum
-PRIVATE
-    cxx_constexpr
-    cxx_lambdas
-    cxx_range_for)
-
 # Check for OpenMP ###################################################
 
 if(WITH_OPENMP)
     find_package(OpenMP QUIET)
 
-    if(OPENMP_FOUND)
-        message(STATUS "Found OpenMP: ${OpenMP_CXX_FLAGS}")
+    if(TARGET OpenMP::OpenMP_CXX)
+        set(LIB_OPENMP "OpenMP::OpenMP_CXX")
+    elseif(OPENMP_FOUND)
+        # Support for CMake <= 3.8
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    endif()
+
+    if(OpenMP_CXX_FLAGS)
+        message(STATUS "Found OpenMP: ${OpenMP_CXX_FLAGS}")
 
         cmake_push_check_state()
         set(CMAKE_REQUIRED_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include")
-        set(CMAKE_REQUIRED_FLAGS "${CMAKE_CXX11_STANDARD_COMPILE_OPTION}")
+        set(CMAKE_REQUIRED_FLAGS "${OpenMP_CXX_FLAGS} ${CMAKE_CXX11_STANDARD_COMPILE_OPTION}")
 
         check_cxx_source_compiles("
             #include <omp.h>
@@ -145,6 +138,19 @@ if(WITH_OPENMP)
         cmake_pop_check_state()
     endif()
 endif()
+
+# Build binary #######################################################
+
+add_executable(primesum "${SRC}")
+target_link_libraries(primesum PRIVATE primesieve::primesieve "${LIB_OPENMP}")
+target_include_directories(primesum PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+install(TARGETS primesum DESTINATION "${CMAKE_INSTALL_BINDIR}")
+
+target_compile_features(primesum
+PRIVATE
+    cxx_constexpr
+    cxx_lambdas
+    cxx_range_for)
 
 # Find POPCNT compiler flag ##########################################
 
