@@ -45,7 +45,7 @@ int256_t pi_lmo1(int128_t x)
   int256_t S2 = 0;
 
   vector<int32_t> primes = generate_primes(y);
-  vector<int32_t> lpf = generate_least_prime_factors(y);
+  vector<int32_t> lpf = generate_lpf(y);
   vector<int32_t> mu = generate_moebius(y);
 
   // Calculate the contribution of the ordinary leaves

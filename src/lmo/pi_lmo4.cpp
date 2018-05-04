@@ -152,7 +152,7 @@ int64_t pi_lmo4(int64_t x)
   int256_t p2 = P2(x, y, 1);
 
   vector<int32_t> mu = generate_moebius(y);
-  vector<int32_t> lpf = generate_least_prime_factors(y);
+  vector<int32_t> lpf = generate_lpf(y);
   vector<int32_t> primes = generate_primes(y);
 
   int256_t s1 = S1(x, y, c, 1);

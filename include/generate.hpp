@@ -59,7 +59,7 @@ std::vector<int32_t> generate_moebius(int64_t max);
 /// Generate a vector with the least prime
 /// factors of the integers <= max.
 ///
-std::vector<int32_t> generate_least_prime_factors(int64_t max);
+std::vector<int32_t> generate_lpf(int64_t max);
 
 /// Generate a vector with the prime counts below max
 /// using the sieve of Eratosthenes.
