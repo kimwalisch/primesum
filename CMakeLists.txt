@@ -104,20 +104,41 @@ endif()
 
 if(WITH_OPENMP)
     find_package(OpenMP QUIET)
+    if(OpenMP_FOUND OR OpenMP_CXX_FOUND)
 
-    if(TARGET OpenMP::OpenMP_CXX)
-        set(LIB_OPENMP "OpenMP::OpenMP_CXX")
-    elseif(OPENMP_FOUND)
-        # Support for CMake <= 3.8
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    endif()
-
-    if(OpenMP_CXX_FLAGS)
-        message(STATUS "Found OpenMP: ${OpenMP_CXX_FLAGS}")
+        if(TARGET OpenMP::OpenMP_CXX)
+            set(LIB_OPENMP "OpenMP::OpenMP_CXX")
+            message(STATUS "Found OpenMP: ${OpenMP_CXX_FLAGS}")
+        else()
+            message(STATUS "Found OpenMP: ${OpenMP_CXX_FLAGS}")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+        endif()
 
         cmake_push_check_state()
-        set(CMAKE_REQUIRED_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include")
         set(CMAKE_REQUIRED_FLAGS "${OpenMP_CXX_FLAGS} ${CMAKE_CXX11_STANDARD_COMPILE_OPTION}")
+        set(CMAKE_REQUIRED_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+        check_cxx_source_compiles("
+            #include <int128_t.hpp>
+            int main() {
+                primesum::int128_t sum = 0;
+                #pragma omp parallel for reduction(+: sum)
+                for (int i = 0; i < 100; i++)
+                    sum += i;
+                return 0;
+            }" OpenMP_without_libatomic)
+
+        if(NOT OpenMP_without_libatomic)
+            find_library(LIB_ATOMIC NAMES atomic libatomic.so.1)
+
+            if(LIB_ATOMIC)
+                message(STATUS "Found libatomic: ${LIB_ATOMIC}")
+            else()
+                message(FATAL_ERROR "Failed to find libatomic!")
+            endif()
+        endif()
+
+        set(CMAKE_REQUIRED_LIBRARIES "${LIB_ATOMIC}")
 
         check_cxx_source_compiles("
             #include <omp.h>
@@ -128,10 +149,9 @@ if(WITH_OPENMP)
                 for (int i = 0; i < 100; i++)
                     sum += i;
                 return 0;
-            }"
-            omp_declare_reduction)
+            }" OpenMP_declare_reduction)
 
-        if(NOT omp_declare_reduction)
+        if(NOT OpenMP_declare_reduction)
             message(FATAL_ERROR "Compiler does not support OpenMP 4.0 or later!")
         endif()
 
