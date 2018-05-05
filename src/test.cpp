@@ -2,7 +2,7 @@
 /// @file   test.cpp
 /// @brief  primesum integration tests.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -20,10 +20,6 @@
 #include <exception>
 #include <sstream>
 #include <ctime>
-
-#ifdef _OPENMP
-  #include <omp.h>
-#endif
 
 /// For types: f1(x) , f2(x)
 #define CHECK_11(f1, f2) check_equal(#f1, x, f1 (x), f2 (x))

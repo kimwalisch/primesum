@@ -19,7 +19,7 @@
 ///         3) lpf          if moebius(n) = -1
 ///         4) INT_MAX      if n is a prime
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -39,10 +39,6 @@
 #include <limits>
 #include <stdint.h>
 #include <vector>
-
-#ifdef _OPENMP
-  #include <omp.h>
-#endif
 
 namespace primesum {
 

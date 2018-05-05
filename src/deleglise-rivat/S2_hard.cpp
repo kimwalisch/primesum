@@ -6,7 +6,7 @@
 ///        (PiTable & FactorTable) to reduce the memory usage by
 ///        about 10x.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -29,10 +29,6 @@
 
 #include <stdint.h>
 #include <vector>
-
-#ifdef _OPENMP
-  #include <omp.h>
-#endif
 
 using namespace std;
 using namespace primesum;

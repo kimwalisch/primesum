@@ -3,7 +3,7 @@
 /// @brief Print the status of S2(x, y) in percent.
 ///        Requires use of --status[=N] command-line flag.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -20,10 +20,6 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
-
-#ifdef _OPENMP
-  #include <omp.h>
-#endif
 
 using namespace std;
 
