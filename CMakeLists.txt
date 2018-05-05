@@ -184,8 +184,6 @@ PRIVATE
 # Find POPCNT compiler flag ##########################################
 
 if(WITH_POPCNT)
-    include(CMakePushCheckState)
-
     if("${CMAKE_CXX_COMPILER}" MATCHES "icpc")
         cmake_push_check_state()
         set(CMAKE_REQUIRED_FLAGS -Werror)
