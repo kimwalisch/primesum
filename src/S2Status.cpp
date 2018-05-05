@@ -45,17 +45,12 @@ double S2Status::skewed_percent(int128_t n, int128_t limit) const
   return max(old_percent_, percent);
 }
 
-bool S2Status::is_print(double time) const
-{
-  return (time - old_time_) >= print_threshold_;
-}
-
 bool S2Status::is_print(double time, double percent) const
 {
   if (old_time_ == 0)
     return true;
 
-  if (!is_print(time))
+  if ((time - old_time_) < print_threshold_)
     return false;
 
   int new_val = (int) (precision_factor_ * percent);
@@ -85,30 +80,6 @@ void S2Status::print(int128_t n, int128_t limit)
       old_percent_ = percent;
       old_time_ = time;
     }
-  }
-}
-
-void S2Status::print(int128_t n, int128_t limit, double rsd)
-{
-  double time = get_time();
-
-  if (is_print(time))
-  {
-    double percent = skewed_percent(n, limit);
-    int load_balance = (int) in_between(0, 100 - rsd + 0.5, 100);
-
-    ostringstream status;
-    ostringstream out;
-
-    status << "Status: " << fixed << setprecision(precision_) << percent << "%, ";
-    status << "Load balance: " << load_balance << "%";
-    size_t spaces = status.str().length() + 2;
-    string reset_line = "\r" + string(spaces,' ') + "\r";
-    out << reset_line << status.str();
-    cout << out.str() << flush;
-
-    old_percent_ = percent;
-    old_time_ = time;
   }
 }
 
