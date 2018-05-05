@@ -162,7 +162,7 @@ endif()
 # Build binary #######################################################
 
 add_executable(primesum "${SRC}")
-target_link_libraries(primesum PRIVATE primesieve::primesieve "${LIB_OPENMP}")
+target_link_libraries(primesum PRIVATE primesieve::primesieve "${LIB_OPENMP}" "${LIB_ATOMIC}")
 target_include_directories(primesum PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 install(TARGETS primesum DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
