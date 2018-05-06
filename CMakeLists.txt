@@ -165,6 +165,9 @@ if(WITH_OPENMP)
         endif()
 
         cmake_pop_check_state()
+    else()
+        message(STATUS "Performing Test OpenMP")
+        message(STATUS "Performing Test OpenMP - Failed")
     endif()
 endif()
 
