@@ -25,60 +25,74 @@ using namespace std;
 
 namespace primesum {
 
-S2Status::S2Status(int128_t x) :
-  old_percent_(0),
-  old_time_(0),
-  print_threshold_(1.0 / 20),
-  precision_(get_status_precision(x))
+S2Status::S2Status(int128_t x)
 {
-  precision_factor_ = ipow(10, precision_);
+  precision_ = get_status_precision(x);
+  int q = ipow(10, precision_);
+  epsilon_ = 1.0 / q;
 }
 
-double S2Status::skewed_percent(int128_t n, int128_t limit) const
+/// Dirty hack!
+double S2Status::skewed_percent(int128_t x, int128_t y)
 {
   double exp = 0.96;
-  double percent = get_percent((double) n, (double) limit);
+  double percent = get_percent(x, y);
   double base = exp + percent / (101 / (1 - exp));
   double low = pow(base, 100.0);
-  percent = 100 - in_between(0, 100 * (pow(base, percent) - low) / (1 - low), 100);
+  double dividend = pow(base, percent) - low;
+  percent = 100 - (100 * dividend / (1 - low));
 
-  return max(old_percent_, percent);
+  return percent;
 }
 
-bool S2Status::is_print(double time, double percent) const
+#if defined(_OPENMP)
+
+bool S2Status::is_print(double time)
 {
-  if (old_time_ == 0)
-    return true;
+  TryLock lock(lock_);
+  if (lock.ownsLock())
+  {
+    double old = time_;
+    return old == 0 ||
+          (time - old) >= is_print_;
+  }
 
-  if ((time - old_time_) < print_threshold_)
-    return false;
-
-  int new_val = (int) (precision_factor_ * percent);
-  int old_val = (int) (precision_factor_ * old_percent_);
-
-  return new_val > old_val;
+  return false;
 }
+
+#else
+
+bool S2Status::is_print(double time)
+{
+  double old = time_;
+  return old == 0 ||
+        (time - old) >= is_print_;
+}
+
+#endif
 
 void S2Status::print(int128_t n, int128_t limit)
 {
   double time = get_time();
-  double percent = skewed_percent(n, limit);
 
-  if (is_print(time, percent))
+  if (is_print(time))
   {
-    ostringstream status;
-    ostringstream out;
+    time_ = time;
 
-    status << "Status: " << fixed << setprecision(precision_) << percent << "%";
-    size_t spaces = status.str().length();
-    string reset_line = "\r" + string(spaces,' ') + "\r";
-    out << reset_line << status.str();
-    cout << out.str() << flush;
+    double percent = skewed_percent(n, limit);
+    double old = percent_;
 
-    #pragma omp critical (s2_status)
+    if ((percent - old) >= epsilon_)
     {
-      old_percent_ = percent;
-      old_time_ = time;
+      percent_ = percent;
+      ostringstream status;
+      ostringstream out;
+
+      status << "Status: " << fixed << setprecision(precision_) << percent << "%";
+      size_t spaces = status.str().length();
+      string reset_line = "\r" + string(spaces,' ') + "\r";
+      out << reset_line << status.str();
+      cout << out.str() << flush;
     }
   }
 }

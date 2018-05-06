@@ -12,6 +12,10 @@
 
 #include <int128_t.hpp>
 
+#if defined(_OPENMP)
+  #include <OmpLock.hpp>
+#endif
+
 namespace primesum {
 
 class S2Status
@@ -19,14 +23,18 @@ class S2Status
 public:
   S2Status(int128_t x);
   void print(int128_t n, int128_t limit);
-  double skewed_percent(int128_t n, int128_t limit) const;
+  static double skewed_percent(int128_t n, int128_t limit);
 private:
-  bool is_print(double time, double percent) const;
-  double old_percent_;
-  double old_time_;
-  double print_threshold_;
+  bool is_print(double time);
+  double epsilon_;
+  double percent_ = -1;
+  double time_ = 0;
+  double is_print_ = 1.0 / 20;
   int precision_;
-  int precision_factor_;
+
+#if defined(_OPENMP)
+  OmpLock lock_;
+#endif
 };
 
 } // namespace

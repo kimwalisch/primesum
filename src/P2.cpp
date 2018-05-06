@@ -170,7 +170,7 @@ P2_OpenMP_master(T x,
 
     if (is_print())
     {
-      double percent = get_percent((double) low, (double) z);
+      double percent = get_percent(low, z);
       cout << "\rStatus: " << fixed << setprecision(get_status_precision(x))
            << percent << '%' << flush;
     }
