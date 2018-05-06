@@ -150,6 +150,7 @@ int64_t S2LoadBalancer::get_min_segment_size() const
 ///
 double S2LoadBalancer::get_pivot(double seconds) const
 {
+  seconds = max(min_seconds_, seconds);
   double log_seconds = log(seconds);
   log_seconds = max(min_seconds_, log_seconds);
   double dont_decrease = decrease_dividend_ / (seconds * log_seconds);
