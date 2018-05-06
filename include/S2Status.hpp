@@ -23,7 +23,7 @@ class S2Status
 public:
   S2Status(int128_t x);
   void print(int128_t n, int128_t limit);
-  static double skewed_percent(int128_t n, int128_t limit);
+  static double skewed_percent(int128_t x, int128_t y);
 private:
   bool is_print(double time);
   double epsilon_;
