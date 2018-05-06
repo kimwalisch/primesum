@@ -135,7 +135,7 @@ int64_t S2(int64_t x,
       {
         int64_t xn = x / (prime * primes[l]);
         int64_t stop = xn - low;
-        for (; i <= stop; i+= 2)
+        for (; i <= stop; i += 2)
           phi[b] += (low + i) * sieve[i];
         S2_result += primes[l]* prime * phi[b];
       }
