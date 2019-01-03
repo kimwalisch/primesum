@@ -3,6 +3,7 @@ project(primesum CXX)
 set(PRIMESUM_VERSION_MAJOR 1)
 set(PRIMESUM_VERSION_MINOR 6)
 set(PRIMESUM_VERSION "${PRIMESUM_VERSION_MAJOR}.${PRIMESUM_VERSION_MINOR}")
+set(CMAKE_BUILD_TYPE Release)
 
 # Build options ######################################################
 
@@ -52,14 +53,6 @@ include(CheckCXXCompilerFlag)
 include(CheckCXXSourceCompiles)
 include(CMakePushCheckState)
 include(GNUInstallDirs)
-
-# Set default build type to Release ##################################
-
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING
-        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-        FORCE)
-endif()
 
 # libprimesieve ######################################################
 
