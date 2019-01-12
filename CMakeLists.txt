@@ -87,9 +87,9 @@ if(WITH_LIBDIVIDE)
 endif()
 
 if(libdivide_branchfree)
-    set(LIB_SRC ${LIB_SRC} src/deleglise-rivat/S2_easy_libdivide.cpp)
+    set(SRC ${SRC} src/deleglise-rivat/S2_easy_libdivide.cpp)
 else()
-    set(LIB_SRC ${LIB_SRC} src/deleglise-rivat/S2_easy.cpp)
+    set(SRC ${SRC} src/deleglise-rivat/S2_easy.cpp)
 endif()
 
 # Check for OpenMP ###################################################
