@@ -15,7 +15,7 @@ before_install:
   - sudo apt-get update -qq
 
 install:
-  - sudo apt-get install -y g++-multilib make cmake cppcheck valgrind mingw-w64
+  - sudo apt-get install -y make cmake cppcheck valgrind mingw-w64
 
 script:
   # 1) Static code analysis
@@ -41,11 +41,3 @@ script:
              -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
              -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
   - make -j4 VERBOSE=1
-  # 5) Test 32-bit
-  - cd ..
-  - rm -rf build
-  - mkdir build
-  - cd build
-  - cmake .. -DCMAKE_CXX_FLAGS="$CXXFLAGS -m32 -Wno-long-long"
-  - make -j4
-  - ./primesum --test
