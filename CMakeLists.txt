@@ -68,29 +68,28 @@ if(NOT HAVE___INT128_T)
     endif()
 endif()
 
-# Check if libdivide.h works #########################################
+# Check if libdivide.h compiles ######################################
 
 if(WITH_LIBDIVIDE)
-    message(STATUS "Performing Test libdivide")
+    cmake_push_check_state()
+    set(CMAKE_REQUIRED_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-    try_run(RUN_LIBDIVIDE COMPILE_LIBDIVIDE
-            ${CMAKE_BINARY_DIR}
-            ${CMAKE_CURRENT_SOURCE_DIR}/test/libdivide.cpp
-            COMPILE_DEFINITIONS -I${CMAKE_CURRENT_SOURCE_DIR}/include)
+    check_cxx_source_compiles("
+        #include <libdivide.h>
+        #include <stdint.h>
+        int main() {
+            libdivide::divider<uint64_t, libdivide::BRANCHFREE> d(3);
+            uint64_t n = 1000000000;
+            return (n / d == n / 3) ? 0 : 1;
+        }" libdivide_branchfree)
 
-    if(RUN_LIBDIVIDE EQUAL 0)
-        message(STATUS "Performing Test libdivide - Success")
+    cmake_pop_check_state()
+
+    if(libdivide_branchfree)
+        set(LIB_SRC ${LIB_SRC} src/deleglise-rivat/S2_easy_libdivide.cpp)
     else()
-        message(STATUS "Performing Test libdivide - Failed")
+        set(LIB_SRC ${LIB_SRC} src/deleglise-rivat/S2_easy.cpp)
     endif()
-endif()
-
-# Include S2_easy* source files ######################################
-
-if(RUN_LIBDIVIDE EQUAL 0)
-    set(SRC ${SRC} src/deleglise-rivat/S2_easy_libdivide.cpp)
-else()
-    set(SRC ${SRC} src/deleglise-rivat/S2_easy.cpp)
 endif()
 
 # Check for OpenMP ###################################################
@@ -187,16 +186,22 @@ if(WITH_POPCNT)
         cmake_pop_check_state()
 
         if(msse42)
-            target_compile_options(primesum PRIVATE -msse4.2)
+            set(POPCNT_FLAG "-msse4.2")
         endif()
-    else()
+    endif()
+
+    if(NOT POPCNT_FLAG)
         cmake_push_check_state()
         set(CMAKE_REQUIRED_FLAGS -Werror)
         check_cxx_compiler_flag(-mpopcnt mpopcnt)
         cmake_pop_check_state()
 
         if(mpopcnt)
-            target_compile_options(primesum PRIVATE -mpopcnt)
+            set(POPCNT_FLAG "-mpopcnt")
         endif()
     endif()
+endif()
+
+if(POPCNT_FLAG)
+    target_compile_options(primesum PRIVATE "${POPCNT_FLAG}")
 endif()
