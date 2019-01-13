@@ -99,7 +99,14 @@ script:
         # 2) Run test suite
         mkdir build
         cd build
-        cmake ..
+        if [ "${CXX:0:3}" = "g++" ]
+        then
+            cmake ..
+        fi
+        if [ "$CXX" = "clang++" ]
+        then
+            cmake .. -DWITH_OPENMP=OFF
+        fi
         make -j4
         ldd primesum
         ./primesum --test
