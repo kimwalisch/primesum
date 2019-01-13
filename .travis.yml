@@ -121,8 +121,7 @@ script:
         # 1) Run test suite
         mkdir build
         cd build
-        cmake .. -DCMAKE_CXX_FLAGS="$SANITIZER_FLAGS" \
-                 -DCMAKE_C_FLAGS="$SANITIZER_FLAGS"
-        make -j4
+        cmake .. -DCMAKE_CXX_FLAGS="$SANITIZER_FLAGS"
+        make -j4 VERBOSE=1
         ./primesum --test
     fi
