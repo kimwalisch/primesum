@@ -65,7 +65,9 @@ matrix:
 
 env:
   global:
-    - CXXFLAGS="-O3 -Wall -Wextra -Werror -pedantic -Wno-missing-braces"
+    - WARNING_FLAGS="-Wall -Wextra -Werror -pedantic -Wno-missing-braces"
+    - CXXFLAGS="-O3 $WARNING_FLAGS"
+    - SANITIZER_FLAGS="-O1 -g -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer $WARNING_FLAGS"
     - OMP_NUM_THREADS=4
 
 before_install:
@@ -119,7 +121,8 @@ script:
         # 1) Run test suite
         mkdir build
         cd build
-        cmake .. -DBUILD_TESTS=ON
+        cmake .. -DCMAKE_CXX_FLAGS="$SANITIZER_FLAGS" \
+                 -DCMAKE_C_FLAGS="$SANITIZER_FLAGS"
         make -j4
         ./primesum --test
     fi
