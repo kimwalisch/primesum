@@ -67,7 +67,7 @@ env:
   global:
     - WARNING_FLAGS="-Wall -Wextra -Werror -pedantic -Wno-missing-braces"
     - CXXFLAGS="-O3 $WARNING_FLAGS"
-    - SANITIZER_FLAGS="-O1 -g -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer $WARNING_FLAGS"
+    - SANITIZER_FLAGS="-O1 -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer $WARNING_FLAGS"
     - OMP_NUM_THREADS=4
 
 before_install:
@@ -121,7 +121,8 @@ script:
         # 1) Run test suite
         mkdir build
         cd build
-        cmake .. -DCMAKE_CXX_FLAGS="$SANITIZER_FLAGS"
+        cmake .. -DCMAKE_BUILD_TYPE=Debug \
+                 -DCMAKE_CXX_FLAGS="$SANITIZER_FLAGS"
         make -j4 VERBOSE=1
         ./primesum --test
     fi

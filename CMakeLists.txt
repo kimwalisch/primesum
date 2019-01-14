@@ -3,7 +3,6 @@ project(primesum CXX)
 set(PRIMESUM_VERSION_MAJOR 1)
 set(PRIMESUM_VERSION_MINOR 6)
 set(PRIMESUM_VERSION "${PRIMESUM_VERSION_MAJOR}.${PRIMESUM_VERSION_MINOR}")
-set(CMAKE_BUILD_TYPE Release)
 
 # Build options ######################################################
 
@@ -13,6 +12,19 @@ option(WITH_OPENMP       "Enable OpenMP support"          ON)
 option(BUILD_STATIC_LIBS "Build static libprimesieve"     ON)
 option(BUILD_SHARED_LIBS "Build shared libprimesieve"     OFF)
 option(BUILD_PRIMESIEVE  "Build primesieve binary"        OFF)
+
+# Set default build type to Release ##################################
+
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.9)
+    get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+elseif(CMAKE_CONFIGURATION_TYPES)
+    set(isMultiConfig TRUE)
+endif()
+
+if(NOT isMultiConfig AND NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING
+    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif()
 
 # primesum binary source files #######################################
 
