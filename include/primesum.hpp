@@ -1,7 +1,7 @@
 ///
 /// @file  primesum.hpp
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License.
 ///
@@ -13,9 +13,9 @@
 #include <string>
 #include <stdint.h>
 
-#define PRIMESUM_VERSION "1.6"
+#define PRIMESUM_VERSION "1.7"
 #define PRIMESUM_VERSION_MAJOR 1
-#define PRIMESUM_VERSION_MINOR 6
+#define PRIMESUM_VERSION_MINOR 7
 
 namespace primesum {
 
