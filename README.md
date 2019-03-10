@@ -77,6 +77,26 @@ Advanced Deleglise-Rivat options:
          --S2_hard          Only compute the hard special leaves
 ```
 
+## Performance tips
+
+primesum scales nicely up until 10^23 on current CPUs. For larger
+computations primesums's large memory usage will cause many
+[TLB (translation lookaside buffer)](https://en.wikipedia.org/wiki/Translation_lookaside_buffer)
+cache misses that will severely deteriorate primesum's performance.
+Fortunately the Linux kernel allows to enable
+[transparent huge pages](https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html)
+so that large memory allocations will automatically be done using huge
+pages instead of ordinary pages which dramatically reduces the number of
+TLB cache misses.
+
+```bash
+sudo su
+
+# Enable transparent huge pages until next reboot
+echo always > /sys/kernel/mm/transparent_hugepage/enabled
+echo always > /sys/kernel/mm/transparent_hugepage/defrag
+```
+
 ## Benchmark
 
 <table>
