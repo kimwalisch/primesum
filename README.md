@@ -1,6 +1,6 @@
 # primesum
 
-[![Build Status](https://travis-ci.org/kimwalisch/primesum.svg)](https://travis-ci.org/kimwalisch/primesum)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/kimwalisch/primesum?branch=master&svg=true)](https://ci.appveyor.com/project/kimwalisch/primesum)
 [![Github Releases](https://img.shields.io/github/release/kimwalisch/primesum.svg)](https://github.com/kimwalisch/primesum/releases)
 
 **primesum** is a command-line program that computes the sum of the
