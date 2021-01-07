@@ -1,7 +1,7 @@
 ///
 /// @file  EratBig.hpp
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2020 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -11,9 +11,9 @@
 #define ERATBIG_HPP
 
 #include "Bucket.hpp"
+#include "macros.hpp"
 #include "MemoryPool.hpp"
 #include "Wheel.hpp"
-#include "types.hpp"
 
 #include <stdint.h>
 #include <vector>
@@ -28,18 +28,17 @@ class EratBig : public Wheel210_t
 {
 public:
   void init(uint64_t, uint64_t, uint64_t);
-  void crossOff(byte_t*);
+  NOINLINE void crossOff(uint8_t*);
   bool enabled() const { return enabled_; }
 private:
   uint64_t maxPrime_ = 0;
   uint64_t log2SieveSize_ = 0;
   uint64_t moduloSieveSize_ = 0;
-  std::vector<SievingPrime*> sievingPrimes_;
+  std::vector<SievingPrime*> buckets_;
   MemoryPool memoryPool_;
   bool enabled_ = false;
-  void init(uint64_t);
   void storeSievingPrime(uint64_t, uint64_t, uint64_t);
-  void crossOff(byte_t*, Bucket*);
+  NOINLINE void crossOff(uint8_t*, Bucket*);
 };
 
 } // namespace

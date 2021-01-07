@@ -3,33 +3,33 @@
 /// @brief  The Erat class manages prime sieving using the
 ///         EratSmall, EratMedium, EratBig classes.
 ///
-/// Copyright (C) 2019 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2020 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
 ///
 
 #include <primesieve/config.hpp>
+#include <primesieve/CpuInfo.hpp>
 #include <primesieve/Erat.hpp>
 #include <primesieve/EratSmall.hpp>
 #include <primesieve/EratMedium.hpp>
 #include <primesieve/EratBig.hpp>
 #include <primesieve/PreSieve.hpp>
 #include <primesieve/pmath.hpp>
-#include <primesieve/primesieve_error.hpp>
 
 #include <stdint.h>
 #include <array>
 #include <algorithm>
+#include <cassert>
 #include <memory>
 
 using namespace std;
-using namespace primesieve;
 
 namespace {
 
 /// unset bits < start
-const array<byte_t, 37> unsetSmaller =
+const array<uint8_t, 37> unsetSmaller =
 {
   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
   0xfe, 0xfe, 0xfe, 0xfe, 0xfc, 0xfc, 0xf8, 0xf8,
@@ -39,7 +39,7 @@ const array<byte_t, 37> unsetSmaller =
 };
 
 /// unset bits > stop
-const array<byte_t, 37> unsetLarger =
+const array<uint8_t, 37> unsetLarger =
 {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
   0x01, 0x01, 0x01, 0x03, 0x03, 0x07, 0x07, 0x07,
@@ -51,18 +51,6 @@ const array<byte_t, 37> unsetLarger =
 } // namespace
 
 namespace primesieve {
-
-const array<uint64_t, 64> Erat::bruijnBitValues_ =
-{
-    7,  47,  11,  49,  67, 113,  13,  53,
-   89,  71, 161, 101, 119, 187,  17, 233,
-   59,  79,  91,  73, 133, 139, 163, 103,
-  149, 121, 203, 169, 191, 217,  19, 239,
-   43,  61, 109,  83, 157,  97, 181, 229,
-   77, 131, 137, 143, 199, 167, 211,  41,
-  107, 151, 179, 227, 127, 197, 209,  37,
-  173, 223, 193,  31, 221,  29,  23, 241
-};
 
 Erat::Erat() = default;
 
@@ -84,9 +72,7 @@ void Erat::init(uint64_t start,
   if (start > stop)
     return;
 
-  if (start < 7)
-    throw primesieve_error("Erat: start < 7");
-
+  assert(start >= 7);
   start_ = start;
   stop_ = stop;
   preSieve_ = &preSieve;
@@ -94,6 +80,11 @@ void Erat::init(uint64_t start,
   maxPreSieve_ = preSieve_->getMaxPrime();
   initSieve(sieveSize);
 
+  // The 8 bits of each byte of the sieve array correspond to
+  // the offsets { 7, 11, 13, 17, 19, 23, 29, 31 }. If we
+  // would set dist = sieveSize * 30 we would not include the
+  // last bit of the last byte which corresponds to the offset
+  // 31. For this reason we set dist = sieveSize * 30 + 6.
   uint64_t rem = byteRemainder(start);
   uint64_t dist = sieveSize_ * 30 + 6;
   segmentLow_ = start_ - rem;
@@ -109,24 +100,46 @@ void Erat::initSieve(uint64_t sieveSize)
   sieveSize_ = inBetween(8, sieveSize_, 4096);
   sieveSize_ *= 1024;
 
-  sieve_ = new byte_t[sieveSize_];
+  sieve_ = new uint8_t[sieveSize_];
   deleter_.reset(sieve_);
 }
 
 void Erat::initErat()
 {
   uint64_t sqrtStop = isqrt(stop_);
-  uint64_t l1Size = EratSmall::getL1Size(sieveSize_);
+  uint64_t l1CacheSize = getL1CacheSize();
 
-  maxEratSmall_  = (uint64_t) (l1Size * config::FACTOR_ERATSMALL);
+  maxEratSmall_ = (uint64_t) (l1CacheSize * config::FACTOR_ERATSMALL);
   maxEratMedium_ = (uint64_t) (sieveSize_ * config::FACTOR_ERATMEDIUM);
 
   if (sqrtStop > maxPreSieve_)
-    eratSmall_.init(stop_, l1Size, maxEratSmall_);
+    eratSmall_.init(stop_, l1CacheSize, maxEratSmall_);
   if (sqrtStop > maxEratSmall_)
     eratMedium_.init(stop_, sieveSize_, maxEratMedium_);
   if (sqrtStop > maxEratMedium_)
     eratBig_.init(stop_, sieveSize_, sqrtStop);
+}
+
+/// EratMedium and EratBig usually run fastest using a sieve
+/// size that matches the CPUs L2 cache size. EratSmall
+/// however runs fastest using a sieve size that matches the
+/// CPUs L1 cache size. Hence we use a smaller sieve size
+/// (L1 cache size) in EratSmall and a larger sieve size (L2
+/// cache size) in both EratMedium and EratBig.
+///
+uint64_t Erat::getL1CacheSize() const
+{
+  if (!cpuInfo.hasL1Cache())
+    return sieveSize_;
+
+  uint64_t size = cpuInfo.l1CacheSize();
+  uint64_t minSize = 8 << 10;
+  uint64_t maxSize = 4096 << 10;
+
+  size = std::min(size, sieveSize_);
+  size = inBetween(minSize, size, maxSize);
+
+  return size;
 }
 
 bool Erat::hasNextSegment() const
@@ -199,7 +212,7 @@ void Erat::sieveLastSegment()
   // unset bytes > stop
   uint64_t bytes = sieveSize_ % 8;
   bytes = (8 - bytes) % 8;
-  fill_n(&sieve_[sieveSize_], bytes, (byte_t) 0);
+  fill_n(&sieve_[sieveSize_], bytes, (uint8_t) 0);
 
   segmentLow_ = stop_;
 }

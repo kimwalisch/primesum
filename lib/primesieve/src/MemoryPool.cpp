@@ -10,7 +10,7 @@
 ///        doing any memory allocation as long as the MemoryPool's
 ///        stock is not empty.
 ///
-/// Copyright (C) 2019 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2020 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -22,24 +22,11 @@
 #include <primesieve/primesieve_error.hpp>
 
 #include <algorithm>
-#include <memory>
 #include <vector>
 
 using std::size_t;
-using std::unique_ptr;
 
 namespace primesieve {
-
-void MemoryPool::reset(SievingPrime*& sievingPrime)
-{
-  if (!stock_)
-    allocateBuckets();
-
-  Bucket* bucket = stock_;
-  stock_ = stock_->next();
-  bucket->setNext(nullptr);
-  sievingPrime = bucket->begin();
-}
 
 void MemoryPool::addBucket(SievingPrime*& sievingPrime)
 {
@@ -48,10 +35,19 @@ void MemoryPool::addBucket(SievingPrime*& sievingPrime)
 
   Bucket* bucket = stock_;
   stock_ = stock_->next();
+  bucket->setNext(nullptr);
 
-  Bucket* old = getBucket(sievingPrime);
-  old->setEnd(sievingPrime);
-  bucket->setNext(old);
+  // In case we add a bucket to the front of a
+  // non empty bucket list we need to set the
+  // next pointer of the new bucket to the bucket
+  // that was previously at the front of the list.
+  if (sievingPrime)
+  {
+    Bucket* old = Bucket::get(sievingPrime);
+    old->setEnd(sievingPrime);
+    bucket->setNext(old);
+  }
+
   sievingPrime = bucket->begin();
 }
 
@@ -67,13 +63,13 @@ void MemoryPool::allocateBuckets()
   if (memory_.empty())
     memory_.reserve(128);
 
-  // allocate a large chunk of memory
+  // Allocate a large chunk of memory
   size_t bytes = count_ * sizeof(Bucket);
   char* memory = new char[bytes];
-  memory_.emplace_back(unique_ptr<char[]>(memory));
+  memory_.emplace_back(memory);
   void* ptr = memory;
 
-  // align pointer address to sizeof(Bucket)
+  // Align pointer address to sizeof(Bucket)
   if (!std::align(sizeof(Bucket), sizeof(Bucket), ptr, bytes))
     throw primesieve_error("MemoryPool: failed to align memory!");
 

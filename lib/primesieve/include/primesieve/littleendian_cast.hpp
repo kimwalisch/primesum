@@ -3,7 +3,7 @@
 /// @brief  Cast bytes in ascending address order on both little and
 ///         big endian CPUs.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2020 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -12,9 +12,9 @@
 #ifndef LITTLEENDIAN_CAST_HPP
 #define LITTLEENDIAN_CAST_HPP
 
-#include "types.hpp"
+#include <stdint.h>
 
-namespace primesieve {
+namespace {
 
 /// http://c-faq.com/misc/endiantest.html
 inline bool is_littleendian()
@@ -37,7 +37,7 @@ inline bool is_littleendian()
 template <typename T, int INDEX, int STOP>
 struct littleendian_cast_helper
 {
-  static T sum(const byte_t* array, T n)
+  static T sum(const uint8_t* array, T n)
   {
     n += static_cast<T>(array[INDEX]) << (INDEX * 8);
     return littleendian_cast_helper<T, INDEX + 1, STOP - 1>::sum(array, n);
@@ -47,14 +47,14 @@ struct littleendian_cast_helper
 template <typename T, int INDEX>
 struct littleendian_cast_helper<T, INDEX, 0>
 {
-  static T sum(const byte_t*, T n)
+  static T sum(const uint8_t*, T n)
   {
     return n;
   }
 };
 
 template <typename T>
-inline T littleendian_cast(const byte_t* array)
+inline T littleendian_cast(const uint8_t* array)
 {
   if (is_littleendian())
     return *reinterpret_cast<const T*>(array);

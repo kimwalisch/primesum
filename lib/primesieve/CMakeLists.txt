@@ -1,16 +1,17 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.4...3.19)
 project(primesieve CXX)
-set(PRIMESIEVE_VERSION "7.5")
-set(PRIMESIEVE_SOVERSION "9.5.0")
+set(PRIMESIEVE_VERSION "7.6")
+set(PRIMESIEVE_SOVERSION "9.6.0")
 
 # Build options ######################################################
 
-option(BUILD_PRIMESIEVE  "Build primesieve binary"    ON)
-option(BUILD_SHARED_LIBS "Build shared libprimesieve" ON)
-option(BUILD_STATIC_LIBS "Build static libprimesieve" ON)
-option(BUILD_DOC         "Build documentation"        OFF)
-option(BUILD_EXAMPLES    "Build example programs"     OFF)
-option(BUILD_TESTS       "Build test programs"        OFF)
+option(BUILD_PRIMESIEVE  "Build primesieve binary"       ON)
+option(BUILD_SHARED_LIBS "Build shared libprimesieve"    ON)
+option(BUILD_STATIC_LIBS "Build static libprimesieve"    ON)
+option(BUILD_DOC         "Build C/C++ API documentation" OFF)
+option(BUILD_MANPAGE     "Regenerate man page using a2x" OFF)
+option(BUILD_EXAMPLES    "Build example programs"        OFF)
+option(BUILD_TESTS       "Build test programs"           OFF)
 
 if(NOT BUILD_SHARED_LIBS AND NOT BUILD_STATIC_LIBS)
     message(FATAL_ERROR "One or both of BUILD_SHARED_LIBS or BUILD_STATIC_LIBS must be set to ON")
@@ -31,22 +32,24 @@ endif()
 
 # primesieve binary source files #####################################
 
-set(BIN_SRC src/console/cmdoptions.cpp
-            src/console/help.cpp
-            src/console/main.cpp
-            src/console/test.cpp)
+set(BIN_SRC src/app/cmdoptions.cpp
+            src/app/help.cpp
+            src/app/main.cpp
+            src/app/test.cpp)
 
 # primesieve library source files ####################################
 
 set(LIB_SRC src/api-c.cpp
             src/api.cpp
             src/CpuInfo.cpp
-            src/EratBig.cpp
-            src/EratMedium.cpp
+            src/Erat.cpp
             src/EratSmall.cpp
+            src/EratMedium.cpp
+            src/EratBig.cpp
             src/iterator-c.cpp
             src/iterator.cpp
             src/IteratorHelper.cpp
+            src/LookupTables.cpp
             src/MemoryPool.cpp
             src/PrimeGenerator.cpp
             src/nthPrime.cpp
@@ -55,15 +58,12 @@ set(LIB_SRC src/api-c.cpp
             src/PreSieve.cpp
             src/PrintPrimes.cpp
             src/PrimeSieve.cpp
-            src/Erat.cpp
-            src/SievingPrimes.cpp
-            src/Wheel.cpp)
+            src/SievingPrimes.cpp)
 
 # Required includes ##################################################
 
 include(GNUInstallDirs)
 include(CMakePushCheckState)
-include(CheckCXXCompilerFlag)
 include(CheckCXXSourceCompiles)
 include(CMakePackageConfigHelpers)
 
@@ -75,15 +75,6 @@ if(WIN32 AND NOT MINGW)
         # Export symbols to .def file
         set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
     endif()
-endif()
-
-# Silence GCC switch fall through warnings ###########################
-
-check_cxx_compiler_flag(-Wno-implicit-fallthrough Wno_fallthrough)
-
-if(Wno_fallthrough)
-    set_source_files_properties(src/EratSmall.cpp PROPERTIES COMPILE_FLAGS -Wno-implicit-fallthrough)
-    set_source_files_properties(src/EratMedium.cpp PROPERTIES COMPILE_FLAGS -Wno-implicit-fallthrough)
 endif()
 
 # Check if libatomic is needed #######################################
@@ -281,44 +272,20 @@ endif()
 
 # Regenerate man page ################################################
 
-if(CMAKE_SYSTEM_NAME AND
-   CMAKE_HOST_SYSTEM_NAME AND
-   NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "${CMAKE_HOST_SYSTEM_NAME}")
-    set(IS_CROSS_COMPILIATION ON)
-endif()
+if(BUILD_MANPAGE)
+    find_program(A2X_EXECUTABLE a2x)
 
-if(CMAKE_SYSTEM_PROCESSOR AND
-   CMAKE_HOST_SYSTEM_PROCESSOR AND
-   NOT "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "${CMAKE_HOST_SYSTEM_PROCESSOR}")
-    set(IS_CROSS_COMPILIATION ON)
-endif()
-
-if(BUILD_PRIMESIEVE AND NOT IS_CROSS_COMPILIATION)
-    find_program(HELP2MAN help2man)
-
-    if(HELP2MAN)
-        message(STATUS "Found help2man: ${HELP2MAN}")
-
-        execute_process(COMMAND perl -e "use Locale::gettext;"
-                        RESULT_VARIABLE LOCALE_RES
-                        OUTPUT_QUIET ERROR_QUIET)
-
-        if(LOCALE_RES EQUAL 0)
-            message(STATUS "Found help2man option: --locale=C.UTF-8")
-            set(HELP2MAN_LOCALE "--locale=C.UTF-8")
-        endif()
+    if(NOT A2X_EXECUTABLE)
+        message(FATAL_ERROR "Missing a2x program (required for man page generation)!")
+    else()
+        message(STATUS "Found a2x: ${A2X_EXECUTABLE}")
 
         add_custom_command(
             TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${HELP2MAN}
-            ARGS -s 1
-                 --manual="primesieve"
-                 --source="primesieve ${PRIMESIEVE_VERSION}"
-                 --no-info
-                 ${HELP2MAN_LOCALE}
-                 -n "efficient prime number generator"
-                 -o ${PROJECT_SOURCE_DIR}/doc/primesieve.1
-                 $<TARGET_FILE:primesieve>
+            COMMAND ${A2X_EXECUTABLE}
+            ARGS --format=manpage
+                 -D "${PROJECT_SOURCE_DIR}/doc"
+                 "${PROJECT_SOURCE_DIR}/doc/primesieve.txt"
             VERBATIM)
     endif()
 endif()

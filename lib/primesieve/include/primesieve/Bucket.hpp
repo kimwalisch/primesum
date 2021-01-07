@@ -5,7 +5,7 @@
 ///         once there is no more space in the current Bucket
 ///         a new Bucket is allocated.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2020 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -18,6 +18,7 @@
 #include "pmath.hpp"
 
 #include <stdint.h>
+#include <cstddef>
 #include <cassert>
 
 namespace primesieve {
@@ -42,8 +43,7 @@ public:
                uint64_t multipleIndex,
                uint64_t wheelIndex)
   {
-    set(multipleIndex, wheelIndex);
-    sievingPrime_ = (uint32_t) sievingPrime;
+    set(sievingPrime, multipleIndex, wheelIndex);
   }
 
   void set(uint64_t multipleIndex,
@@ -51,7 +51,6 @@ public:
   {
     assert(multipleIndex <= MAX_MULTIPLEINDEX);
     assert(wheelIndex <= MAX_WHEELINDEX);
-
     indexes_ = (uint32_t) (multipleIndex | (wheelIndex << 23));
   }
 
@@ -59,7 +58,9 @@ public:
            uint64_t multipleIndex,
            uint64_t wheelIndex)
   {
-    set(multipleIndex, wheelIndex);
+    assert(multipleIndex <= MAX_MULTIPLEINDEX);
+    assert(wheelIndex <= MAX_WHEELINDEX);
+    indexes_ = (uint32_t) (multipleIndex | (wheelIndex << 23));
     sievingPrime_ = (uint32_t) sievingPrime;
   }
 
@@ -76,18 +77,6 @@ public:
   uint64_t getWheelIndex() const
   {
     return indexes_ >> 23;
-  }
-
-  void setMultipleIndex(uint64_t multipleIndex)
-  {
-    assert(multipleIndex <= MAX_MULTIPLEINDEX);
-    indexes_ = (uint32_t) (indexes_ | multipleIndex);
-  }
-
-  void setWheelIndex(uint64_t wheelIndex)
-  {
-    assert(wheelIndex <= MAX_WHEELINDEX);
-    indexes_ = (uint32_t) (wheelIndex << 23);
   }
 
 private:
@@ -109,11 +98,42 @@ public:
   SievingPrime* begin() { return &sievingPrimes_[0]; }
   SievingPrime* end()   { return end_; }
   Bucket* next()        { return next_; }
-  bool hasNext() const  { return next_ != nullptr; }
-  bool empty()          { return begin() == end(); }
   void setNext(Bucket* next) { next_ = next; }
   void setEnd(SievingPrime* end) { end_ = end; }
   void reset() { end_ = begin(); }
+
+  /// Get the sieving prime's bucket.
+  /// For performance reasons we don't keep an array with all
+  /// buckets. Instead we find the sieving prime's bucket by
+  /// doing pointer arithmetic using the sieving prime's address.
+  /// Since all buckets are aligned by sizeof(Bucket) we
+  /// calculate the next address that is smaller than the sieving
+  /// prime's address and that is aligned by sizeof(Bucket).
+  /// That's the address of the sieving prime's bucket.
+  ///
+  static Bucket* get(SievingPrime* sievingPrime)
+  {
+    assert(sievingPrime != nullptr);
+    std::size_t address = (std::size_t) sievingPrime;
+    // We need to adjust the address
+    // in case the bucket is full.
+    address -= 1;
+    address -= address % sizeof(Bucket);
+    return (Bucket*) address;
+  }
+
+  /// Returns true if the bucket is full with sieving primes
+  /// (or if there is no bucket i.e. sievingPrime == nullptr).
+  /// Each bucket's memory address is aligned by sizeof(Bucket)
+  /// (which is a power of 2) in the MemoryPool. This allows
+  /// us to quickly check if the bucket is full using the next
+  /// sieving prime's address % sizeof(Bucket).
+  ///
+  static bool isFull(SievingPrime* sievingPrime)
+  {
+    std::size_t address = (std::size_t) sievingPrime;
+    return address % sizeof(Bucket) == 0;
+  }
 
 private:
   enum {

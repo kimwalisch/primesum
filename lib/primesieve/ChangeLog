@@ -1,20 +1,52 @@
-Changes in version 7.5, 07/04/2019
+Changes in version 7.6, 18/12/2020
 ==================================
 
-This version fixes a few non critical bugs/issues.
+* The primesieve GUI application has been deprecated/removed.
+  It only works with QT4 which has reached end-of-life.
+* Get rid Travis-CI because it is not free anymore.
+* CpuInfo.cpp: Linux kernel CPU detection has been updated.
+* CpuInfo.cpp: Add workaround for sysctl bug (macOS & iOS).
+* Erat.hpp: Use CTZ instruction on x64 and ARM64 CPUs.
+* config.hpp: Tune FACTOR_ERATSMALL factor.
+* EratSmall.cpp: Get rid of goto.
+* EratSmall.cpp: Optimize switch statement.
+* EratSmall.cpp: Annotate switch cases with fallthrough.
+* EratMedium.cpp: Get rid of goto.
+* EratMedium.cpp: Optimize switch statements.
+* EratMedium.cpp: Annotate switch cases with fallthrough.
+* EratBig.cpp: Simplify main sieving loop.
+* doc/C_Examples.md: libprimesieve C code examples.
+* doc/CPP_Examples.md: libprimesieve C++ code examples.
+
+Changes in version 7.5, 27/12/2019
+==================================
+
+This is a minor new release, the API and ABI (Application binary
+interface) are backwards compatible.
+
+primesieve::iterator::next_prime() has been sped up by about 10%.
+Since primesieve::iterator is also used under the hood for
+generating an array (or vector) of primes that should also run
+slightly faster.
+
 I have also removed the https://primesieve.org website because it
-simply takes too much effort to maintain it and make it look
-nice across all devices, operating systems and browsers.
+simply took too much effort to maintain it and make it look nice
+across all devices, operating systems and browsers.
 Hence primesieve's main homepage is now its GitHub repo:
 https://github.com/kimwalisch/primesieve
 
-* CMakeLists.txt: Require CMake 3.4 instead 3.9.
 * Erat.cpp: Silence MSVC debug warning.
 * StorePrimes.hpp: Add workaround for windows.h max/min macros.
-* primecount.pc.in: Fix libdir and includedir.
+* PrimeGenerator.cpp: Cache more primes.
+* SievingPrimes.cpp: Cache more primes.
+* cmdoptions.cpp: Support options of type: --option VALUE.
+* help.cpp: Improve help menu.
+* CMakeLists.txt: Require CMake 3.4 instead 3.9.
+* primesieve.pc.in: Fix libdir and includedir.
 * README.md: Add libprimesieve multi-threading section.
 * BUILD.md: Add detailed build instructions.
 * doc/ALGORITHMS.md: Info from https://primesieve.org.
+* doc/primesieve.txt: New AsciiDoc man page.
 
 Changes in version 7.4, 10/02/2019
 ==================================

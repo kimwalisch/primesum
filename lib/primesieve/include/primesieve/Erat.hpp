@@ -1,7 +1,7 @@
 ///
 /// @file  Erat.hpp
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2020 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -10,14 +10,69 @@
 #ifndef ERAT_HPP
 #define ERAT_HPP
 
+#include "forward.hpp"
 #include "EratSmall.hpp"
 #include "EratMedium.hpp"
 #include "EratBig.hpp"
-#include "types.hpp"
+#include "macros.hpp"
 
 #include <stdint.h>
 #include <array>
 #include <memory>
+
+/// In order convert 1 bits of the sieve array into primes we
+/// need to quickly calculate the index of the first set bit.
+/// This CPU instruction is usually named CTZ (Count trailing
+/// zeros). Unfortunately only x86 and x64 CPUs currently have
+/// an instruction for that, other CPU architectures like
+/// ARM64 or PPC64 have to emulate the CTZ instruction using
+/// multiple other instructions.
+///
+/// On x64 CPUs there are actually 2 instructions to count the
+/// number of trailing zeros: BSF and TZCNT. BSF is an old
+/// instruction whereas TZCNT is much more recent (Bit
+/// Manipulation Instruction Set 1). Since I expect BSF to be
+/// slow on future x64 CPUs (because it is legacy) we only use
+/// __builtin_ctzll() if we can guarantee that TZCNT will be
+/// generated.
+///
+/// There is also a quick, pure integer algorithm known for
+/// quickly computing the index of the 1st set bit. This
+/// algorithm is named the "De Bruijn bitscan".
+/// https://www.chessprogramming.org/BitScan
+///
+/// Because of this situation, we only use __builtin_ctzll()
+/// or std::countr_zero() when we know that the user's CPU
+/// architecture can quickly compute CTZ, either using a single
+/// instruction or emulated using very few instructions. For
+/// all other CPU architectures we fallback to the "De Bruijn
+/// bitscan" algorithm.
+
+#if !defined(__has_builtin)
+  #define __has_builtin(x) 0
+#endif
+
+#if !defined(__has_include)
+  #define __has_include(x) 0
+#endif
+
+#if __cplusplus >= 202002L && \
+    __has_include(<bit>) && \
+    (defined(__BMI__) /* TZCNT (x64) */ || \
+     defined(__aarch64__) /* CTZ = RBIT + CLZ */ || \
+     defined(_M_ARM64) /* CTZ = RBIT + CLZ */)
+
+#include <bit>
+#define ctz64(x) std::countr_zero(x)
+
+#elif __has_builtin(__builtin_ctzll) && \
+    (defined(__BMI__) /* TZCNT (x64) */ || \
+     defined(__aarch64__) /* CTZ = RBIT + CLZ */ || \
+     defined(_M_ARM64) /* CTZ = RBIT + CLZ */)
+
+#define ctz64(x) __builtin_ctzll(x)
+
+#endif
 
 namespace primesieve {
 
@@ -47,26 +102,26 @@ protected:
   /// Upper bound of the current segment
   uint64_t segmentHigh_ = 0;
   /// Sieve of Eratosthenes array
-  byte_t* sieve_ = nullptr;
+  uint8_t* sieve_ = nullptr;
   Erat();
   Erat(uint64_t, uint64_t);
   void init(uint64_t, uint64_t, uint64_t, PreSieve&);
   void addSievingPrime(uint64_t);
-  void sieveSegment();
+  NOINLINE void sieveSegment();
   bool hasNextSegment() const;
-  static uint64_t nextPrime(uint64_t*, uint64_t);
+  static uint64_t nextPrime(uint64_t, uint64_t);
 
 private:
-  static const std::array<uint64_t, 64> bruijnBitValues_;
   uint64_t maxPreSieve_ = 0;
   uint64_t maxEratSmall_ = 0;
   uint64_t maxEratMedium_ = 0;
-  std::unique_ptr<byte_t[]> deleter_;
+  std::unique_ptr<uint8_t[]> deleter_;
   PreSieve* preSieve_ = nullptr;
   EratSmall eratSmall_;
   EratBig eratBig_;
   EratMedium eratMedium_;
   static uint64_t byteRemainder(uint64_t);
+  uint64_t getL1CacheSize() const;
   void initSieve(uint64_t);
   void initErat();
   void preSieve();
@@ -74,19 +129,23 @@ private:
   void sieveLastSegment();
 };
 
-/// Reconstruct the prime number corresponding to
-/// the first set bit and unset that bit
-///
-inline uint64_t Erat::nextPrime(uint64_t* bits, uint64_t low)
+/// Convert 1st set bit into prime
+inline uint64_t Erat::nextPrime(uint64_t bits, uint64_t low)
 {
-  // calculate bitValues_[bitScanForward(*bits)]
-  // using a custom De Bruijn bitscan
-  uint64_t debruijn = 0x3F08A4C6ACB9DBDull;
-  uint64_t mask = *bits - 1;
-  uint64_t bitValue = bruijnBitValues_[((*bits ^ mask) * debruijn) >> 58];
+#if defined(ctz64)
+  // Find first set 1 bit
+  auto bitIndex = ctz64(bits);
+  uint64_t bitValue = bitValues[bitIndex];
   uint64_t prime = low + bitValue;
-  *bits &= mask;
   return prime;
+#else
+  // Fallback if CTZ instruction is not avilable
+  uint64_t debruijn = 0x3F08A4C6ACB9DBDull;
+  uint64_t hash = ((bits ^ (bits - 1)) * debruijn) >> 58;
+  uint64_t bitValue = bruijnBitValues[hash];
+  uint64_t prime = low + bitValue;
+  return prime;
+#endif
 }
 
 inline void Erat::addSievingPrime(uint64_t prime)

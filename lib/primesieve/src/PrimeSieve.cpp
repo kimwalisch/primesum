@@ -10,12 +10,12 @@
 /// file in the top level directory.
 ///
 
+#include <primesieve/forward.hpp>
 #include <primesieve/PrimeSieve.hpp>
 #include <primesieve/ParallelSieve.hpp>
 #include <primesieve/pmath.hpp>
 #include <primesieve/PrintPrimes.hpp>
 #include <primesieve/PreSieve.hpp>
-#include <primesieve/types.hpp>
 
 #include <stdint.h>
 #include <algorithm>
@@ -113,7 +113,7 @@ bool PrimeSieve::isPrintkTuplets() const
 
 bool PrimeSieve::isStatus() const
 {
-  return isFlag(PRINT_STATUS, UPDATE_GUI_STATUS);
+  return isFlag(PRINT_STATUS);
 }
 
 bool PrimeSieve::isCount(int i) const
@@ -202,8 +202,6 @@ void PrimeSieve::setStatus(double percent)
   {
     auto old = percent_;
     percent_ = percent;
-    if (sharedMemory_)
-      sharedMemory_->percent = percent_;
     if (isFlag(PRINT_STATUS))
       printStatus(old, percent_);
   }
@@ -213,6 +211,10 @@ void PrimeSieve::updateStatus(uint64_t dist)
 {
   if (parent_)
   {
+    // This is a worker thread, so we need
+    // to send the update status request
+    // to the parent object which handles
+    // thread synchronization.
     updateDistance_ += dist;
     if (parent_->tryUpdateStatus(updateDistance_))
       updateDistance_ = 0;
@@ -225,8 +227,6 @@ void PrimeSieve::updateStatus(uint64_t dist)
       percent = sievedDistance_ * 100.0 / getDistance();
     auto old = percent_;
     percent_ = min(percent, 100.0);
-    if (sharedMemory_)
-      sharedMemory_->percent = percent_;
     if (isFlag(PRINT_STATUS))
       printStatus(old, percent_);
   }
