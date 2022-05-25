@@ -205,6 +205,12 @@ GCC 6.4.
     <td>Oct. 16, 2016</td>
     <td>David Baugh</td>
   </tr>
+  <tr align="right">
+    <td>10<sup>26</sup></td>
+    <td>84227651431208862537105979544170116745778105437780</td>
+    <td>May. 25, 2022</td>
+    <td>Kim Walisch</td>
+  </tr>
 </table>
 
 Note that the sum of the primes below 10^21 was already correctly
