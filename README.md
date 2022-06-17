@@ -263,6 +263,12 @@ withdrew his result in 2011.
     <td>Sep. 26, 2016</td>
     <td>David Baugh</td>
   </tr>
+  <tr align="right">
+    <td>10<sup>24</sup></td>
+    <td>28900534863094599803598612528087047372125211931087</td>
+    <td>June 17, 2022</td>
+    <td>Kim Walisch</td>
+  </tr>
 </table>
 
 ## [A130739](http://oeis.org/A130739) world records
