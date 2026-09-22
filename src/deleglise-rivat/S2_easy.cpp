@@ -15,7 +15,7 @@
 #include <generate.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
-#include <min_max.hpp>
+#include <min.hpp>
 #include <imath.hpp>
 #include <S2Status.hpp>
 #include <S2.hpp>

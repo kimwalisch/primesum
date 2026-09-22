@@ -20,7 +20,7 @@
 #include <generate.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
-#include <min_max.hpp>
+#include <min.hpp>
 #include <imath.hpp>
 #include <S2.hpp>
 #include <S2LoadBalancer.hpp>
@@ -120,7 +120,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
 {
   low += segment_size * segments_per_thread * thread_num;
   limit = min(low + segment_size * segments_per_thread, limit);
-  int64_t max_b = pi[min(isqrt(x / low), isqrt(z), y)];
+  int64_t max_b = pi[min3(isqrt(x / low), isqrt(z), y)];
   int64_t pi_sqrty = pi[isqrt(y)];
   T s2_hard = 0;
 
@@ -202,7 +202,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
         int64_t x2_div_low = min(fast_div(x2, low), y);
         int64_t x2_div_high = min(fast_div(x2, high), y);
         int64_t l = pi[min(x2_div_low, z / prime)];
-        int64_t min_hard = max(x2_div_high, y / prime, prime);
+        int64_t min_hard = max3(x2_div_high, y / prime, prime);
         int64_t start = 0;
         int128_t sum = 0;
 
@@ -281,7 +281,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
         int64_t x2_div_low = min(fast_div(x2, low), y);
         int64_t x2_div_high = min(fast_div(x2, high), y);
         int64_t l = pi[min(x2_div_low, z / prime)];
-        int64_t min_hard = max(x2_div_high, y / prime, prime);
+        int64_t min_hard = max3(x2_div_high, y / prime, prime);
 
         if (prime >= primes[l])
           goto next_segment;

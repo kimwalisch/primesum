@@ -41,7 +41,7 @@ if(TARGET OpenMP::OpenMP_CXX)
                 sum128 += (i / 3) * omp_get_thread_num();
                 sum256 += (i / 3) * omp_get_thread_num();
             }
-            std::cout << sum128 << sum256;
+            std::cout << (int64_t) sum128 << (int64_t) sum256;
             return 0;
         }")
 

@@ -16,6 +16,8 @@
   * Replace std::vector and std::array with Vector and Array.
   * Update int128_t.hpp and move 128-bit printing into print.cpp.
   * Update integer math functions from primecount.
+  * Replace min_max.hpp with primecount's latest min.hpp.
+  * Fix the OpenMP feature check with out-of-line 128-bit printing.
 
 2019-02-20 Kim Walisch  <kim.walisch@gmail.com>
 

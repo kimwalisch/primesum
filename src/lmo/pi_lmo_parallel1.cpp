@@ -16,7 +16,7 @@
 #include <aligned_vector.hpp>
 #include <BitSieve.hpp>
 #include <generate.hpp>
-#include <min_max.hpp>
+#include <min.hpp>
 #include <imath.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>
@@ -139,7 +139,7 @@ T S2_thread(uint128_t x,
     {
       int64_t prime = primes[b];
       int64_t l = pi[min(x / (prime * low), y)];
-      int64_t min_m = max(x / (prime * high), y / prime, prime);
+      int64_t min_m = max3(x / (prime * high), y / prime, prime);
       int64_t i = 0;
 
       if (prime >= primes[l])
