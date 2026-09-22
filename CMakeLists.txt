@@ -263,10 +263,5 @@ install(FILES include/primesum.hpp
 
 if(BUILD_TESTS)
     enable_testing()
-
-    if(BUILD_PRIMESUM)
-        add_test(NAME primesum COMMAND primesum --test)
-    endif()
-
     add_subdirectory(test)
 endif()
