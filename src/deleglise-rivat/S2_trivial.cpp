@@ -3,7 +3,7 @@
 /// @brief Calculate the contribution of the trivial special leaves
 ///        in parallel using OpenMP.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include <algorithm>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -34,7 +33,7 @@ int256_t S2_trivial_OpenMP(int128_t x,
                            PrimeSums& prime_sums,
                            int threads)
 {
-  int64_t thread_threshold = ipow(10, 7);
+  int64_t thread_threshold = ipow<7>(10);
   threads = ideal_num_threads(threads, y, thread_threshold);
 
   PiTable pi(y);
@@ -51,7 +50,7 @@ int256_t S2_trivial_OpenMP(int128_t x,
     int64_t thread_interval = ceil_div(y - start, threads);
     start += thread_interval * i;
     int64_t stop = min(start + thread_interval, y);
-    primesieve::iterator iter(start - 1, stop);
+    primesieve::iterator iter(start, stop);
     int128_t prime;
 
     while ((prime = iter.next_prime()) < stop)
@@ -77,7 +76,6 @@ int256_t S2_trivial(int128_t x,
 {
   print("");
   print("=== S2_trivial(x, y) ===");
-  print("Computation of the trivial special leaves");
   print(x, y, c, threads);
 
   double time = get_time();

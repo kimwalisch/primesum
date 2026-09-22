@@ -1,0 +1,111 @@
+name: Build Windows binaries
+
+# Run ONLY when manually triggered from the GitHub Actions UI
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-x64:
+    name: Windows x64 / GCC
+    runs-on: windows-2022
+
+    steps:
+      # setup-msys2 recommends disabling Windows CRLF conversion when
+      # repository shell scripts are executed inside MSYS2.
+      - name: Configure Git line endings
+        shell: powershell
+        run: |
+          git config --global core.autocrlf input
+
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup MSYS2 / MinGW-w64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            zip
+            unzip
+            git
+            wget
+
+      - name: Build and Package
+        shell: msys2 {0}
+        run: |
+          ./scripts/build_mingw64_x64.sh
+
+      - name: Get Version for Artifact
+        shell: powershell
+        run: |
+          $VersionString = Select-String -Path "CMakeLists.txt" -Pattern '^\s*VERSION\s+([0-9]+(?:\.[0-9]+)*)\s*$'
+          if (-not $VersionString) {
+            throw "Failed to detect version in CMakeLists.txt"
+          }
+          echo "PROJECT_VERSION=$($VersionString.Matches[0].Groups[1].Value)" >> $env:GITHUB_ENV
+
+      - name: Upload Windows x64 CI artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Pseudosquares-Prime-Sieve-${{ env.PROJECT_VERSION }}-win-x64
+          path: build-release/Pseudosquares-Prime-Sieve-${{ env.PROJECT_VERSION }}-win-x64/*
+          if-no-files-found: error
+          retention-days: 7
+
+  windows-arm64:
+    name: Windows ARM64 / Clang
+    runs-on: windows-11-arm
+
+    steps:
+      # setup-msys2 recommends disabling Windows CRLF conversion when
+      # repository shell scripts are executed inside MSYS2.
+      - name: Configure Git line endings
+        shell: powershell
+        run: |
+          git config --global core.autocrlf input
+
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup MSYS2 / MinGW-w64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANGARM64
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-clang-aarch64-clang
+            mingw-w64-clang-aarch64-cmake
+            zip
+            unzip
+            git
+            wget
+
+      - name: Build and Package
+        shell: msys2 {0}
+        run: |
+          ./scripts/build_mingw64_arm64.sh
+
+      - name: Get Version for Artifact
+        shell: powershell
+        run: |
+          $VersionString = Select-String -Path "CMakeLists.txt" -Pattern '^\s*VERSION\s+([0-9]+(?:\.[0-9]+)*)\s*$'
+          if (-not $VersionString) {
+            throw "Failed to detect version in CMakeLists.txt"
+          }
+          echo "PROJECT_VERSION=$($VersionString.Matches[0].Groups[1].Value)" >> $env:GITHUB_ENV
+
+      - name: Upload Windows arm64 CI artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Pseudosquares-Prime-Sieve-${{ env.PROJECT_VERSION }}-win-arm64
+          path: build-release/Pseudosquares-Prime-Sieve-${{ env.PROJECT_VERSION }}-win-arm64/*
+          if-no-files-found: error
+          retention-days: 7

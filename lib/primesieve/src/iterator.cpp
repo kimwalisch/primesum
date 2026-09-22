@@ -1,111 +1,187 @@
 ///
 /// @file  iterator.cpp
 ///
-/// Copyright (C) 2019 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2025 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
 ///
 
+#include "IteratorHelper.hpp"
+#include "PrimeGenerator.hpp"
+
 #include <primesieve/iterator.hpp>
-#include <primesieve/IteratorHelper.hpp>
-#include <primesieve/PrimeGenerator.hpp>
+#include <primesieve/macros.hpp>
 
 #include <stdint.h>
-#include <vector>
-#include <memory>
+#include <limits>
 
 namespace {
 
-template <typename T>
-void clear(std::unique_ptr<T>& ptr)
+void freeAllMemory(primesieve::iterator* it)
 {
-  ptr.reset(nullptr);
+  if (it->memory_)
+  {
+    using primesieve::IteratorData;
+    delete (IteratorData*) it->memory_;
+    it->memory_ = nullptr;
+  }
 }
 
 } // namespace
 
 namespace primesieve {
 
-iterator::~iterator() = default;
-
-iterator::iterator(iterator&&) noexcept = default;
-
-iterator& iterator::operator=(iterator&&) noexcept = default;
+iterator::iterator() noexcept :
+  iterator(0)
+{ }
 
 iterator::iterator(uint64_t start,
-                   uint64_t stop_hint)
+                   uint64_t stop_hint) noexcept :
+  i_(0),
+  size_(0),
+  start_(start),
+  stop_hint_(stop_hint),
+  primes_(nullptr),
+  memory_(nullptr)
+{ }
+
+/// Move constructor
+iterator::iterator(iterator&& other) noexcept :
+  i_(other.i_),
+  size_(other.size_),
+  start_(other.start_),
+  stop_hint_(other.stop_hint_),
+  primes_(other.primes_),
+  memory_(other.memory_)
 {
-  skipto(start, stop_hint);
+  other.i_ = 0;
+  other.size_ = 0;
+  other.start_ = 0;
+  other.stop_hint_ = std::numeric_limits<uint64_t>::max();
+  other.primes_ = nullptr;
+  other.memory_ = nullptr;
 }
 
-void iterator::skipto(uint64_t start,
-                      uint64_t stop_hint)
+/// Move assignment operator
+iterator& iterator::operator=(iterator&& other) noexcept
 {
-  start_ = start;
-  stop_ = start;
-  stop_hint_ = stop_hint;
+  if (this != &other)
+  {
+    freeAllMemory(this);
+
+    i_ = other.i_;
+    size_ = other.size_;
+    start_ = other.start_;
+    stop_hint_ = other.stop_hint_;
+    primes_ = other.primes_;
+    memory_ = other.memory_;
+
+    other.i_ = 0;
+    other.size_ = 0;
+    other.start_ = 0;
+    other.stop_hint_ = std::numeric_limits<uint64_t>::max();
+    other.primes_ = nullptr;
+    other.memory_ = nullptr;
+  }
+
+  return *this;
+}
+
+void iterator::jump_to(uint64_t start,
+                       uint64_t stop_hint) noexcept
+{
   i_ = 0;
-  last_idx_ = 0;
-  dist_ = 0;
-  clear(primeGenerator_);
-  primes_.clear();
+  size_ = 0;
+  start_ = start;
+  stop_hint_ = stop_hint;
+  primes_ = nullptr;
+
+  // Frees most memory, but keeps some smaller data
+  // structures (e.g. the IteratorData object) that
+  // are useful if the primesieve::iterator is reused.
+  // The remaining memory uses at most 2 kilobytes.
+  if (memory_)
+  {
+    auto& iterData = *(IteratorData*) memory_;
+    iterData.stop = start;
+    iterData.dist = 0;
+    iterData.include_start_number = true;
+    iterData.deletePrimeGenerator();
+    iterData.deletePrimes();
+  }
+}
+
+void iterator::clear() noexcept
+{
+  jump_to(0);
+}
+
+iterator::~iterator()
+{
+  freeAllMemory(this);
 }
 
 void iterator::generate_next_primes()
 {
+  if (!memory_)
+    memory_ = new IteratorData(start_);
+
+  auto& iterData = *(IteratorData*) memory_;
+  auto& primes = iterData.primes;
+
   while (true)
   {
-    if (!primeGenerator_)
+    if (!iterData.primeGenerator)
     {
-      IteratorHelper::next(&start_, &stop_, stop_hint_, &dist_);
-      auto p = new PrimeGenerator(start_, stop_);
-      primeGenerator_.reset(p);
-      primes_.resize(256);
+      IteratorHelper::updateNext(start_, stop_hint_, iterData);
+      iterData.newPrimeGenerator(start_, iterData.stop);
     }
 
-    primeGenerator_->fill(primes_, &last_idx_);
+    iterData.primeGenerator->fillNextPrimes(primes, &size_);
+    primes_ = primes.data();
+    i_ = 0;
 
-    // There are 3 different cases here:
-    // 1) The primes array contains a few primes (<= 256).
-    //    In this case we return the primes to the user.
-    // 2) The primes array is empty because the next
-    //    prime > stop. In this case we reset the
-    //    primeGenerator object, increase the start & stop
-    //    numbers and sieve the next segment.
-    // 3) The next prime > 2^64. In this case the primes
-    //    array contains an error code (UINT64_MAX) which
-    //    is returned to the user.
-    if (last_idx_ == 0)
-      clear(primeGenerator_);
+    // There are 2 different cases here:
+    // 1) The primes array is empty because the next prime > stop.
+    //    In this case we reset the primeGenerator object, increase
+    //    the start & stop numbers and sieve the next segment.
+    // 2) The primes array is not empty (contains up to 1024 primes),
+    //    in this case we return it to the user.
+    if_unlikely(size_ == 0)
+      iterData.deletePrimeGenerator();
     else
-      break;
+      return;
   }
-
-  i_ = 0;
-  last_idx_--;
 }
 
 void iterator::generate_prev_primes()
 {
-  if (primeGenerator_)
-    start_ = primes_.front();
+  if (!memory_)
+    memory_ = new IteratorData(start_);
 
-  primes_.clear();
+  auto& iterData = *(IteratorData*) memory_;
+  auto& primes = iterData.primes;
 
-  while (primes_.empty())
+  // Special case if generate_next_primes() has
+  // been used before generate_prev_primes().
+  if_unlikely(iterData.primeGenerator)
   {
-    IteratorHelper::prev(&start_, &stop_, stop_hint_, &dist_);
-    if (start_ <= 2)
-      primes_.push_back(0);
-    auto p = new PrimeGenerator(start_, stop_);
-    primeGenerator_.reset(p);
-    primeGenerator_->fill(primes_);
-    clear(primeGenerator_);
+    start_ = primes.front();
+    iterData.deletePrimeGenerator();
+    ASSERT(!iterData.include_start_number);
   }
 
-  last_idx_ = primes_.size() - 1;
-  i_ = last_idx_;
+  do
+  {
+    IteratorHelper::updatePrev(start_, stop_hint_, iterData);
+    iterData.newPrimeGenerator(start_, iterData.stop);
+    iterData.primeGenerator->fillPrevPrimes(primes, &size_);
+    iterData.deletePrimeGenerator();
+    primes_ = primes.data();
+    i_ = size_;
+  }
+  while (!size_);
 }
 
 } // namespace

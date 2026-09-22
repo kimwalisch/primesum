@@ -2,25 +2,25 @@
 /// @file   count_primes1.cpp
 /// @brief  Count the primes up to 10^9.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
 ///
 
-#include <primesieve/ParallelSieve.hpp>
+#include <ParallelSieve.hpp>
+#include <primesieve/macros.hpp>
+#include <primesieve/Vector.hpp>
 
 #include <stdint.h>
+#include <cstdlib>
 #include <iostream>
 #include <iomanip>
-#include <cstdlib>
-#include <cmath>
 
-using namespace std;
 using namespace primesieve;
 
 /// Correct pi(x) values to compare with test results
-const uint64_t pix[9] =
+const Array<uint64_t, 9> pix =
 {
   4,        // pi(10^1)
   25,       // pi(10^2)
@@ -35,29 +35,39 @@ const uint64_t pix[9] =
 
 void check(bool OK)
 {
-  cout << "   " << (OK ? "OK" : "ERROR") << "\n";
+  std::cout << "   " << (OK ? "OK" : "ERROR") << "\n";
   if (!OK)
-    exit(1);
+    std::exit(1);
 }
 
 int main()
 {
-  cout << left;
-  ParallelSieve ps;
-  ps.setStart(0);
-  ps.setStop(0);
+  std::cout << std::left;
+  INDETERMINATE ParallelSieve ps;
   uint64_t count = 0;
+  uint64_t stop = 1;
 
-  // pi(x) with x = 10^i for i = 1 to 9
-  for (int i = 1; i <= 9; i++)
+  // pi(x) with x = 10^(i+1)
+  for (size_t i = 0; i < pix.size(); i++)
   {
-    count += ps.countPrimes(ps.getStop() + 1, (uint64_t) pow(10.0, i));
-    cout << "pi(10^" << i << ") = " << setw(12) << count;
-    check(count == pix[i - 1]);
+    uint64_t start = stop + 1;
+    stop *= 10;
+    count += ps.countPrimes(start, stop);
+    std::cout << "pi(10^" << i + 1 << ") = " << std::setw(12) << count;
+    check(count == pix[i]);
   }
 
-  cout << endl;
-  cout << "All tests passed successfully!" << endl;
+  // Test PreSieve with preSievePrimes <= 163.
+  // The thread interval must be sufficiently large
+  // otherwise minimal pre-sieving is used.
+  // Using a single thread increases thread interval.
+  ps.setNumThreads(1);
+  count = ps.countPrimes(0, (uint64_t) 1e9);
+  std::cout << "pi(10^9) = " << std::setw(12) << count;
+  check(count == 50847534);
+
+  std::cout << std::endl;
+  std::cout << "All tests passed successfully!" << std::endl;
 
   return 0;
 }

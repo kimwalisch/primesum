@@ -5,7 +5,7 @@
 ///        divides with comparatively cheap multiplication and
 ///        bitshifts.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -13,17 +13,18 @@
 
 #include <PiTable.hpp>
 #include <primesum-internal.hpp>
+#include <fast_div.hpp>
 #include <generate.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
-#include <min_max.hpp>
+#include <min.hpp>
 #include <imath.hpp>
 #include <S2Status.hpp>
 #include <S2.hpp>
+#include <Vector.hpp>
 
 #include <libdivide.h>
 #include <stdint.h>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -39,17 +40,16 @@ bool is_libdivide(T x)
 using fastdiv_t = libdivide::branchfree_divider<uint64_t>;
 
 template <typename Primes>
-vector<fastdiv_t>
+Vector<fastdiv_t>
 libdivide_divisors(Primes& primes)
 {
-  vector<fastdiv_t> fastdiv(1);
-  fastdiv.insert(fastdiv.end(), primes.begin() + 1, primes.end());
+  // Initialize libdivide vector from primes vector
+  Vector<fastdiv_t> fastdiv(primes.size());
+  for (std::size_t i = 1; i < fastdiv.size(); i++)
+    fastdiv[i] = primes[i];
   return fastdiv;
 }
 
-/// Calculate the contribution of the clustered easy
-/// leaves and the sparse easy leaves.
-///
 template <typename res_t, typename Primes, typename PrimeSums>
 res_t S2_easy_OpenMP(uint128_t x,
                      int64_t y,
@@ -62,7 +62,7 @@ res_t S2_easy_OpenMP(uint128_t x,
   res_t s2_easy = 0;
   int64_t x13 = iroot<3>(x);
   threads = ideal_num_threads(threads, x13, 1000);
-  vector<fastdiv_t> fastdiv = libdivide_divisors(primes);
+  Vector<fastdiv_t> fastdiv = libdivide_divisors(primes);
   using PS = typename PrimeSums::value_type;
 
   PiTable pi(y);
@@ -76,70 +76,75 @@ res_t S2_easy_OpenMP(uint128_t x,
     int64_t prime = primes[b];
     uint128_t x2 = x / prime;
     int64_t min_trivial = min(x2 / prime, y);
-    int64_t min_clustered = (int64_t) isqrt(x2);
     int64_t min_sparse = z / prime;
     int64_t min_hard = max(y / prime, prime);
-
-    min_clustered = in_between(min_hard, min_clustered, y);
     min_sparse = in_between(min_hard, min_sparse, y);
 
     int64_t l = pi[min_trivial];
-    int64_t pi_min_clustered = pi[min_clustered];
     int64_t pi_min_sparse = pi[min_sparse];
+    auto prime_sum_b1 = prime_sums[b - 1];
 
     if (is_libdivide(x2))
     {
-      // Find all clustered easy leaves:
-      // n = primes[b] * primes[l]
-      // x / n <= y && phi(x / n, b - 1) == phi(x / m, b - 1)
-      // where phi(x / n, b - 1) = pi(x / n) - b + 2
-      while (l > pi_min_clustered)
+      // Unroll loop to increase instruction level parallelism
+      for (; l > pi_min_sparse + 4; l -= 4)
       {
-        int64_t xn = (uint64_t) x2 / fastdiv[l];
-        int64_t phi_xn = pi[xn] - b + 2;
-        res_t phi_xn_sum = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
-        int64_t xm = (uint64_t) x2 / fastdiv[b + phi_xn - 1];
-        xm = max(xm, min_clustered);
-        int64_t l2 = pi[xm];
-        s2_easy += (phi_xn_sum * prime) * (prime_sums[l] - prime_sums[l2]);
-        l = l2;
+        int64_t xn0 = (uint64_t) x2 / fastdiv[l];
+        int64_t xn1 = (uint64_t) x2 / fastdiv[l - 1];
+        int64_t xn2 = (uint64_t) x2 / fastdiv[l - 2];
+        int64_t xn3 = (uint64_t) x2 / fastdiv[l - 3];
+
+        res_t phi0 = prime_sums[pi[xn0]] + 1 - prime_sum_b1;
+        res_t phi1 = prime_sums[pi[xn1]] + 1 - prime_sum_b1;
+        res_t phi2 = prime_sums[pi[xn2]] + 1 - prime_sum_b1;
+        res_t phi3 = prime_sums[pi[xn3]] + 1 - prime_sum_b1;
+
+        s2_easy += phi0 * ((PS) prime * primes[l]) +
+                   phi1 * ((PS) prime * primes[l - 1]) +
+                   phi2 * ((PS) prime * primes[l - 2]) +
+                   phi3 * ((PS) prime * primes[l - 3]);
       }
 
-      // Find all sparse easy leaves:
+      // Find all easy special leaves:
       // n = primes[b] * primes[l]
       // x / n <= y && phi(x / n, b - 1) = pi(x / n) - b + 2
+      NO_UNROLL_LOOP
       for (; l > pi_min_sparse; l--)
       {
         int64_t xn = (uint64_t) x2 / fastdiv[l];
-        res_t phi = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
+        res_t phi = prime_sums[pi[xn]] + 1 - prime_sum_b1;
         s2_easy += phi * ((PS) prime * primes[l]);
       }
     }
     else
     {
-      // Find all clustered easy leaves:
-      // n = primes[b] * primes[l]
-      // x / n <= y && phi(x / n, b - 1) == phi(x / m, b - 1)
-      // where phi(x / n, b - 1) = pi(x / n) - b + 2
-      while (l > pi_min_clustered)
+      // Unroll loop to increase instruction level parallelism
+      for (; l > pi_min_sparse + 4; l -= 4)
       {
-        int64_t xn = (int64_t) (x2 / primes[l]);
-        int64_t phi_xn = pi[xn] - b + 2;
-        res_t phi_xn_sum = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
-        int64_t xm = (int64_t) (x2 / primes[b + phi_xn - 1]);
-        xm = max(xm, min_clustered);
-        int64_t l2 = pi[xm];
-        s2_easy += (phi_xn_sum * prime) * (prime_sums[l] - prime_sums[l2]);
-        l = l2;
+        int64_t xn0 = fast_div64(x2, primes[l]);
+        int64_t xn1 = fast_div64(x2, primes[l - 1]);
+        int64_t xn2 = fast_div64(x2, primes[l - 2]);
+        int64_t xn3 = fast_div64(x2, primes[l - 3]);
+
+        res_t phi0 = prime_sums[pi[xn0]] + 1 - prime_sum_b1;
+        res_t phi1 = prime_sums[pi[xn1]] + 1 - prime_sum_b1;
+        res_t phi2 = prime_sums[pi[xn2]] + 1 - prime_sum_b1;
+        res_t phi3 = prime_sums[pi[xn3]] + 1 - prime_sum_b1;
+
+        s2_easy += phi0 * ((PS) prime * primes[l]) +
+                   phi1 * ((PS) prime * primes[l - 1]) +
+                   phi2 * ((PS) prime * primes[l - 2]) +
+                   phi3 * ((PS) prime * primes[l - 3]);
       }
 
-      // Find all sparse easy leaves:
+      // Find all easy special leaves:
       // n = primes[b] * primes[l]
       // x / n <= y && phi(x / n, b - 1) = pi(x / n) - b + 2
+      NO_UNROLL_LOOP
       for (; l > pi_min_sparse; l--)
       {
-        int64_t xn = (int64_t) (x2 / primes[l]);
-        res_t phi = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
+        int64_t xn = fast_div64(x2, primes[l]);
+        res_t phi = prime_sums[pi[xn]] + 1 - prime_sum_b1;
         s2_easy += phi * ((PS) prime * primes[l]);
       }
     }
@@ -163,7 +168,6 @@ int256_t S2_easy(int128_t x,
 {
   print("");
   print("=== S2_easy(x, y) ===");
-  print("Computation of the easy special leaves");
   print(x, y, c, threads);
 
   double time = get_time();

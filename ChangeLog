@@ -1,3 +1,28 @@
+2026-09-22 Kim Walisch  <kim.walisch@gmail.com>
+
+  Unreleased changes.
+
+  * ci.yml: Add GitHub Actions CI tests.
+  * S2_easy.cpp: Get rid of slow clustered easy leaves algorithm.
+  * S2_easy.cpp: Manually unroll loop to improve performance.
+  * S2_easy_libdivide.cpp: Get rid of slow clustered easy leaves algorithm.
+  * BitSieve.cpp: Improve sum_bits().
+  * Update iterator boundaries for primesieve >= 11.0.
+  * Adapt CMake compiler and OpenMP checks from primecount.
+  * Require CMake >= 3.9 and support Windows shared library builds.
+  * Copy libdivide 5.3.0 and divisor initialization from primecount.
+  * Add CTest support for integration and arithmetic tests.
+  * Port fast_div.hpp from primecount without ARM SVE, fast_div64()
+    or legacy 32-bit division.
+  * Copy scalar POPCNT code from primecount without runtime dispatch.
+  * Replace std::vector and std::array with Vector and Array.
+  * Update int128_t.hpp and move 128-bit printing into print.cpp.
+  * Update integer math functions from primecount.
+  * Replace min_max.hpp with primecount's latest min.hpp.
+  * Fix the OpenMP feature check with out-of-line 128-bit printing.
+  * Build libprimesum and link the command-line app and tests against it.
+  * Use fast_div64() when the quotient is known to fit into 64 bits.
+
 2019-02-20 Kim Walisch  <kim.walisch@gmail.com>
 
   Version 1.7 released.

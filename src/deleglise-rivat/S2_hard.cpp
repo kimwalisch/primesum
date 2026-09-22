@@ -6,7 +6,7 @@
 ///        (PiTable & FactorTable) to reduce the memory usage by
 ///        about 10x.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -20,15 +20,15 @@
 #include <generate.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
-#include <min_max.hpp>
+#include <min.hpp>
 #include <imath.hpp>
 #include <S2.hpp>
 #include <S2LoadBalancer.hpp>
 #include <BinaryIndexedTree.hpp>
+#include <Vector.hpp>
 #include <Wheel.hpp>
 
 #include <stdint.h>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -115,12 +115,12 @@ T S2_hard_OpenMP_thread(uint128_t x,
                         FactorTable& factors,
                         PiTable& pi,
                         Primes& primes,
-                        vector<T>& mu_sum,
-                        vector<int128_t>& phi)
+                        Vector<T>& mu_sum,
+                        Vector<int128_t>& phi)
 {
   low += segment_size * segments_per_thread * thread_num;
   limit = min(low + segment_size * segments_per_thread, limit);
-  int64_t max_b = pi[min(isqrt(x / low), isqrt(z), y)];
+  int64_t max_b = pi[min3(isqrt(x / low), isqrt(z), y)];
   int64_t pi_sqrty = pi[isqrt(y)];
   T s2_hard = 0;
 
@@ -129,8 +129,10 @@ T S2_hard_OpenMP_thread(uint128_t x,
 
   BitSieve sieve(segment_size);
   Wheel wheel(primes, max_b + 1, low);
-  phi.resize(max_b + 1, 0);
-  mu_sum.resize(max_b + 1, 0);
+  phi.resize(max_b + 1);
+  mu_sum.resize(max_b + 1);
+  fill(phi.begin(), phi.end(), 0);
+  fill(mu_sum.begin(), mu_sum.end(), 0);
   BinaryIndexedTree tree;
 
   // Segmented sieve of Eratosthenes
@@ -174,7 +176,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
           if (prime < factors.lpf(m))
           {
             int64_t fm = factors.get_number(m);
-            int64_t xn = (int64_t) fast_div(x2, fm);
+            int64_t xn = fast_div64(x2, fm);
             int64_t stop = xn - low;
             sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
             int128_t phi_xn = phi[b] + sum;
@@ -200,7 +202,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
         int64_t x2_div_low = min(fast_div(x2, low), y);
         int64_t x2_div_high = min(fast_div(x2, high), y);
         int64_t l = pi[min(x2_div_low, z / prime)];
-        int64_t min_hard = max(x2_div_high, y / prime, prime);
+        int64_t min_hard = max3(x2_div_high, y / prime, prime);
         int64_t start = 0;
         int128_t sum = 0;
 
@@ -209,7 +211,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
 
         for (; primes[l] > min_hard; l--)
         {
-          int64_t xn = (int64_t) fast_div(x2, primes[l]);
+          int64_t xn = fast_div64(x2, primes[l]);
           int64_t stop = xn - low;
           sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
           int128_t phi_xn = phi[b] + sum;
@@ -255,7 +257,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
           if (prime < factors.lpf(m))
           {
             int64_t fm = factors.get_number(m);
-            int64_t xn = (int64_t) fast_div(x2, fm);
+            int64_t xn = fast_div64(x2, fm);
             int128_t sum = tree.sum(xn - low);
             int128_t phi_xn = phi[b] + sum;
             int64_t mu_m = factors.mu(m);
@@ -279,14 +281,14 @@ T S2_hard_OpenMP_thread(uint128_t x,
         int64_t x2_div_low = min(fast_div(x2, low), y);
         int64_t x2_div_high = min(fast_div(x2, high), y);
         int64_t l = pi[min(x2_div_low, z / prime)];
-        int64_t min_hard = max(x2_div_high, y / prime, prime);
+        int64_t min_hard = max3(x2_div_high, y / prime, prime);
 
         if (prime >= primes[l])
           goto next_segment;
 
         for (; primes[l] > min_hard; l--)
         {
-          int64_t xn = (int64_t) fast_div(x2, primes[l]);
+          int64_t xn = fast_div64(x2, primes[l]);
           int128_t sum = tree.sum(xn - low);
           int128_t phi_xn = phi[b] + sum;
           T pmul = primes[l] * (int128_t) prime;
@@ -337,7 +339,8 @@ S2_hard_OpenMP_master(X x,
   int64_t segments_per_thread = 1;
 
   PiTable pi(max_prime);
-  vector<int128_t> phi_total(pi[isqrt(z)] + 1, 0);
+  Vector<int128_t> phi_total(pi[isqrt(z)] + 1);
+  fill(phi_total.begin(), phi_total.end(), 0);
   double alpha = get_alpha(x, y);
 
   while (low < limit)
@@ -346,8 +349,8 @@ S2_hard_OpenMP_master(X x,
     threads = in_between(1, threads, segments);
     segments_per_thread = in_between(1, segments_per_thread, ceil_div(segments, threads));
 
-    aligned_vector<vector<int128_t>> phi(threads);
-    aligned_vector<vector<res_t>> mu_sum(threads);
+    aligned_vector<Vector<int128_t>> phi(threads);
+    aligned_vector<Vector<res_t>> mu_sum(threads);
     aligned_vector<double> timings(threads);
 
     #pragma omp parallel for num_threads(threads) reduction(+: s2_hard)
@@ -392,7 +395,6 @@ int256_t S2_hard(int128_t x,
 {
   print("");
   print("=== S2_hard(x, y) ===");
-  print("Computation of the hard special leaves");
   print(x, y, c, threads);
 
   double time = get_time();

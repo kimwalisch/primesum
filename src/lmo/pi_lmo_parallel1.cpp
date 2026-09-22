@@ -6,7 +6,7 @@
 ///        unsieved elements using POPCNT without using any special
 ///        counting tree data structure.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -16,7 +16,7 @@
 #include <aligned_vector.hpp>
 #include <BitSieve.hpp>
 #include <generate.hpp>
-#include <min_max.hpp>
+#include <min.hpp>
 #include <imath.hpp>
 #include <PhiTiny.hpp>
 #include <S1.hpp>
@@ -24,9 +24,9 @@
 #include <Wheel.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -66,12 +66,12 @@ T S2_thread(uint128_t x,
             int64_t thread_num,
             int64_t low,
             int64_t limit,
-            vector<int32_t>& pi,
-            vector<int32_t>& primes,
-            vector<int32_t>& lpf,
-            vector<int32_t>& mu,
-            vector<T>& mu_sum,
-            vector<T>& phi)
+            Vector<int32_t>& pi,
+            Vector<int32_t>& primes,
+            Vector<int32_t>& lpf,
+            Vector<int32_t>& mu,
+            Vector<T>& mu_sum,
+            Vector<T>& phi)
 {
   low += segment_size * segments_per_thread * thread_num;
   limit = min(low + segment_size * segments_per_thread, limit);
@@ -85,8 +85,10 @@ T S2_thread(uint128_t x,
 
   BitSieve sieve(segment_size);
   Wheel wheel(primes, size, low);
-  phi.resize(size, 0);
-  mu_sum.resize(size, 0);
+  phi.resize(size);
+  mu_sum.resize(size);
+  fill(phi.begin(), phi.end(), 0);
+  fill(mu_sum.begin(), mu_sum.end(), 0);
 
   // Process the segments assigned to the current thread
   for (; low < limit; low += segment_size)
@@ -137,7 +139,7 @@ T S2_thread(uint128_t x,
     {
       int64_t prime = primes[b];
       int64_t l = pi[min(x / (prime * low), y)];
-      int64_t min_m = max(x / (prime * high), y / prime, prime);
+      int64_t min_m = max3(x / (prime * high), y / prime, prime);
       int64_t i = 0;
 
       if (prime >= primes[l])
@@ -176,14 +178,13 @@ T S2_thread(uint128_t x,
 int256_t S2(uint128_t x,
             int64_t y,
             int64_t c,
-            vector<int32_t>& primes,
-            vector<int32_t>& lpf,
-            vector<int32_t>& mu,
+            Vector<int32_t>& primes,
+            Vector<int32_t>& lpf,
+            Vector<int32_t>& mu,
             int threads)
 {
   print("");
   print("=== S2(x, y) ===");
-  print("Computation of the special leaves");
 
   int256_t S2_total = 0;
   int64_t low = 1;
@@ -196,8 +197,9 @@ int256_t S2(uint128_t x,
   int64_t segments_per_thread = 1;
 
   double time = get_time();
-  vector<int32_t> pi = generate_pi(y);
-  vector<int256_t> phi_total(primes.size(), 0);
+  Vector<int32_t> pi = generate_pi(y);
+  Vector<int256_t> phi_total(primes.size());
+  fill(phi_total.begin(), phi_total.end(), 0);
 
   while (low < limit)
   {
@@ -205,8 +207,8 @@ int256_t S2(uint128_t x,
     threads = in_between(1, threads, segments);
     segments_per_thread = in_between(1, segments_per_thread, ceil_div(segments, threads));
 
-    aligned_vector<vector<int256_t>> phi(threads);
-    aligned_vector<vector<int256_t>> mu_sum(threads);
+    aligned_vector<Vector<int256_t>> phi(threads);
+    aligned_vector<Vector<int256_t>> mu_sum(threads);
     aligned_vector<double> timings(threads);
 
     #pragma omp parallel for num_threads(threads) reduction(+: S2_total)
@@ -265,9 +267,9 @@ int256_t pi_lmo_parallel1(int128_t x, int threads)
   print(x, y, z, c, alpha, threads);
 
   int256_t p2 = P2(x, y, threads);
-  vector<int32_t> mu = generate_moebius(y);
-  vector<int32_t> lpf = generate_lpf(y);
-  vector<int32_t> primes = generate_primes(y);
+  Vector<int32_t> mu = generate_moebius(y);
+  Vector<int32_t> lpf = generate_lpf(y);
+  Vector<int32_t> primes = generate_primes(y);
 
   int256_t s1 = S1(x, y, c, threads);
   int256_t s2 = S2(x, y, c, primes, lpf, mu, threads);

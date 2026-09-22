@@ -15,7 +15,7 @@
 ///         Revista do DETUA, vol. 4, no. 6, March 2006, pp. 767-768.
 ///         http://sweet.ua.pt/tos/bib/5.4.pdf
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -25,8 +25,9 @@
 #define BINARYINDEXEDTREE_HPP
 
 #include <int128_t.hpp>
+#include <Vector.hpp>
+
 #include <stdint.h>
-#include <vector>
 
 namespace primesum {
 
@@ -80,7 +81,7 @@ public:
   }
 
 private:
-  std::vector<int128_t> tree_;
+  Vector<int128_t> tree_;
   int64_t size_ = 0;
 };
 

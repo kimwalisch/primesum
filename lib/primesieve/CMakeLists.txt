@@ -1,17 +1,45 @@
-cmake_minimum_required(VERSION 3.4...3.19)
-project(primesieve CXX)
-set(PRIMESIEVE_VERSION "7.6")
-set(PRIMESIEVE_SOVERSION "9.6.0")
+cmake_minimum_required(VERSION 3.9...4.2)
+
+project(primesieve
+        VERSION 12.16
+        LANGUAGES CXX)
 
 # Build options ######################################################
 
 option(BUILD_PRIMESIEVE  "Build primesieve binary"       ON)
-option(BUILD_SHARED_LIBS "Build shared libprimesieve"    ON)
 option(BUILD_STATIC_LIBS "Build static libprimesieve"    ON)
 option(BUILD_DOC         "Build C/C++ API documentation" OFF)
 option(BUILD_MANPAGE     "Regenerate man page using a2x" OFF)
 option(BUILD_EXAMPLES    "Build example programs"        OFF)
 option(BUILD_TESTS       "Build test programs"           OFF)
+
+# By default we enable building the shared libprimesieve library, but
+# not when using Emscripten. Emscripten nowadays builds shared
+# libraries as WebAssembly side modules (and reports
+# TARGET_SUPPORTS_SHARED_LIBS=TRUE), but linking the primesieve binary
+# against such a side module requires Emscripten's dynamic linking
+# (-sMAIN_MODULE and -fPIC). For a self-contained WebAssembly binary we
+# want static linking, which is also what Emscripten recommends for
+# best performance.
+get_property(SHARED_LIBS_SUPPORTED GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
+
+if(SHARED_LIBS_SUPPORTED AND NOT EMSCRIPTEN)
+    option(BUILD_SHARED_LIBS "Build shared libprimesieve" ON)
+else()
+    option(BUILD_SHARED_LIBS "Build shared libprimesieve" OFF)
+endif()
+
+option(WITH_MULTIARCH       "Enable runtime dispatching to fastest supported CPU instruction set" ON)
+
+# Check if primesieve is top level project ###########################
+
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(PRIMESIEVE_IS_TOP_PROJECT ON)
+else()
+    set(PRIMESIEVE_IS_TOP_PROJECT OFF)
+endif()
+
+# libprimesieve sanity check #########################################
 
 if(NOT BUILD_SHARED_LIBS AND NOT BUILD_STATIC_LIBS)
     message(FATAL_ERROR "One or both of BUILD_SHARED_LIBS or BUILD_STATIC_LIBS must be set to ON")
@@ -19,28 +47,44 @@ endif()
 
 # Set default build type to Release ##################################
 
-if(NOT CMAKE_VERSION VERSION_LESS 3.9)
+if(PRIMESIEVE_IS_TOP_PROJECT)
     get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-elseif(CMAKE_CONFIGURATION_TYPES)
-    set(isMultiConfig TRUE)
+
+    if(NOT isMultiConfig AND NOT CMAKE_BUILD_TYPE)
+        message(STATUS "Setting CMAKE_BUILD_TYPE = Release")
+        set(CMAKE_BUILD_TYPE Release CACHE STRING
+            "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+    endif()
 endif()
 
-if(NOT isMultiConfig AND NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING
-    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    list(APPEND PRIMESIEVE_COMPILE_DEFINITIONS "ENABLE_ASSERT")
+endif()
+
+# Hide symbols of inline functions ###################################
+# This reduces the size of the shared libprimesieve by about 1%.
+
+if(PRIMESIEVE_IS_TOP_PROJECT)
+    if (NOT DEFINED CMAKE_VISIBILITY_INLINES_HIDDEN)
+        message(STATUS "Setting CMAKE_VISIBILITY_INLINES_HIDDEN = ON")
+        set(CMAKE_VISIBILITY_INLINES_HIDDEN ON CACHE BOOL
+            "Whether to add a compiler flag to hide symbols of inline functions")
+    endif ()
 endif()
 
 # primesieve binary source files #####################################
 
-set(BIN_SRC src/app/cmdoptions.cpp
+set(BIN_SRC src/app/CmdOptions.cpp
             src/app/help.cpp
             src/app/main.cpp
+            src/app/stressTest.cpp
             src/app/test.cpp)
 
 # primesieve library source files ####################################
 
 set(LIB_SRC src/api-c.cpp
             src/api.cpp
+            src/CountPrintPrimes.cpp
             src/CpuInfo.cpp
             src/Erat.cpp
             src/EratSmall.cpp
@@ -56,94 +100,53 @@ set(LIB_SRC src/api-c.cpp
             src/ParallelSieve.cpp
             src/popcount.cpp
             src/PreSieve.cpp
-            src/PrintPrimes.cpp
-            src/PrimeSieve.cpp
-            src/SievingPrimes.cpp)
+            src/PrimeSieveClass.cpp
+            src/RiemannR.cpp
+            src/SievingPrimes.cpp
+            src/util.cpp)
 
-# Required includes ##################################################
+# Check if compiler supports CPU multiarch ###########################
 
-include(GNUInstallDirs)
-include(CMakePushCheckState)
-include(CheckCXXSourceCompiles)
-include(CMakePackageConfigHelpers)
+if(WITH_MULTIARCH)
+    include("${PROJECT_SOURCE_DIR}/cmake/multiarch_x86_popcnt.cmake")
+    include("${PROJECT_SOURCE_DIR}/cmake/multiarch_avx512_bw.cmake")
+    include("${PROJECT_SOURCE_DIR}/cmake/multiarch_avx512_vbmi2.cmake")
 
-# MSVC DLL support (Windows) #########################################
-
-if(WIN32 AND NOT MINGW)
-    set(WIN32_MSVC_COMPATIBLE ON)
-    if(BUILD_SHARED_LIBS)
-        # Export symbols to .def file
-        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-    endif()
-endif()
-
-# Check if libatomic is needed #######################################
-
-cmake_push_check_state()
-
-if(CMAKE_CXX11_STANDARD_COMPILE_OPTION)
-    set(CMAKE_REQUIRED_FLAGS ${CMAKE_CXX11_STANDARD_COMPILE_OPTION})
-endif()
-
-check_cxx_source_compiles("
-    #include <atomic>
-    #include <stdint.h>
-    int main() {
-        std::atomic<int64_t> x;
-        x = 1;
-        x--;
-        return (int) x;
-    }"
-    atomic64)
-
-if(NOT atomic64)
-    find_library(ATOMIC NAMES atomic libatomic.so.1)
-
-    if(ATOMIC)
-        set(LIBATOMIC ${ATOMIC})
-        message(STATUS "Found libatomic: ${LIBATOMIC}")
+    if(multiarch_x86_popcnt OR multiarch_avx512_bw OR multiarch_avx512_vbmi2)
+        set(LIB_SRC ${LIB_SRC} src/arch/x86/cpuid.cpp)
     else()
-        check_cxx_source_compiles("
-            #include <atomic>
-            #include <stdint.h>
-            int main() {
-                std::atomic<int32_t> x;
-                x = 1;
-                x--;
-                return (int) x;
-            }"
-            atomic32)
-
-        if(atomic32)
-            message(FATAL_ERROR "Failed to find libatomic!")
+        include("${PROJECT_SOURCE_DIR}/cmake/multiarch_sve_arm.cmake")
+        if(multiarch_sve_arm)
+            set(LIB_SRC ${LIB_SRC} src/arch/arm/sve.cpp)
         endif()
     endif()
 endif()
 
-cmake_pop_check_state()
+# Required includes ##################################################
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+# Check if libatomic is needed (old 32-bit systems) ##################
+
+include("${PROJECT_SOURCE_DIR}/cmake/libatomic.cmake")
 
 # libprimesieve (shared library) #####################################
 
 find_package(Threads REQUIRED QUIET)
 
+if(CMAKE_THREAD_LIBS_INIT)
+    string(APPEND PRIMESIEVE_PKGCONFIG_LIBS_PRIVATE "${CMAKE_THREAD_LIBS_INIT} ")
+endif()
+
 if(BUILD_SHARED_LIBS)
     add_library(libprimesieve SHARED ${LIB_SRC})
     set_target_properties(libprimesieve PROPERTIES OUTPUT_NAME primesieve)
-    target_link_libraries(libprimesieve PRIVATE Threads::Threads ${LIBATOMIC})
-    string(REPLACE "." ";" SOVERSION_LIST ${PRIMESIEVE_SOVERSION})
-    list(GET SOVERSION_LIST 0 PRIMESIEVE_SOVERSION_MAJOR)
-    set_target_properties(libprimesieve PROPERTIES SOVERSION ${PRIMESIEVE_SOVERSION_MAJOR})
-    set_target_properties(libprimesieve PROPERTIES VERSION ${PRIMESIEVE_SOVERSION})
-
-    if(WIN32_MSVC_COMPATIBLE)
-        # On Windows the shared library will be named primesieve.dll
-        # and the associated import library will be named
-        # primesieve.lib. This is an issue as the static library
-        # is also named primesieve.lib. Hence we rename the import
-        # library to primesieve.dll.lib. The Rust programming
-        # language uses the same naming convention.
-        set_target_properties(libprimesieve PROPERTIES IMPORT_SUFFIX ".dll.lib")
-    endif()
+    set_target_properties(libprimesieve PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
+    set_target_properties(libprimesieve PROPERTIES VERSION ${PROJECT_VERSION})
+    set_target_properties(libprimesieve PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    target_link_libraries(libprimesieve PRIVATE Threads::Threads ${PRIMESIEVE_LINK_LIBRARIES})
+    target_compile_definitions(libprimesieve PRIVATE ${PRIMESIEVE_COMPILE_DEFINITIONS})
 
     target_compile_features(libprimesieve
     PUBLIC
@@ -153,9 +156,12 @@ if(BUILD_SHARED_LIBS)
         cxx_uniform_initialization
         cxx_lambdas)
 
-    target_include_directories(libprimesieve PUBLIC
+    target_include_directories(libprimesieve
+    PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>)
+        $<INSTALL_INTERFACE:include>
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
     install(TARGETS libprimesieve
             EXPORT primesieveShared
@@ -169,10 +175,12 @@ endif()
 if(BUILD_STATIC_LIBS)
     add_library(libprimesieve-static STATIC ${LIB_SRC})
     set_target_properties(libprimesieve-static PROPERTIES OUTPUT_NAME primesieve)
-    target_link_libraries(libprimesieve-static PRIVATE Threads::Threads ${LIBATOMIC})
+    target_link_libraries(libprimesieve-static PRIVATE Threads::Threads ${PRIMESIEVE_LINK_LIBRARIES})
+    target_compile_definitions(libprimesieve-static PRIVATE ${PRIMESIEVE_COMPILE_DEFINITIONS})
 
-    if(TARGET libprimesieve)
-        add_dependencies(libprimesieve-static libprimesieve)
+    if(CMAKE_IMPORT_LIBRARY_SUFFIX AND
+       "${CMAKE_IMPORT_LIBRARY_SUFFIX}" STREQUAL "${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        set_target_properties(libprimesieve-static PROPERTIES ARCHIVE_OUTPUT_NAME primesieve_static)
     endif()
 
     target_compile_features(libprimesieve-static
@@ -183,9 +191,12 @@ if(BUILD_STATIC_LIBS)
         cxx_uniform_initialization
         cxx_lambdas)
 
-    target_include_directories(libprimesieve-static PUBLIC
+    target_include_directories(libprimesieve-static
+    PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>)
+        $<INSTALL_INTERFACE:include>
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
     install(TARGETS libprimesieve-static
             EXPORT primesieveStatic
@@ -204,12 +215,12 @@ endif()
 # that is in the PATH environment variable.
 
 if(WIN32 AND TARGET libprimesieve-static)
-    set(STATIC_LINKING ON)
+    set(STATICALLY_LINK_LIBPRIMESIEVE ON)
 elseif(NOT TARGET libprimesieve)
-    set(STATIC_LINKING ON)
+    set(STATICALLY_LINK_LIBPRIMESIEVE ON)
 endif()
 
-if(STATIC_LINKING)
+if(STATICALLY_LINK_LIBPRIMESIEVE)
     add_library(primesieve::primesieve ALIAS libprimesieve-static)
 else()
     add_library(primesieve::primesieve ALIAS libprimesieve)
@@ -219,13 +230,11 @@ endif()
 
 if(BUILD_PRIMESIEVE)
     add_executable(primesieve ${BIN_SRC})
-    target_link_libraries(primesieve primesieve::primesieve)
+    target_link_libraries(primesieve primesieve::primesieve Threads::Threads)
+    target_include_directories(primesieve PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_compile_definitions(primesieve PRIVATE ${PRIMESIEVE_COMPILE_DEFINITIONS})
     target_compile_features(primesieve PRIVATE cxx_auto_type)
     install(TARGETS primesieve DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-    if(TARGET libprimesieve-static)
-        add_dependencies(primesieve libprimesieve-static)
-    endif()
 endif()
 
 # Install headers ####################################################
@@ -246,7 +255,7 @@ install(FILES include/primesieve/iterator.h
 
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/primesieveConfigVersion.cmake"
-    VERSION ${PRIMESIEVE_VERSION}
+    VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion)
 
 configure_package_config_file(
@@ -297,7 +306,7 @@ if(BUILD_PRIMESIEVE)
             DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 endif()
 
-# Install primesieve.pc (pkg-config) #################################
+# Install primesieve.pc (pkgconf) ####################################
 
 configure_file(primesieve.pc.in primesieve.pc @ONLY)
 

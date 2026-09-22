@@ -1,7 +1,7 @@
 ///
 /// @file  macros.hpp
 ///
-/// Copyright (C) 2020 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -22,6 +22,18 @@
   #define __has_cpp_attribute(x) 0
 #endif
 
+#ifndef __has_include
+  #define __has_include(x) 0
+#endif
+
+#if __has_attribute(always_inline)
+  #define ALWAYS_INLINE inline __attribute__((always_inline))
+#elif defined(_MSC_VER)
+  #define ALWAYS_INLINE inline __forceinline
+#else
+  #define ALWAYS_INLINE inline
+#endif
+
 /// Some functions in primesieve use a large number of variables
 /// at the same time. If such functions are inlined then
 /// performance drops because not all variables fit into registers
@@ -37,6 +49,16 @@
 #endif
 
 #if __cplusplus >= 202002L && \
+    __has_cpp_attribute(likely)
+  #define if_likely(x) if (x) [[likely]]
+#elif defined(__GNUC__) || \
+      __has_builtin(__builtin_expect)
+  #define if_likely(x) if (__builtin_expect(!!(x), 1))
+#else
+  #define if_likely(x) if (x)
+#endif
+
+#if __cplusplus >= 202002L && \
     __has_cpp_attribute(unlikely)
   #define if_unlikely(x) if (x) [[unlikely]]
 #elif defined(__GNUC__) || \
@@ -44,6 +66,36 @@
   #define if_unlikely(x) if (__builtin_expect(!!(x), 0))
 #else
   #define if_unlikely(x) if (x)
+#endif
+
+/// Enable expensive debugging assertions.
+/// These assertions enable e.g. bounds checks for the
+/// Vector and Array types.
+///
+#if defined(ENABLE_ASSERT)
+  namespace primesieve {
+  [[noreturn]]
+  void assert_failed(const char* assertion,
+                     const char* file,
+                     unsigned int line,
+                     const char* function);
+  } // namespace
+
+  #if defined(_MSC_VER)
+    #define ASSERT_FUNCTION __FUNCSIG__
+  #elif defined(__GNUC__) || defined(__clang__)
+    #define ASSERT_FUNCTION __PRETTY_FUNCTION__
+  #else
+    #define ASSERT_FUNCTION __func__
+  #endif
+
+  #define ASSERT(x) \
+    do { \
+      if(!(x)) \
+        primesieve::assert_failed(#x, __FILE__, __LINE__, ASSERT_FUNCTION); \
+    } while (0)
+#else
+  #define ASSERT(x) ((void) 0)
 #endif
 
 #if __cplusplus >= 201703L && \
@@ -60,15 +112,50 @@
   #define UNREACHABLE __builtin_unreachable()
 #elif defined(_MSC_VER)
   #define UNREACHABLE __assume(0)
+#elif __cplusplus >= 202301L && \
+      defined(__cpp_lib_unreachable)
+  // We prefer __builtin_unreachable() over std::unreachable()
+  // because GCC's std::unreachable() implementation uses
+  // __builtin_trap() instead of __builtin_unreachable() if
+  // _GLIBCXX_ASSERTIONS is defined.
+  #include <utility>
+  #define UNREACHABLE std::unreachable()
 #else
   #define UNREACHABLE
 #endif
 
-/// Use [[maybe_unused]] from C++17 once widely supported
-#if defined(NDEBUG)
-  #define MAYBE_UNUSED(x)
+#if __cplusplus >= 201703L && \
+    __has_cpp_attribute(maybe_unused)
+  #define MAYBE_UNUSED [[maybe_unused]]
+#elif __has_attribute(unused)
+  #define MAYBE_UNUSED __attribute__((unused))
 #else
-  #define MAYBE_UNUSED(x) x
+  #define MAYBE_UNUSED
+#endif
+
+// Silence GCC < 12 warning:
+// warning: 'unused' attribute ignored [-Wattributes]
+#if defined(__GNUC__) && \
+   !defined(__clang__)
+  #if __GNUC__ < 12
+    #undef MAYBE_UNUSED
+    #define MAYBE_UNUSED
+  #endif
+#endif
+
+/// By default C++26 (and GCC/Clang's -ftrivial-auto-var-init) zero
+/// initializes variables with automatic storage duration. In primesieve
+/// we place INDETERMINATE in front of large stack variable declarations
+/// whose memory is initialized later, in order to prevent this and
+/// avoid the unnecessary memset performance overhead.
+///
+#if __has_attribute(uninitialized)
+  #define INDETERMINATE __attribute__((uninitialized))
+#elif __cplusplus >= 202603L && \
+      __has_cpp_attribute(indeterminate)
+  #define INDETERMINATE [[indeterminate]]
+#else
+  #define INDETERMINATE
 #endif
 
 #endif

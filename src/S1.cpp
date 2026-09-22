@@ -1,7 +1,7 @@
 ///
 /// @file  S1.cpp
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -13,9 +13,9 @@
 #include <imath.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -35,7 +35,7 @@ S1_OpenMP_thread(X x,
                  int64_t b,
                  int64_t c,
                  X square_free,
-                 vector<P>& primes)
+                 Vector<P>& primes)
 {
   using res_t = typename next_larger_type<X>::type;
 
@@ -63,9 +63,9 @@ S1_OpenMP_master(X x,
                  int64_t c,
                  int threads)
 {
-  int64_t thread_threshold = ipow(10, 6);
+  int64_t thread_threshold = ipow<6>(10);
   threads = ideal_num_threads(threads, y, thread_threshold);
-  vector<Y> primes = generate_primes<Y>(y);
+  Vector<Y> primes = generate_primes<Y>(y);
   auto s1_sum = phi_sum(x, c);
 
   #pragma omp parallel for schedule(static, 1) num_threads(threads) reduction (+: s1_sum)
@@ -89,7 +89,6 @@ int256_t S1(int128_t x,
 {
   print("");
   print("=== S1(x, y) ===");
-  print("Computation of the ordinary leaves");
   print(x, y, c, threads);
 
   double time = get_time();

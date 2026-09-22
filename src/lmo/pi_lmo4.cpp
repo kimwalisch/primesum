@@ -5,7 +5,7 @@
 ///        sieve of Eratosthenes and a special tree data structure
 ///        for faster summing in S2(x).
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -19,10 +19,10 @@
 #include <BinaryIndexedTree.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
 #include <algorithm>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -61,18 +61,20 @@ void cross_off(int64_t prime,
 int128_t S2(int64_t x,
             int64_t y,
             int64_t c,
-            vector<int32_t>& primes,
-            vector<int32_t>& lpf,
-            vector<int32_t>& mu)
+            int64_t pi_y,
+            Vector<int32_t>& primes,
+            Vector<int32_t>& lpf,
+            Vector<int32_t>& mu)
 {
   int64_t limit = x / y + 1;
   int64_t segment_size = next_power_of_2(isqrt(limit));
-  int64_t pi_y = pi_bsearch(primes, y);
   int128_t S2_result = 0;
 
-  vector<char> sieve(segment_size);
-  vector<int64_t> next(primes.begin(), primes.end());
-  vector<int128_t> phi(primes.size(), 0);
+  Vector<char> sieve(segment_size);
+  Vector<int64_t> next(primes.size());
+  Vector<int128_t> phi(primes.size());
+  copy(primes.begin(), primes.end(), next.begin());
+  fill(phi.begin(), phi.end(), 0);
   BinaryIndexedTree tree;
 
   // Segmented sieve of Eratosthenes
@@ -151,12 +153,13 @@ int64_t pi_lmo4(int64_t x)
   int64_t c = PhiTiny::get_c(y);
   int256_t p2 = P2(x, y, 1);
 
-  vector<int32_t> mu = generate_moebius(y);
-  vector<int32_t> lpf = generate_lpf(y);
-  vector<int32_t> primes = generate_primes(y);
+  Vector<int32_t> mu = generate_moebius(y);
+  Vector<int32_t> lpf = generate_lpf(y);
+  Vector<int32_t> primes = generate_primes(y);
 
+  int64_t pi_y = primes.size() - 1;
   int256_t s1 = S1(x, y, c, 1);
-  int256_t s2 = S2(x, y, c, primes, lpf, mu);
+  int256_t s2 = S2(x, y, c, pi_y, primes, lpf, mu);
   int256_t phi = s1 + s2;
   int256_t sum = phi + prime_sum_tiny(y) - 1 - p2;
 

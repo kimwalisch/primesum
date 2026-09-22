@@ -5,7 +5,7 @@
 ///        and returns the number of primes <= n in O(1)
 ///        operations.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -13,9 +13,9 @@
 
 #include <PiTable.hpp>
 #include <primesieve.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
-#include <vector>
 
 namespace primesum {
 

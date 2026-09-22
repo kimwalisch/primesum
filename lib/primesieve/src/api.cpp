@@ -4,22 +4,27 @@
 ///         Contains the implementations of the functions declared
 ///         in the primesieve.hpp header file.
 ///
-/// Copyright (C) 2020 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
 ///
 
+#include "CpuInfo.hpp"
+#include "PrimeSieveClass.hpp"
+#include "ParallelSieve.hpp"
+
 #include <primesieve.hpp>
-#include <primesieve/CpuInfo.hpp>
+#include <primesieve/config.hpp>
+#include <primesieve/macros.hpp>
 #include <primesieve/pmath.hpp>
-#include <primesieve/PrimeSieve.hpp>
-#include <primesieve/ParallelSieve.hpp>
 
 #include <stdint.h>
 #include <cstddef>
 #include <limits>
 #include <string>
+
+using std::size_t;
 
 namespace {
 
@@ -33,85 +38,85 @@ namespace primesieve {
 
 uint64_t nth_prime(int64_t n, uint64_t start)
 {
-  ParallelSieve ps;
+  INDETERMINATE ParallelSieve ps;
   return ps.nthPrime(n, start);
 }
 
 uint64_t count_primes(uint64_t start, uint64_t stop)
 {
-  ParallelSieve ps;
+  INDETERMINATE ParallelSieve ps;
   ps.sieve(start, stop, COUNT_PRIMES);
   return ps.getCount(0);
 }
 
 uint64_t count_twins(uint64_t start, uint64_t stop)
 {
-  ParallelSieve ps;
+  INDETERMINATE ParallelSieve ps;
   ps.sieve(start, stop, COUNT_TWINS);
   return ps.getCount(1);
 }
 
 uint64_t count_triplets(uint64_t start, uint64_t stop)
 {
-  ParallelSieve ps;
+  INDETERMINATE ParallelSieve ps;
   ps.sieve(start, stop, COUNT_TRIPLETS);
   return ps.getCount(2);
 }
 
 uint64_t count_quadruplets(uint64_t start, uint64_t stop)
 {
-  ParallelSieve ps;
+  INDETERMINATE ParallelSieve ps;
   ps.sieve(start, stop, COUNT_QUADRUPLETS);
   return ps.getCount(3);
 }
 
 uint64_t count_quintuplets(uint64_t start, uint64_t stop)
 {
-  ParallelSieve ps;
+  INDETERMINATE ParallelSieve ps;
   ps.sieve(start, stop, COUNT_QUINTUPLETS);
   return ps.getCount(4);
 }
 
 uint64_t count_sextuplets(uint64_t start, uint64_t stop)
 {
-  ParallelSieve ps;
+  INDETERMINATE ParallelSieve ps;
   ps.sieve(start, stop, COUNT_SEXTUPLETS);
   return ps.getCount(5);
 }
 
 void print_primes(uint64_t start, uint64_t stop)
 {
-  PrimeSieve ps;
+  INDETERMINATE PrimeSieve ps;
   ps.sieve(start, stop, PRINT_PRIMES);
 }
 
 void print_twins(uint64_t start, uint64_t stop)
 {
-  PrimeSieve ps;
+  INDETERMINATE PrimeSieve ps;
   ps.sieve(start, stop, PRINT_TWINS);
 }
 
 void print_triplets(uint64_t start, uint64_t stop)
 {
-  PrimeSieve ps;
+  INDETERMINATE PrimeSieve ps;
   ps.sieve(start, stop, PRINT_TRIPLETS);
 }
 
 void print_quadruplets(uint64_t start, uint64_t stop)
 {
-  PrimeSieve ps;
+  INDETERMINATE PrimeSieve ps;
   ps.sieve(start, stop, PRINT_QUADRUPLETS);
 }
 
 void print_quintuplets(uint64_t start, uint64_t stop)
 {
-  PrimeSieve ps;
+  INDETERMINATE PrimeSieve ps;
   ps.sieve(start, stop, PRINT_QUINTUPLETS);
 }
 
 void print_sextuplets(uint64_t start, uint64_t stop)
 {
-  PrimeSieve ps;
+  INDETERMINATE PrimeSieve ps;
   ps.sieve(start, stop, PRINT_SEXTUPLETS);
 }
 
@@ -140,8 +145,7 @@ std::string primesieve_version()
 
 void set_sieve_size(int size)
 {
-  sieve_size = inBetween(8, size, 4096);
-  sieve_size = floorPow2(sieve_size);
+  sieve_size = inBetween(16, size, 8192);
 }
 
 int get_sieve_size()
@@ -150,74 +154,63 @@ int get_sieve_size()
   if (sieve_size)
     return sieve_size;
 
-#if defined(__APPLE__)
-  // On Apple's operating systems (macOS & iOS) we use
-  // the sysctl library to query CPU info. Unfortunately
-  // sysctl returns erroneous L2 & L3 cache information on
-  // Apple silicon CPUs (ARM & ARM64). We can only know
-  // if an L2 cache exists and that it is likely fast. If
-  // this is the case, we make a conservative guess that
-  // the L2 cache per core is at least 8x larger than the
-  // L1 cache as this will likely improve performance.
-  if (cpuInfo.sysctlL2CacheWorkaround() &&
-      cpuInfo.hasL1Cache() &&
-      cpuInfo.l2CacheSize() > cpuInfo.l1CacheSize() * 8)
+  if (cpuInfo.hasL1Cache() &&
+      cpuInfo.hasL2Cache())
   {
     // Convert bytes to KiB
-    size_t size = cpuInfo.l1CacheSize() >> 10;
-    size = inBetween(8, size * 8, 4096);
-    size = floorPow2(size);
-    return (int) size;
+    size_t l1Size = cpuInfo.l1CacheBytes() >> 10;
+    size_t l2Size = cpuInfo.l2CacheBytes() >> 10;
+
+    // Check if the CPU cache info is likely correct.
+    // When primesieve is run inside a virtual machine
+    // the cache sharing info is often reported as 1
+    // which is often incorrect. Hence if at least one
+    // of the CPU caches' sharing info is > 1, then we
+    // assume that the reported values are correct.
+    if (cpuInfo.hasL2Sharing() && (cpuInfo.l2Sharing() > 1 ||
+        (cpuInfo.hasL3Sharing() && cpuInfo.l3Sharing() > 1)))
+    {
+      size_t maxSize = l2Size / cpuInfo.l2Sharing();
+
+      // Many CPUs have scaling issues when running
+      // multi-threaded workloads and fully utilizing
+      // the L2 cache. Hence we ensure that the sieve
+      // array size is < L2 cache size (per core).
+      if (cpuInfo.l2Sharing() == 2)
+        maxSize = floorPow2(maxSize);
+      else
+        maxSize = floorPow2(maxSize - 1);
+
+      maxSize = std::max(l1Size, maxSize);
+      size_t size = std::min(l1Size * 16, maxSize);
+      size = inBetween(16, size, 8192);
+      return (int) size;
+    }
+    else
+    {
+      // In this code path we cannot trust the CPU cache
+      // info reported by the OS. Hence, we are more
+      // conservative and use a smaller sieve array size.
+      size_t maxSize = floorPow2(l2Size - 1);
+      maxSize = std::max(l1Size, maxSize);
+      size_t size = std::min(l1Size * 8, maxSize);
+      size = inBetween(16, size, 8192);
+      return (int) size;
+    }
   }
-#endif
-
-  // Shared CPU caches are usually slow. Hence we only use
-  // the L2 cache for sieving if each physical CPU core
-  // has a private L2 cache. Also we only use half of the
-  // L2 cache. This is a safety measure as some CPUs incur
-  // a significant performance degradation if we fully
-  // utilize the L2 cache.
-  if (cpuInfo.hasPrivateL2Cache())
+  else if (cpuInfo.hasL1Cache())
   {
     // Convert bytes to KiB
-    size_t size = cpuInfo.l2CacheSize() >> 10;
-    size = inBetween(32, size - 1, 4096);
-    size = floorPow2(size);
-    return (int) size;
-  }
-
-  // TODO: Shared L2 caches can also be fast?!
-  //
-  // Up until 2020 shared L2 caches have been slow when
-  // used with multi-threading in primesieve on all
-  // desktop and server CPUs. However in 2020 Apple
-  // released their M1 CPU (ARM64) with an L2 cache that
-  // performs well using multi-threading in primesieve and
-  // media seems to agree that this L2 cache is shared.
-  // I still have some doubts whether this is really the
-  // case, but if it's really true then it is likely that
-  // competitors will eventually catch up and also build
-  // CPUs with fast shared L2 caches.
-  //
-  // If the CPU manufacturers move to fast L2 shared
-  // caches then we have to add support for it here. We
-  // should then set the sieve size to e.g.:
-  // total L2 cache size / (L2 cache sharing * 2).
-
-  if (cpuInfo.hasL1Cache())
-  {
-    // Convert bytes to KiB
-    size_t size = cpuInfo.l1CacheSize() >> 10;
-    size = inBetween(8, size, 4096);
-    size = floorPow2(size);
-    return (int) size;
+    size_t l1Size = cpuInfo.l1CacheBytes() >> 10;
+    l1Size = inBetween(16, l1Size, 8192);
+    return (int) l1Size;
   }
   else
   {
     // Default sieve size in KiB
-    size_t size = 32;
-    size = inBetween(8, size, 4096);
-    size = floorPow2(size);
+    size_t l1Size = config::L1D_CACHE_BYTES >> 10;
+    size_t size = l1Size * 8;
+    size = inBetween(16, size, 8192);
     return (int) size;
   }
 }

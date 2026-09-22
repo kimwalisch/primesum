@@ -4,7 +4,7 @@
 ///         Wheel factorization is used to skip multiples of
 ///         small primes in the sieve of Eratosthenes.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -14,9 +14,9 @@
 #define WHEEL_HPP
 
 #include <imath.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
-#include <vector>
 
 namespace primesum {
 
@@ -110,7 +110,7 @@ private:
 
   static const InitWheel init[210];
   static const NextWheel next[48];
-  std::vector<WheelItem> wheel_;
+  Vector<WheelItem> wheel_;
 };
 
 } // namespace

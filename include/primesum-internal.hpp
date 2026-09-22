@@ -2,7 +2,7 @@
 /// @file   primesum-internal.hpp
 /// @brief  primesum internal function definitions.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -13,14 +13,12 @@
 
 #include <int128_t.hpp>
 #include <int256_t.hpp>
-#include <aligned_vector.hpp>
 #include <imath.hpp>
 #include <print.hpp>
 
 #include <stdint.h>
 #include <algorithm>
 #include <string>
-#include <vector>
 
 namespace primesum {
 

@@ -1,0 +1,63 @@
+name: Build Windows binaries
+
+# Run ONLY when manually triggered from the GitHub Actions UI
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-x64:
+    name: Windows x64 / Clang
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Build and Package
+        shell: powershell
+        run: |
+          ./scripts/build_clang_x64.ps1
+
+      - name: Get Version for Artifact
+        shell: powershell
+        run: |
+          $VersionString = Select-String -Path "include/primesieve.hpp" -Pattern 'PRIMESIEVE_VERSION "(.*)"'
+          echo "PROJECT_VERSION=$($VersionString.Matches.Groups[1].Value)" >> $env:GITHUB_ENV
+
+      - name: Upload Windows x64 CI artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: primesieve-${{ env.PROJECT_VERSION }}-win-x64
+          path: build-release/primesieve-${{ env.PROJECT_VERSION }}-win-x64/*
+          if-no-files-found: error
+          retention-days: 7
+
+  windows-arm64:
+    name: Windows ARM64 / Clang
+    runs-on: windows-11-arm
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Build and Package
+        shell: powershell
+        run: |
+          ./scripts/build_clang_arm64.ps1
+
+      - name: Get Version for Artifact
+        shell: powershell
+        run: |
+          $VersionString = Select-String -Path "include/primesieve.hpp" -Pattern 'PRIMESIEVE_VERSION "(.*)"'
+          echo "PROJECT_VERSION=$($VersionString.Matches.Groups[1].Value)" >> $env:GITHUB_ENV
+
+      - name: Upload Windows arm64 CI artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: primesieve-${{ env.PROJECT_VERSION }}-win-arm64
+          path: build-release/primesieve-${{ env.PROJECT_VERSION }}-win-arm64/*
+          if-no-files-found: error
+          retention-days: 7

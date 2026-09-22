@@ -2,7 +2,7 @@
 /// @file   isqrt_constexpr.cpp
 /// @brief  Test compile time square root function.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -14,13 +14,11 @@
 #include <limits>
 #include <iostream>
 
-using namespace std;
-
 #if defined(BAD_ISQRT)
 
 /// The following compile time integer square root function
 /// has a recursion depth of O(sqrt(n)). This is very bad, the
-/// stack will explose if you try to compute the square root
+/// stack will explode if you try to compute the square root
 /// of a number > 10^9. Furthermore constexpr recursion depth
 /// is limited by the compiler even more e.g. both GCC and
 /// Clang currently limit constexpr recursion depth to 512.
@@ -58,6 +56,8 @@ static_assert(bad_isqrt(100000000) == 10000, "bad_isqrt(10^8) failed!");
 
 int main()
 {
+  using primesieve::ctSqrt;
+
   static_assert(ctSqrt(0) == 0, "ctSqrt(0) failed!");
   static_assert(ctSqrt(1) == 1, "ctSqrt(1) failed!");
   static_assert(ctSqrt(2) == 1, "ctSqrt(2) failed!");
@@ -109,10 +109,10 @@ int main()
   static_assert(ctSqrt(std::numeric_limits<uint16_t>::max()) == 255, "ctSqrt(2^16-1) failed!");
   static_assert(ctSqrt(std::numeric_limits<int32_t>::max()) == 46340, "ctSqrt(2^31-1) failed!");
   static_assert(ctSqrt(std::numeric_limits<uint32_t>::max()) == 65535, "ctSqrt(2^32-1) failed!");
-  static_assert(ctSqrt(std::numeric_limits<int64_t>::max()) == 3037000499ll, "ctSqrt(2^63-1) failed!");
-  static_assert(ctSqrt(std::numeric_limits<uint64_t>::max()) == 4294967295ull, "ctSqrt(2^64-1) failed!");
+  static_assert(ctSqrt(std::numeric_limits<int64_t>::max()) == 3037000499, "ctSqrt(2^63-1) failed!");
+  static_assert(ctSqrt(std::numeric_limits<uint64_t>::max()) == 4294967295, "ctSqrt(2^64-1) failed!");
 
-  cout << "All tests passed successfully!" << endl;
+  std::cout << "All tests passed successfully!" << std::endl;
 
   return 0;
 }

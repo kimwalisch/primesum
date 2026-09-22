@@ -6,32 +6,38 @@
 ///         returns the primes. When there are no more primes left in
 ///         the vector PrimeGenerator generates new primes.
 ///
-/// Copyright (C) 2019 Kim Walisch, <kim.walisch@gmail.com>
+///         primesieve::iterator's next_prime() performance depends
+///         on PrimeGenerator::fillNextPrimes(). Therefore
+///         fillNextPrimes() is highly optimized using hardware
+///         acceleration (e.g. CTZ, AVX512) whenever possible.
+///
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2022 @zielaj, https://github.com/zielaj
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
 ///
 
-#include <primesieve/Erat.hpp>
+#include "PrimeGenerator.hpp"
+#include "Erat.hpp"
+#include "SievingPrimes.hpp"
+
 #include <primesieve/forward.hpp>
-#include <primesieve/littleendian_cast.hpp>
-#include <primesieve/PreSieve.hpp>
-#include <primesieve/PrimeGenerator.hpp>
+#include <primesieve/macros.hpp>
+#include <primesieve/primesieve_error.hpp>
 #include <primesieve/pmath.hpp>
-#include <primesieve/SievingPrimes.hpp>
+#include <primesieve/popcnt.hpp>
+#include <primesieve/util.hpp>
+#include <primesieve/Vector.hpp>
 
 #include <stdint.h>
 #include <algorithm>
-#include <array>
-#include <cassert>
-#include <vector>
-
-using namespace std;
+#include <limits>
 
 namespace {
 
 /// First 128 primes
-const array<uint64_t, 128> smallPrimes =
+const primesieve::Array<uint64_t, 128> smallPrimes =
 {
     2,   3,   5,   7,  11,  13,  17,  19,  23,  29,
    31,  37,  41,  43,  47,  53,  59,  61,  67,  71,
@@ -49,7 +55,7 @@ const array<uint64_t, 128> smallPrimes =
 };
 
 /// Number of primes <= n
-const array<uint8_t, 720> primePi =
+const primesieve::Array<uint8_t, 720> primePi =
 {
     0,   0,   1,   2,   2,   3,   3,   4,   4,   4,   4,   5,   5,   6,   6,
     6,   6,   7,   7,   8,   8,   8,   8,   9,   9,   9,   9,   9,   9,  10,
@@ -105,70 +111,19 @@ const array<uint8_t, 720> primePi =
 
 namespace primesieve {
 
-PrimeGenerator::PrimeGenerator(uint64_t start, uint64_t stop) :
+PrimeGenerator::PrimeGenerator(uint64_t start,
+                               uint64_t stop) :
   Erat(start, stop)
 { }
-
-/// Used by iterator::prev_prime()
-void PrimeGenerator::init(vector<uint64_t>& primes)
-{
-  size_t size = primeCountApprox(start_, stop_);
-  primes.reserve(size);
-
-  if (start_ <= maxCachedPrime())
-  {
-    size_t a = getStartIdx();
-    size_t b = getStopIdx();
-
-    primes.insert(primes.end(),
-             smallPrimes.begin() + a,
-             smallPrimes.begin() + b);
-  }
-
-  initErat();
-}
-
-/// Used by iterator::next_prime()
-void PrimeGenerator::init(vector<uint64_t>& primes, size_t* size)
-{
-  if (start_ <= maxCachedPrime())
-  {
-    size_t a = getStartIdx();
-    size_t b = getStopIdx();
-
-    *size = b - a;
-    assert(*size <= primes.size());
-
-    copy(smallPrimes.begin() + a,
-         smallPrimes.begin() + b,
-         primes.begin());
-  }
-
-  initErat();
-}
-
-void PrimeGenerator::initErat()
-{
-  uint64_t startErat = maxCachedPrime() + 1;
-  startErat = max(startErat, start_);
-  isInit_ = true;
-
-  if (startErat <= stop_)
-  {
-    int sieveSize = get_sieve_size();
-    Erat::init(startErat, stop_, sieveSize, preSieve_);
-    sievingPrimes_.init(this, preSieve_);
-  }
-}
 
 uint64_t PrimeGenerator::maxCachedPrime()
 {
   return smallPrimes.back();
 }
 
-size_t PrimeGenerator::getStartIdx() const
+std::size_t PrimeGenerator::getStartIdx() const
 {
-  size_t startIdx = 0;
+  std::size_t startIdx = 0;
 
   if (start_ > 1)
     startIdx = primePi[start_ - 1];
@@ -176,9 +131,9 @@ size_t PrimeGenerator::getStartIdx() const
   return startIdx;
 }
 
-size_t PrimeGenerator::getStopIdx() const
+std::size_t PrimeGenerator::getStopIdx() const
 {
-  size_t stopIdx = 0;
+  std::size_t stopIdx = 0;
 
   if (stop_ < maxCachedPrime())
     stopIdx = primePi[stop_];
@@ -186,6 +141,133 @@ size_t PrimeGenerator::getStopIdx() const
     stopIdx = smallPrimes.size();
 
   return stopIdx;
+}
+
+/// Used by iterator::prev_prime()
+void PrimeGenerator::initPrevPrimes(Vector<uint64_t>& primes,
+                                    std::size_t* size)
+{
+  auto resize = [](Vector<uint64_t>& primes,
+                   std::size_t size)
+  {
+    // Avoids reallocation in fillPrevPrimes()
+    size += 64;
+
+    if (primes.empty())
+      primes.resize(size);
+    // When sieving backwards the number of primes inside [start, stop]
+    // slowly increases in each new segment as there are more small
+    // than large primes. Our new size has been calculated using
+    // primeCountUpper(start, stop) which is usually too large by 4%
+    // near 10^12 and by 2.5% near 10^19. Hence if the new size is less
+    // than 1% larger than the old size we do not increase the primes
+    // buffer as it will likely be large enough to fit all primes.
+    else if (size > primes.size() &&
+             (double) size / (double) primes.size() > 1.01)
+    {
+      // Prevent unnecessary copying when resizing
+      primes.clear();
+      primes.resize(size);
+    }
+  };
+
+  std::size_t pix = primeCountUpper(start_, stop_);
+
+  if (start_ <= maxCachedPrime())
+  {
+    std::size_t a = getStartIdx();
+    std::size_t b = getStopIdx();
+    ASSERT(a <= b);
+
+    *size = (start_ <= 2) + b - a;
+    resize(primes, std::max(*size, pix));
+    std::size_t i = 0;
+
+    if (start_ <= 2)
+      primes[i++] = 0;
+
+    std::copy(smallPrimes.begin() + a,
+              smallPrimes.begin() + b,
+              &primes[i]);
+  }
+  else
+    resize(primes, pix);
+
+  initErat();
+}
+
+/// Used by iterator::next_prime()
+void PrimeGenerator::initNextPrimes(Vector<uint64_t>& primes,
+                                    std::size_t* size)
+{
+  auto resize = [](Vector<uint64_t>& primes,
+                   std::size_t size)
+  {
+    if (size > primes.size())
+    {
+      // Prevent unnecessary copying when resizing
+      primes.clear();
+      primes.resize(size);
+    }
+  };
+
+  // A buffer of 1024 primes provides good
+  // performance with little memory usage.
+  std::size_t maxSize = 1 << 10;
+
+  if (start_ <= maxCachedPrime())
+  {
+    std::size_t a = getStartIdx();
+    std::size_t b = getStopIdx();
+    *size = b - a;
+
+    if (stop_ < maxCachedPrime() + 2)
+      resize(primes, *size);
+    else
+    {
+      // +64 is needed because our fillNextPrimes()
+      // algorithm aborts as soon as there is not
+      // enough space to store 64 more primes.
+      std::size_t minSize = *size + 64;
+      std::size_t pix = primeCountUpper(start_, stop_) + 64;
+      pix = inBetween(minSize, pix, maxSize);
+      pix = std::max(*size, pix);
+      resize(primes, pix);
+    }
+
+    ASSERT(primes.size() >= *size);
+    std::copy(smallPrimes.begin() + a,
+              smallPrimes.begin() + b,
+              primes.begin());
+  }
+  else
+  {
+    // +64 is needed because our fillNextPrimes()
+    // algorithm aborts as soon as there is not
+    // enough space to store 64 more primes.
+    std::size_t minSize = 64;
+    std::size_t pix = primeCountUpper(start_, stop_) + 64;
+    pix = inBetween(minSize, pix, maxSize);
+    resize(primes, pix);
+  }
+
+  initErat();
+}
+
+void PrimeGenerator::initErat()
+{
+  ASSERT(maxCachedPrime() >= 5);
+  uint64_t startErat = maxCachedPrime() + 2;
+  startErat = std::max(startErat, start_);
+  isInit_ = true;
+
+  if (startErat <= stop_ &&
+      startErat < std::numeric_limits<uint64_t>::max())
+  {
+    int sieveSize = get_sieve_size();
+    Erat::init(startErat, stop_, sieveSize, memoryPool_);
+    sievingPrimes_.init(this, sieveSize, memoryPool_);
+  }
 }
 
 void PrimeGenerator::sieveSegment()
@@ -208,10 +290,11 @@ void PrimeGenerator::sieveSegment()
 }
 
 /// Used by iterator::prev_prime()
-bool PrimeGenerator::sieveSegment(vector<uint64_t>& primes)
+bool PrimeGenerator::sievePrevPrimes(Vector<uint64_t>& primes,
+                                     std::size_t* size)
 {
   if (!isInit_)
-    init(primes);
+    initPrevPrimes(primes, size);
 
   if (hasNextSegment())
   {
@@ -219,20 +302,18 @@ bool PrimeGenerator::sieveSegment(vector<uint64_t>& primes)
     return true;
   }
 
+  // We have generated all primes inside [start, stop], we cannot
+  // generate more primes using this PrimeGenerator. Therefore we
+  // need to allocate a new PrimeGenerator in iterator.cpp.
   return false;
 }
 
 /// Used by iterator::next_prime()
-bool PrimeGenerator::sieveSegment(vector<uint64_t>& primes, size_t* size)
+bool PrimeGenerator::sieveNextPrimes(Vector<uint64_t>& primes,
+                                     std::size_t* size)
 {
-  *size = 0;
-
   if (!isInit_)
-  {
-    init(primes, size);
-    if (*size > 0)
-      return false;
-  }
+    initNextPrimes(primes, size);
 
   if (hasNextSegment())
   {
@@ -240,89 +321,23 @@ bool PrimeGenerator::sieveSegment(vector<uint64_t>& primes, size_t* size)
     return true;
   }
 
-  // primesieve only supports primes < 2^64. In case the next
-  // prime would be > 2^64 we simply return UINT64_MAX.
-  if (stop_ >= numeric_limits<uint64_t>::max())
-  {
-    primes[0] = ~0ull;
-    *size = 1;
-  }
+  // The next prime would be > 2^64
+  if_unlikely(stop_ >= std::numeric_limits<uint64_t>::max())
+    throw primesieve_error("cannot generate primes > 2^64");
 
+  // We have generated all primes <= stop, we cannot generate
+  // more primes using this PrimeGenerator. Therefore we
+  // need to allocate a new PrimeGenerator in iterator.cpp.
   return false;
 }
 
-/// This method is used by iterator::prev_prime().
-/// This method stores all primes inside [a, b] into the primes
-/// vector. (b - a) is about sqrt(stop) so the memory usage is
-/// quite large. Also after primesieve::iterator has iterated
-/// over the primes inside [a, b] we need to generate new
-/// primes which incurs an initialization overhead of O(sqrt(n)).
-///
-void PrimeGenerator::fill(vector<uint64_t>& primes)
-{
-  while (sieveSegment(primes))
-  {
-    while (sieveIdx_ < sieveSize_)
-    {
-      uint64_t bits = littleendian_cast<uint64_t>(&sieve_[sieveIdx_]);
-
-      for (; bits != 0; bits &= bits - 1)
-        primes.push_back(nextPrime(bits, low_));
-
-      low_ += 8 * 30;
-      sieveIdx_ += 8;
-    }
-  }
-}
-
-/// This method is used by iterator::next_prime().
-/// This method stores only the next few primes (~ 200) in the
-/// primes vector. Also for iterator::next_prime() there is no
-/// recurring initialization overhead (unlike prev_prime()) for
-/// this reason iterator::next_prime() runs up to 2x faster
-/// than iterator::prev_prime().
-///
-void PrimeGenerator::fill(vector<uint64_t>& primes,
-                          size_t* size)
-{
-  do
-  {
-    if (sieveIdx_ >= sieveSize_)
-      if (!sieveSegment(primes, size))
-        return;
-
-    // Use local variables to prevent the compiler from
-    // writing temporary results to memory.
-    size_t i = 0;
-    size_t maxSize = primes.size();
-    assert(maxSize >= 64);
-    uint64_t low = low_;
-    uint8_t* sieve = sieve_;
-    uint64_t sieveIdx = sieveIdx_;
-    uint64_t sieveSize = sieveSize_;
-
-    // Fill the buffer with at least (maxSize - 64) primes.
-    // Each loop iteration can generate up to 64 primes
-    // so we have to stop generating primes once there is
-    // not enough space for 64 more primes.
-    do
-    {
-      uint64_t bits = littleendian_cast<uint64_t>(&sieve[sieveIdx]);
-
-      for (; bits != 0; bits &= bits - 1)
-        primes[i++] = nextPrime(bits, low);
-
-      low += 8 * 30;
-      sieveIdx += 8;
-    }
-    while (i <= maxSize - 64 &&
-           sieveIdx < sieveSize);
-
-    low_ = low;
-    sieveIdx_ = sieveIdx;
-    *size = i;
-  }
-  while (*size == 0);
-}
-
 } // namespace
+
+#if defined(ENABLE_PRIMEGENERATOR_DEFAULT)
+  #include "PrimeGenerator_default.hpp"
+#endif
+
+#if defined(ENABLE_AVX512_VBMI2) || \
+    defined(ENABLE_MULTIARCH_AVX512_VBMI2)
+  #include "PrimeGenerator_x86_avx512.hpp"
+#endif

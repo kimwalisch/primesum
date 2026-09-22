@@ -1,7 +1,7 @@
 ///
 /// @file  aligned_vector.hpp
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -10,8 +10,8 @@
 #ifndef ALIGNED_VECTOR_HPP
 #define ALIGNED_VECTOR_HPP
 
+#include <Vector.hpp>
 #include <cstddef>
-#include <vector>
 
 // Maximum cache line size of current CPUs
 #ifndef CACHE_LINE_SIZE
@@ -30,7 +30,13 @@ class aligned_vector
 {
 public:
   aligned_vector(std::size_t size)
-    : vect_(size) { }
+    : vect_(size)
+  {
+    // Zero initialize memory
+    for (auto &v : vect_)
+      v.val[0] = 0;
+  }
+
   std::size_t size() const { return vect_.size(); }
   T& operator[](std::size_t pos) { return vect_[pos].val[0]; }
 private:
@@ -38,7 +44,7 @@ private:
   {
     T val[CACHE_LINE_SIZE / sizeof(T)];
   };
-  std::vector<align_t> vect_;
+  Vector<align_t> vect_;
 };
 
 } // namespace

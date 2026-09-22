@@ -22,7 +22,7 @@
 ///       [2] phi(x, a) = (x / pp) * φ(pp) + phi(x % pp, a)
 ///           with pp = 2 * 3 * ... * prime[a] 
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -34,12 +34,11 @@
 #include <imath.hpp>
 #include <PhiTiny.hpp>
 #include <fast_div.hpp>
-#include <min_max.hpp>
+#include <min.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
 #include <algorithm>
-#include <array>
-#include <vector>
 #include <limits>
 
 using namespace std;
@@ -53,7 +52,7 @@ const int MAX_A = 100;
 class PhiCache
 {
 public:
-  PhiCache(vector<int32_t>& primes,
+  PhiCache(Vector<int32_t>& primes,
            PiTable& pi) :
     primes_(primes),
     pi_(pi)
@@ -110,8 +109,8 @@ public:
 
 private:
   using T = uint16_t;
-  array<vector<T>, MAX_A> cache_;
-  vector<int32_t>& primes_;
+  Array<Vector<T>, MAX_A> cache_;
+  Vector<int32_t>& primes_;
   PiTable& pi_;
 
   void update_cache(uint64_t x, uint64_t a, int64_t sum)
@@ -120,7 +119,11 @@ private:
         x <= numeric_limits<T>::max())
     {
       if (x >= cache_[a].size())
-        cache_[a].resize(x + 1, 0);
+      {
+        std::size_t old_size = cache_[a].size();
+        cache_[a].resize(x + 1);
+        fill(cache_[a].begin() + old_size, cache_[a].end(), 0);
+      }
 
       cache_[a][x] = (T) abs(sum);
     }
@@ -129,7 +132,7 @@ private:
   bool is_pix(int64_t x, int64_t a) const
   {
     return x < pi_.size() &&
-           x < isquare(primes_[a + 1]);
+           x < int64_t(primes_[a + 1]) * primes_[a + 1];
   }
 
   bool is_cached(uint64_t x, uint64_t a) const
@@ -169,18 +172,22 @@ int64_t phi(int64_t x, int64_t a, int threads)
       // use large pi(x) lookup table for speed
       int64_t sqrtx = isqrt(x);
       PiTable pi(max(sqrtx, primes[a]));
-      PhiCache cache(primes, pi);
 
       int64_t c = PhiTiny::get_c(sqrtx);
       int64_t pi_sqrtx = min(pi[sqrtx], a);
-      int64_t thread_threshold = ipow(10ll, 10);
+      int64_t thread_threshold = ipow<10>(10ll);
       threads = ideal_num_threads(threads, x, thread_threshold);
 
       sum = phi_tiny(x, c) - a + pi_sqrtx;
 
-      #pragma omp parallel for num_threads(threads) schedule(dynamic, 16) firstprivate(cache) reduction(+: sum)
-      for (int64_t i = c; i < pi_sqrtx; i++)
-        sum += cache.phi<-1>(x / primes[i + 1], i);
+      #pragma omp parallel num_threads(threads) reduction(+: sum)
+      {
+        PhiCache cache(primes, pi);
+
+        #pragma omp for nowait schedule(dynamic, 16)
+        for (int64_t i = c; i < pi_sqrtx; i++)
+          sum += cache.phi<-1>(x / primes[i + 1], i);
+      }
     }
   }
 

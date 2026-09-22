@@ -1,10 +1,13 @@
 /**
  * @file   primesieve.h
- * @brief  primesieve C API. primesieve is a library for fast prime
- *         number generation. In case an error occurs errno is set to
- *         EDOM and PRIMESIEVE_ERROR is returned.
+ * @brief  primesieve C API. primesieve is a library for quickly
+ *         generating prime numbers. If an error occurs, primesieve
+ *         functions with a uint64_t return type return PRIMESIEVE_ERROR
+ *         and the corresponding error message is printed to the
+ *         standard error stream. libprimesieve also sets the C errno
+ *         variable to EDOM if an error occurs.
  * 
- * Copyright (C) 2020 Kim Walisch, <kim.walisch@gmail.com>
+ * Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
  * 
  * This file is distributed under the BSD License.
  */
@@ -12,9 +15,9 @@
 #ifndef PRIMESIEVE_H
 #define PRIMESIEVE_H
 
-#define PRIMESIEVE_VERSION "7.6"
-#define PRIMESIEVE_VERSION_MAJOR 7
-#define PRIMESIEVE_VERSION_MINOR 6
+#define PRIMESIEVE_VERSION "12.16"
+#define PRIMESIEVE_VERSION_MAJOR 12
+#define PRIMESIEVE_VERSION_MINOR 16
 
 #include <primesieve/iterator.h>
 
@@ -66,12 +69,29 @@ enum {
  * Get an array with the primes inside the interval [start, stop].
  * @param size  The size of the returned primes array.
  * @param type  The type of the primes to generate, e.g. INT_PRIMES.
+ * 
+ * In case an error occurs the error message is printed to the
+ * standard error stream, the size is set to 0 and a NULL pointer
+ * is returned. In order to distinguish an "error" from "no primes
+ * found within [start, stop]" libprimesieve also sets the C errno
+ * variable (from <errno.h>) to EDOM if any error occurs. By
+ * checking errno after calling primesieve_generate_primes() users
+ * can reliably detect errors.
  */
 void* primesieve_generate_primes(uint64_t start, uint64_t stop, size_t* size, int type);
 
 /**
  * Get an array with the first n primes >= start.
  * @param type  The type of the primes to generate, e.g. INT_PRIMES.
+ * 
+ * In case an error occurs the error message is printed to the
+ * standard error stream and a NULL pointer is returned.
+ * libprimesieve also sets the C errno variable (from <errno.h>)
+ * to EDOM if any error occurs. The only advantage which checking
+ * errno (after primesieve_generate_n_primes()) has over checking
+ * if a NULL pointer has been returned, is that errno is not set
+ * when calling primesieve_generate_n_primes(0, start, type) which
+ * is valid (but useless) and which returns a NULL pointer.
  */
 void* primesieve_generate_n_primes(uint64_t n, uint64_t start, int type);
 
@@ -95,7 +115,7 @@ void* primesieve_generate_n_primes(uint64_t n, uint64_t start, int type);
 uint64_t primesieve_nth_prime(int64_t n, uint64_t start);
 
 /**
- * Count the primes within the interval [start, stop]. 
+ * Count the primes within the interval [start, stop].
  * By default all CPU cores are used, use
  * primesieve_set_num_threads(int threads) to change the
  * number of threads.
@@ -110,7 +130,7 @@ uint64_t primesieve_nth_prime(int64_t n, uint64_t start);
 uint64_t primesieve_count_primes(uint64_t start, uint64_t stop);
 
 /**
- * Count the twin primes within the interval [start, stop]. 
+ * Count the twin primes within the interval [start, stop].
  * By default all CPU cores are used, use
  * primesieve_set_num_threads(int threads) to change the
  * number of threads.
@@ -118,7 +138,7 @@ uint64_t primesieve_count_primes(uint64_t start, uint64_t stop);
 uint64_t primesieve_count_twins(uint64_t start, uint64_t stop);
 
 /**
- * Count the prime triplets within the interval [start, stop]. 
+ * Count the prime triplets within the interval [start, stop].
  * By default all CPU cores are used, use
  * primesieve_set_num_threads(int threads) to change the
  * number of threads.
@@ -134,7 +154,7 @@ uint64_t primesieve_count_triplets(uint64_t start, uint64_t stop);
 uint64_t primesieve_count_quadruplets(uint64_t start, uint64_t stop);
 
 /**
- * Count the prime quintuplets within the interval [start, stop]. 
+ * Count the prime quintuplets within the interval [start, stop].
  * By default all CPU cores are used, use
  * primesieve_set_num_threads(int threads) to change the
  * number of threads.
@@ -142,7 +162,7 @@ uint64_t primesieve_count_quadruplets(uint64_t start, uint64_t stop);
 uint64_t primesieve_count_quintuplets(uint64_t start, uint64_t stop);
 
 /**
- * Count the prime sextuplets within the interval [start, stop]. 
+ * Count the prime sextuplets within the interval [start, stop].
  * By default all CPU cores are used, use
  * primesieve_set_num_threads(int threads) to change the
  * number of threads.
@@ -189,19 +209,19 @@ void primesieve_print_sextuplets(uint64_t start, uint64_t stop);
  * Returns the largest valid stop number for primesieve.
  * @return 2^64-1 (UINT64_MAX).
  */
-uint64_t primesieve_get_max_stop();
+uint64_t primesieve_get_max_stop(void);
 
 /** Get the current set sieve size in KiB */
-int primesieve_get_sieve_size();
+int primesieve_get_sieve_size(void);
 
 /** Get the current set number of threads */
-int primesieve_get_num_threads();
+int primesieve_get_num_threads(void);
 
 /**
  * Set the sieve size in KiB (kibibyte).
  * The best sieving performance is achieved with a sieve size
  * of your CPU's L1 or L2 cache size (per core).
- * @pre sieve_size >= 8 && <= 4096.
+ * @pre sieve_size >= 16 && <= 8192.
  */
 void primesieve_set_sieve_size(int sieve_size);
 
@@ -220,7 +240,7 @@ void primesieve_set_num_threads(int num_threads);
 void primesieve_free(void* primes);
 
 /** Get the primesieve version number, in the form “i.j” */
-const char* primesieve_version();
+const char* primesieve_version(void);
 
 #ifdef __cplusplus
 } /* extern "C" */

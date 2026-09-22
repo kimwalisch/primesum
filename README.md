@@ -1,8 +1,5 @@
 # primesum
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/kimwalisch/primesum?branch=master&svg=true)](https://ci.appveyor.com/project/kimwalisch/primesum)
-[![Github Releases](https://img.shields.io/github/release/kimwalisch/primesum.svg)](https://github.com/kimwalisch/primesum/releases)
-
 **primesum** is a command-line program that computes the sum of the
 primes below an integer x&nbsp;≤&nbsp;10<sup>31</sup> as quickly as
 possible using a modified version of the combinatorial prime counting
@@ -12,31 +9,48 @@ been used to compute many new [prime sum world records](#a046731-world-records)!
 **primesum** is a modified version of the author's
 [primecount](https://github.com/kimwalisch/primecount) program.
 
-## Binaries
+## Prerequisites
 
-Below are the latest precompiled binaries for Windows, Linux and macOS.
-These binaries are statically linked and require a CPU which supports the
-POPCNT instruction (2010 or later).
+You need to have installed a C++ compiler which supports 128-bit integers
+and OpenMP (e.g. GNU GCC or LLVM/Clang) and CMake ≥ 3.9.
 
-* [primesum-1.7-win64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.7/primesum-1.7-win64.zip), 525 KB
-* [primesum-1.7-linux-x64.tar.xz](https://github.com/kimwalisch/primesum/releases/download/v1.7/primesum-1.7-linux-x64.tar.xz), 837 KB
-* [primesum-1.7-macOS-x64.zip](https://github.com/kimwalisch/primesum/releases/download/v1.7/primesum-1.7-macOS-x64.zip), 353 KB
+<table>
+    <tr>
+        <td><b>Arch Linux:</b></td>
+        <td><code>sudo pacman -S gcc cmake</code></td>
+    </tr>
+    <tr>
+        <td><b>Debian/Ubuntu:</b></td>
+        <td><code>sudo apt install g++ cmake</code></td>
+    </tr>
+    <tr>
+        <td><b>Fedora:</b></td>
+        <td><code>sudo dnf install gcc-c++ cmake</code></td>
+    </tr>
+    <tr>
+        <td><b>macOS:</b></td>
+        <td><code>brew install cmake libomp</code></td>
+    </tr>
+    <tr>
+        <td><b>openSUSE:</b></td>
+        <td><code>sudo zypper install gcc-c++ cmake</code></td>
+    </tr>
+</table>
 
 ## Build instructions
 
-You need to have installed a C++ compiler, cmake and make. Ideally
-primesum should be compiled using a C++ compiler that supports both
-OpenMP and 128-bit integers (e.g. GCC, Clang, Intel C++ Compiler).
-
 ```sh
 cmake .
-make -j
-sudo make install
+cmake --build . --parallel
+
+# Run tests
+./primesum --test
 ```
 
 ## Usage examples
 
 Open a terminal and run primesum using e.g.:
+
 ```sh
 # Sum the primes below 10^14
 ./primesum 1e14
@@ -75,26 +89,6 @@ Advanced Deleglise-Rivat options:
          --S2_trivial       Only compute the trivial special leaves
          --S2_easy          Only compute the easy special leaves
          --S2_hard          Only compute the hard special leaves
-```
-
-## Performance tips
-
-primesum scales nicely up until 10^23 on current CPUs. For larger
-values primesum's large memory usage causes many
-[TLB (translation lookaside buffer)](https://en.wikipedia.org/wiki/Translation_lookaside_buffer)
-cache misses that severely deteriorate primesum's performance.
-Fortunately the Linux kernel allows to enable
-[transparent huge pages](https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html)
-so that large memory allocations will automatically be done using huge
-pages instead of ordinary pages which dramatically reduces the number of
-TLB cache misses.
-
-```bash
-sudo su
-
-# Enable transparent huge pages until next reboot
-echo always > /sys/kernel/mm/transparent_hugepage/enabled
-echo always > /sys/kernel/mm/transparent_hugepage/defrag
 ```
 
 ## Benchmark

@@ -1,0 +1,27 @@
+function(add_primesum_test binary_name source_file)
+    add_executable(${binary_name} ${source_file})
+    target_compile_definitions(${binary_name} PRIVATE ${PRIMESUM_COMPILE_DEFINITIONS})
+    target_compile_features(${binary_name} PRIVATE cxx_auto_type)
+    target_link_libraries(${binary_name} PRIVATE primesum::primesum primesieve::primesieve ${PRIMESUM_LINK_LIBRARIES})
+    add_test(NAME ${binary_name} COMMAND ${binary_name})
+    copy_primesum_runtime_libraries(${binary_name})
+endfunction()
+
+add_primesum_test(libdivide libdivide.cpp)
+add_primesum_test(fast_div fast_div.cpp)
+add_primesum_test(popcnt popcnt.cpp)
+
+if(WITH_POPCNT AND POPCNT_FLAG)
+    target_compile_options(popcnt PRIVATE "${POPCNT_FLAG}")
+endif()
+
+find_path(BOOST_INCLUDE_DIR boost/multiprecision/cpp_int.hpp)
+
+if(BOOST_INCLUDE_DIR)
+    foreach(binary_name division_256-bit modulo_256-bit)
+        add_primesum_test(${binary_name} ${binary_name}.cpp)
+        target_include_directories(${binary_name} SYSTEM PRIVATE ${BOOST_INCLUDE_DIR})
+    endforeach()
+else()
+    message(STATUS "Boost headers not found: skipping 256-bit division and modulo tests")
+endif()

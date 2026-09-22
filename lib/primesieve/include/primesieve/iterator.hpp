@@ -1,9 +1,9 @@
 ///
 /// @file   iterator.hpp
-/// @brief  The iterator class allows to easily iterate (forwards
+/// @brief  primesieve::iterator allows to easily iterate (forwards
 ///         and backwards) over prime numbers.
 ///
-/// Copyright (C) 2019 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -14,14 +14,33 @@
 
 #include <stdint.h>
 #include <cstddef>
-#include <vector>
-#include <memory>
+#include <limits>
+
+#if __cplusplus >= 202002L && \
+    defined(__has_cpp_attribute)
+  #if __has_cpp_attribute(unlikely)
+    #define IF_UNLIKELY_PRIMESIEVE(x) if (x) [[unlikely]]
+  #endif
+#elif defined(__has_builtin)
+  #if __has_builtin(__builtin_expect)
+    #define IF_UNLIKELY_PRIMESIEVE(x) if (__builtin_expect(!!(x), 0))
+  #endif
+#endif
+#if !defined(IF_UNLIKELY_PRIMESIEVE)
+  #define IF_UNLIKELY_PRIMESIEVE(x) if (x)
+#endif
+
+#if defined(min) || defined(max)
+  #undef min
+  #undef max
+  #if __cplusplus >= 202301L
+    #warning "Undefining min()/max() macros. Please define NOMINMAX before including <Windows.h>"
+  #elif defined(_MSC_VER) || defined(__GNUG__)
+    #pragma message("Undefining min()/max() macros. Please define NOMINMAX before including <Windows.h>")
+  #endif
+#endif
 
 namespace primesieve {
-
-class PrimeGenerator;
-
-uint64_t get_max_stop();
 
 /// primesieve::iterator allows to easily iterate over primes both
 /// forwards and backwards. Generating the first prime has a
@@ -29,17 +48,31 @@ uint64_t get_max_stop();
 /// any additional prime is generated in amortized O(log n log log n)
 /// operations. The memory usage is PrimePi(n^0.5) * 8 bytes.
 ///
-class iterator
+struct iterator
 {
-public:
   /// Create a new iterator object.
-  /// @param start      Generate primes > start (or < start).
+  /// Generate primes >= 0. The start number is default initialized to
+  /// 0 and the stop_hint is default initialized to UINT64_MAX.
+  ///
+  iterator() noexcept;
+
+  /// Create a new iterator object.
+  /// @param start      Generate primes >= start (or <= start).
   /// @param stop_hint  Stop number optimization hint, gives significant
   ///                   speed up if few primes are generated. E.g. if
-  ///                   you want to generate the primes below 1000 use
+  ///                   you want to generate the primes <= 1000 use
   ///                   stop_hint = 1000.
   ///
-  iterator(uint64_t start = 0, uint64_t stop_hint = get_max_stop());
+  iterator(uint64_t start, uint64_t stop_hint = std::numeric_limits<uint64_t>::max()) noexcept;
+
+  /// Reset the primesieve iterator to start.
+  /// @param start      Generate primes >= start (or <= start).
+  /// @param stop_hint  Stop number optimization hint, gives significant
+  ///                   speed up if few primes are generated. E.g. if
+  ///                   you want to generate the primes <= 1000 use
+  ///                   stop_hint = 1000.
+  ///
+  void jump_to(uint64_t start, uint64_t stop_hint = std::numeric_limits<uint64_t>::max()) noexcept;
 
   /// primesieve::iterator objects cannot be copied.
   iterator(const iterator&) = delete;
@@ -49,23 +82,47 @@ public:
   iterator(iterator&&) noexcept;
   iterator& operator=(iterator&&) noexcept;
 
+  /// Frees all memory
   ~iterator();
 
-  /// Reset the primesieve iterator to start.
-  /// @param start      Generate primes > start (or < start).
-  /// @param stop_hint  Stop number optimization hint, gives significant
-  ///                   speed up if few primes are generated. E.g. if
-  ///                   you want to generate the primes below 1000 use
-  ///                   stop_hint = 1000.
+  /// Reset the start number to 0 and free most memory.
+  /// Keeps some smaller data structures in memory
+  /// (e.g. the IteratorData object) that are useful if the
+  /// primesieve::iterator is reused. The remaining memory
+  /// uses at most 2 kilobytes.
   ///
-  void skipto(uint64_t start, uint64_t stop_hint = get_max_stop());
+  void clear() noexcept;
+
+  /// Used internally by next_prime().
+  /// generate_next_primes() fills (overwrites) the primes array with
+  /// the next few primes (~ 2^10) that are larger than the current
+  /// largest prime in the primes array or with the primes >= start
+  /// if the primes array is empty.
+  /// Note that this method also updates the i & size member variables
+  /// of this primesieve::iterator struct. The size of the primes array
+  /// varies, but it is > 0 and usually close to 2^10.
+  ///
+  void generate_next_primes();
+
+  /// Used internally by prev_prime().
+  /// generate_prev_primes() fills (overwrites) the primes array with
+  /// the next few primes ~ O(sqrt(n)) that are smaller than the
+  /// current smallest prime in the primes array or with the
+  /// primes <= start if the primes array is empty.
+  /// Note that this method also updates the i & size member variables
+  /// of this primesieve::iterator struct. The size of the primes array
+  /// varies, but it is > 0 and ~ O(sqrt(n)).
+  ///
+  void generate_prev_primes();
 
   /// Get the next prime.
-  /// Returns UINT64_MAX if next prime > 2^64.
+  /// Throws a primesieve::primesieve_error exception (derived from
+  /// std::runtime_error) if any error occurs.
   ///
   uint64_t next_prime()
   {
-    if (i_++ == last_idx_)
+    i_ += 1;
+    IF_UNLIKELY_PRIMESIEVE(i_ >= size_)
       generate_next_primes();
     return primes_[i_];
   }
@@ -78,22 +135,26 @@ public:
   ///
   uint64_t prev_prime()
   {
-    if (i_-- == 0)
+    IF_UNLIKELY_PRIMESIEVE(i_ == 0)
       generate_prev_primes();
+    i_ -= 1;
     return primes_[i_];
   }
 
-private:
+  /// Current index of the primes array.
   std::size_t i_;
-  std::size_t last_idx_;
-  std::vector<uint64_t> primes_;
+  /// Current number of primes in the primes array.
+  std::size_t size_;
+  /// Generate primes >= start.
   uint64_t start_;
-  uint64_t stop_;
+  /// Generate primes <= stop_hint.
   uint64_t stop_hint_;
-  uint64_t dist_;
-  std::unique_ptr<PrimeGenerator> primeGenerator_;
-  void generate_next_primes();
-  void generate_prev_primes();
+  /// The primes array.
+  /// The current smallest prime can be accessed using primes[0].
+  /// The current largest prime can be accessed using primes[size-1].
+  uint64_t* primes_;
+  /// Pointer to internal IteratorData data structure.
+  void* memory_;
 };
 
 } // namespace

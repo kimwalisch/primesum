@@ -4,7 +4,7 @@
 ///        P2(x, y) sums the numbers <= x that have exactly 2 prime
 ///        factors each exceeding the a-th prime.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -12,17 +12,17 @@
 
 #include <primesum-internal.hpp>
 #include <primesieve.hpp>
+#include <aligned_vector.hpp>
 #include <generate.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
-#include <min_max.hpp>
+#include <min.hpp>
 #include <imath.hpp>
 
 #include <stdint.h>
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -72,8 +72,8 @@ T P2_OpenMP_thread(X x,
   int64_t stop  = (int64_t) min(x / low, sqrtx);
   int64_t x_div_prime = 0;
 
-  primesieve::iterator rit(stop + 1, start);
-  primesieve::iterator it(low - 1, z);
+  primesieve::iterator rit(stop, start);
+  primesieve::iterator it(low, z);
 
   int64_t next = it.next_prime();
   int64_t prime = rit.prev_prime();
@@ -187,7 +187,6 @@ int256_t P2(int128_t x, int64_t y, int threads)
 {
   print("");
   print("=== P2(x, y) ===");
-  print("Computation of the 2nd partial sieve function");
   print(x, y, threads);
 
   double time = get_time();

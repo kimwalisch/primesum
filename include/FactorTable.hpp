@@ -19,7 +19,7 @@
 ///         3) lpf          if moebius(n) = -1
 ///         4) INT_MAX      if n is a prime
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -33,12 +33,12 @@
 #include <primesieve.hpp>
 #include <imath.hpp>
 #include <int128_t.hpp>
+#include <macros.hpp>
+#include <Vector.hpp>
 
 #include <algorithm>
-#include <cassert>
 #include <limits>
 #include <stdint.h>
-#include <vector>
 
 namespace primesum {
 
@@ -55,13 +55,13 @@ protected:
 public:
   static void to_index(int64_t* number)
   {
-    assert(*number > 0);
+    ASSERT(*number > 0);
     *number = get_index(*number);
   }
 
   static int64_t get_index(uint64_t number)
   {
-    assert(number > 0);
+    ASSERT(number > 0);
     uint64_t q = number / 210;
     uint64_t r = number % 210;
     return 48 * q + indexes_[r];
@@ -91,10 +91,11 @@ public:
 
     y = std::max<int64_t>(8, y);
     T T_MAX = std::numeric_limits<T>::max();
-    factor_.resize(get_index(y) + 1, T_MAX);
+    factor_.resize(get_index(y) + 1);
+    std::fill(factor_.begin(), factor_.end(), T_MAX);
 
     int64_t sqrty = isqrt(y);
-    int64_t thread_threshold = ipow(10, 7);
+    int64_t thread_threshold = ipow<7>(10);
     threads = ideal_num_threads(threads, y, thread_threshold);
     int64_t thread_distance = ceil_div(y, threads);
 
@@ -104,7 +105,7 @@ public:
       int64_t low = 1;
       low += thread_distance * t;
       int64_t high = std::min(low + thread_distance, y);
-      primesieve::iterator it(get_number(1) - 1);
+      primesieve::iterator it(get_number(1));
 
       while (true)
       {
@@ -164,14 +165,14 @@ public:
   ///
   int64_t mu(int64_t index) const
   {
-    assert(factor_[index] != 0);
+    ASSERT(factor_[index] != 0);
     return (factor_[index] & 1) ? -1 : 1;
   }
 
   static int128_t max()
   {
     int128_t T_MAX = std::numeric_limits<T>::max();
-    return ipow(T_MAX - 1, 2) - 1;
+    return ipow<2>(T_MAX - 1) - 1;
   }
 
 private:
@@ -194,7 +195,7 @@ private:
     return multiple;
   }
 
-  std::vector<T> factor_;
+  Vector<T> factor_;
 };
 
 } // namespace

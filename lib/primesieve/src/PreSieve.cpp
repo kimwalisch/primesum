@@ -1,123 +1,227 @@
 ///
 /// @file   PreSieve.cpp
-/// @brief  Pre-sieve multiples of small primes to speed up the sieve
-///         of Eratosthenes. At startup primesieve initializes a small
-///         buffer of size p1*p2*p3*pn and removes the multiples of
-///         the first n primes from that buffer. Then while sieving at
-///         the start of each new segment this buffer is simply copied
-///         to the sieve array and now we can start sieving at p(n+1)
-///         instead of p1. By default primesieve pre-sieves multiples
-///         of primes <= 19, in practice pre-sieving using even larger
-///         primes uses too much memory and slows things down. In
-///         primesieve pre-sieving provides a minor speed of up to 20%
-///         when the sieving distance is relatively small
-///         e.g. < 10^10.
+/// @brief  Pre-sieve multiples of small primes <= 163 to speed up the
+///         sieve of Eratosthenes. We use 16 static lookup tables from
+///         which the multiples of small primes have been removed
+///         upfront. Each preSieve lookup table is assigned different
+///         primes used for pre-sieving:
 ///
-///         The pre-sieve buffer can be both smaller or larger than
-///         the actual sieve array so a little care needs to be taken
-///         when copying the buffer to the sieve array. When the
-///         buffer is smaller than the sieve array we need to
-///         repeatedly copy the buffer to the sieve array until the
-///         sieve array has been filled completely. When the buffer is
-///         larger than the sieve array we only need to partially copy
-///         it to the sieve array.
+///         preSieveTable[0]  = {  7, 23, 37 }
+///         preSieveTable[1]  = { 11, 19, 31 }
+///         preSieveTable[2]  = { 13, 17, 29 }
+///         preSieveTable[3]  = { 41, 163 }
+///         preSieveTable[4]  = { 43, 157 }
+///         preSieveTable[5]  = { 47, 151 }
+///         preSieveTable[6]  = { 53, 149 }
+///         preSieveTable[7]  = { 59, 139 }
+///         preSieveTable[8]  = { 61, 137 }
+///         preSieveTable[9]  = { 67, 131 }
+///         preSieveTable[10] = { 71, 127 }
+///         preSieveTable[11] = { 73, 113 }
+///         preSieveTable[12] = { 79, 109 }
+///         preSieveTable[13] = { 83, 107 }
+///         preSieveTable[14] = { 89, 103 }
+///         preSieveTable[15] = { 97, 101 }
 ///
-/// Copyright (C) 2020 Kim Walisch, <kim.walisch@gmail.com>
+///         The total size of these 16 preSieveTables is 123
+///         kilobytes. Whilst sieving, we perform a bitwise AND of all
+///         preSieveTables and store the result in the sieve array.
+///         Pre-sieving provides a speedup of up to 30% when sieving
+///         the primes < 10^10 using primesieve.
+///
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2022 @zielaj, https://github.com/zielaj
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
 ///
 
-#include <primesieve/PreSieve.hpp>
-#include <primesieve/EratSmall.hpp>
-#include <primesieve/pmath.hpp>
+#include "PreSieve.hpp"
+#include "PreSieveTables.hpp"
+
+#include <primesieve/Vector.hpp>
+#include <primesieve/macros.hpp>
 
 #include <stdint.h>
 #include <algorithm>
-#include <array>
-#include <iterator>
-#include <vector>
+#include <cstddef>
+#include <utility>
 
-using namespace std;
+#if defined(__ARM_FEATURE_SVE) && \
+    __has_include(<arm_sve.h>)
+  #include "PreSieve_arm_sve.hpp"
+  #define presieve1_default presieve1_arm_sve
+  #define presieve2_default presieve2_arm_sve
+
+#elif defined(__AVX512F__) && \
+      defined(__AVX512BW__) && \
+      __has_include(<immintrin.h>)
+  #include "PreSieve_x86_avx512.hpp"
+  #define presieve1_default presieve1_x86_avx512
+  #define presieve2_default presieve2_x86_avx512
+
+#elif defined(ENABLE_MULTIARCH_ARM_SVE)
+  #include <primesieve/cpu_supports_arm_sve.hpp>
+  #include "PreSieve_arm_sve.hpp"
+
+#elif defined(ENABLE_MULTIARCH_AVX512_BW)
+  #include <primesieve/cpu_supports_avx512_bw.hpp>
+  #include "PreSieve_x86_avx512.hpp"
+#endif
+
+// Portable algorithms that run on any CPU
+#if !defined(presieve1_default) || \
+    !defined(presieve2_default)
+
+#if defined(__SSE2__) && \
+    __has_include(<emmintrin.h>)
+  #include "PreSieve_x86_sse2.hpp"
+  #define presieve1_default presieve1_x86_sse2
+  #define presieve2_default presieve2_x86_sse2
+
+#elif (defined(__ARM_NEON) || defined(__aarch64__)) && \
+      __has_include(<arm_neon.h>)
+  #include "PreSieve_arm_neon.hpp"
+  #define presieve1_default presieve1_arm_neon
+  #define presieve2_default presieve2_arm_neon
+#else
+  #include "PreSieve_default.hpp"
+#endif
+
+#endif
 
 namespace {
 
-// Small primes >= 7
-const array<uint64_t, 5> primes = { 7, 11, 13, 17, 19 };
+/// Runtime dispatch to optimized presieve1() SIMD algorithm
+template <typename... Args>
+void presieve1(Args&&... args)
+{
+#if defined(ENABLE_MULTIARCH_AVX512_BW)
+  if (cpu_supports_avx512_bw)
+    presieve1_x86_avx512(std::forward<Args>(args)...);
+  else
+    presieve1_default(std::forward<Args>(args)...);
+#elif defined(ENABLE_MULTIARCH_ARM_SVE)
+  if (cpu_supports_sve)
+    presieve1_arm_sve(std::forward<Args>(args)...);
+  else
+    presieve1_default(std::forward<Args>(args)...);
+#else
+  presieve1_default(std::forward<Args>(args)...);
+#endif
+}
 
-// Prime products of primes >= 7
-const array<uint64_t, 5> primeProducts = { 210, 2310, 30030, 510510, 9699690 };
+/// Runtime dispatch to optimized presieve2() SIMD algorithm
+template <typename... Args>
+void presieve2(Args&&... args)
+{
+#if defined(ENABLE_MULTIARCH_AVX512_BW)
+  if (cpu_supports_avx512_bw)
+    presieve2_x86_avx512(std::forward<Args>(args)...);
+  else
+    presieve2_default(std::forward<Args>(args)...);
+#elif defined(ENABLE_MULTIARCH_ARM_SVE)
+  if (cpu_supports_sve)
+    presieve2_arm_sve(std::forward<Args>(args)...);
+  else
+    presieve2_default(std::forward<Args>(args)...);
+#else
+  presieve2_default(std::forward<Args>(args)...);
+#endif
+}
 
 } // namespace
 
 namespace primesieve {
 
-void PreSieve::init(uint64_t start,
-                    uint64_t stop)
+void PreSieve::preSieve(Vector<uint64_t>& sieve, uint64_t segmentLow)
 {
-  // The pre-sieve buffer should be at least 100
-  // times smaller than the sieving distance
-  // in order to reduce initialization overhead.
-  uint64_t dist = stop - start;
-  uint64_t threshold = max(dist, isqrt(stop)) / 100;
-  auto last =  primeProducts.end() - 1;
-  auto iter = lower_bound(primeProducts.begin(), last, threshold);
-  auto i = distance(primeProducts.begin(), iter);
+  uint64_t offset = 0;
+  uint64_t pos0, pos1, pos2, pos3;
+  uint8_t* sieve8 = (uint8_t*) sieve.data();
+  uint64_t sieveBytes = sieve.size() * sizeof(uint64_t);
 
-  if (primes.at(i) > maxPrime_)
-    initBuffer(primes[i], primeProducts[i]);
-}
+  pos0 = (segmentLow % (preSieveTables[0].size() * 30)) / 30;
+  pos1 = (segmentLow % (preSieveTables[1].size() * 30)) / 30;
+  pos2 = (segmentLow % (preSieveTables[2].size() * 30)) / 30;
+  pos3 = (segmentLow % (preSieveTables[3].size() * 30)) / 30;
 
-/// Initialize the buffer by removing the
-/// multiples of primes <= maxPrime.
-///
-void PreSieve::initBuffer(uint64_t maxPrime,
-                          uint64_t primeProduct)
-{
-  maxPrime_ = maxPrime;
-  primeProduct_ = primeProduct;
-  size_ = primeProduct_ / 30;
-
-  buffer_.clear();
-  buffer_.resize(size_, 0xff);
-
-  EratSmall eratSmall;
-  uint64_t stop = primeProduct_ * 2;
-  eratSmall.init(stop, size_, maxPrime_);
-
-  for (uint64_t prime : primes)
-    if (prime <= maxPrime_)
-      eratSmall.addSievingPrime(prime, primeProduct_);
-
-  auto buffer = buffer_.data();
-  eratSmall.crossOff(buffer, size_);
-}
-
-/// Copy pre-sieved buffer to sieve array
-void PreSieve::copy(uint8_t* sieve,
-                    uint64_t sieveSize,
-                    uint64_t segmentLow) const
-{
-  // Find segmentLow index
-  uint64_t remainder = segmentLow % primeProduct_;
-  uint64_t i = remainder / 30;
-  uint64_t sizeLeft = size_ - i;
-  auto buffer = buffer_.data();
-
-  if (sieveSize <= sizeLeft)
-    copy_n(&buffer[i], sieveSize, sieve);
-  else
+  // This loop initializes the sieve array.
+  // It performs a bitwise AND of the first four
+  // preSieveTables and stores the result in the
+  // sieve array, discarding its previous contents.
+  while (offset < sieveBytes)
   {
-    // Copy the last remaining bytes of buffer
-    // to the beginning of the sieve array
-    copy_n(&buffer[i], sizeLeft, sieve);
+    uint64_t bytesToCopy = sieveBytes - offset;
 
-    // Restart copying at the beginning of buffer
-    for (i = sizeLeft; i + size_ < sieveSize; i += size_)
-      copy_n(buffer, size_, &sieve[i]);
+    bytesToCopy = std::min(bytesToCopy, uint64_t(preSieveTables[0].size() - pos0));
+    bytesToCopy = std::min(bytesToCopy, uint64_t(preSieveTables[1].size() - pos1));
+    bytesToCopy = std::min(bytesToCopy, uint64_t(preSieveTables[2].size() - pos2));
+    bytesToCopy = std::min(bytesToCopy, uint64_t(preSieveTables[3].size() - pos3));
 
-    // Copy the last remaining bytes
-    copy_n(buffer, sieveSize - i, &sieve[i]);
+    presieve1(preSieveTables[0].begin() + pos0,
+              preSieveTables[1].begin() + pos1,
+              preSieveTables[2].begin() + pos2,
+              preSieveTables[3].begin() + pos3,
+              &sieve8[offset],
+              bytesToCopy);
+
+    offset += bytesToCopy;
+
+    pos0 = (pos0 + bytesToCopy) * (pos0 < preSieveTables[0].size());
+    pos1 = (pos1 + bytesToCopy) * (pos1 < preSieveTables[1].size());
+    pos2 = (pos2 + bytesToCopy) * (pos2 < preSieveTables[2].size());
+    pos3 = (pos3 + bytesToCopy) * (pos3 < preSieveTables[3].size());
+  }
+
+  // This loop performs a bitwise AND of the
+  // sieve array and the preSieveTables, storing
+  // the result back into the sieve array.
+  for (std::size_t i = 4; i < preSieveTables.size(); i += 4)
+  {
+    offset = 0;
+
+    pos0 = (segmentLow % (preSieveTables[i+0].size() * 30)) / 30;
+    pos1 = (segmentLow % (preSieveTables[i+1].size() * 30)) / 30;
+    pos2 = (segmentLow % (preSieveTables[i+2].size() * 30)) / 30;
+    pos3 = (segmentLow % (preSieveTables[i+3].size() * 30)) / 30;
+
+    while (offset < sieveBytes)
+    {
+      uint64_t bytesToCopy = sieveBytes - offset;
+
+      bytesToCopy = std::min(bytesToCopy, uint64_t(preSieveTables[i+0].size() - pos0));
+      bytesToCopy = std::min(bytesToCopy, uint64_t(preSieveTables[i+1].size() - pos1));
+      bytesToCopy = std::min(bytesToCopy, uint64_t(preSieveTables[i+2].size() - pos2));
+      bytesToCopy = std::min(bytesToCopy, uint64_t(preSieveTables[i+3].size() - pos3));
+
+      presieve2(preSieveTables[i+0].begin() + pos0,
+                preSieveTables[i+1].begin() + pos1,
+                preSieveTables[i+2].begin() + pos2,
+                preSieveTables[i+3].begin() + pos3,
+                &sieve8[offset],
+                bytesToCopy);
+
+      offset += bytesToCopy;
+
+      pos0 = (pos0 + bytesToCopy) * (pos0 < preSieveTables[i+0].size());
+      pos1 = (pos1 + bytesToCopy) * (pos1 < preSieveTables[i+1].size());
+      pos2 = (pos2 + bytesToCopy) * (pos2 < preSieveTables[i+2].size());
+      pos3 = (pos3 + bytesToCopy) * (pos3 < preSieveTables[i+3].size());
+    }
+  }
+
+  // Pre-sieving removes the primes <= 163. We
+  // have to undo that work and reset these bits
+  // to 1 (but 49 = 7 * 7 is not a prime).
+  if (segmentLow <= getMaxPrime())
+  {
+    uint64_t i = segmentLow / 30;
+    Array<uint8_t, 8> primeBits = { 0xff, 0xef, 0x77, 0x3f, 0xdb, 0xed, 0x9e, 0xfc };
+
+    ASSERT(sieveBytes >= primeBits.size());
+    for (std::size_t j = 0; i + j < primeBits.size(); j++)
+      sieve8[j] = primeBits[i + j];
   }
 }
 

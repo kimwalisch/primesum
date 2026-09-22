@@ -4,7 +4,7 @@
 ///        counting algorithm. This implementation uses the sieve
 ///        of Eratosthenes (without segmentation) to calculate S2(x).
 ///
-/// Copyright (C) 2014 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2014-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -17,10 +17,10 @@
 #include <S1.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
 #include <algorithm>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -35,15 +35,16 @@ namespace {
 int64_t S2(int64_t x,
            int64_t y,
            int64_t c,
-           vector<int32_t>& primes,
-           vector<int32_t>& lpf,
-           vector<int32_t>& mu)
+           int64_t pi_y,
+           Vector<int32_t>& primes,
+           Vector<int32_t>& lpf,
+           Vector<int32_t>& mu)
 {
   int64_t limit = x / y + 1;
-  int64_t pi_y = pi_bsearch(primes, y);
   int64_t S2_result = 0;
   int64_t b = 1;
-  vector<char> sieve(limit, 1);
+  Vector<char> sieve(limit);
+  fill(sieve.begin(), sieve.end(), 1);
 
   // phi(y, b) nodes with b <= c do not contribute to S2, so we
   // simply sieve out the multiples of the first c primes
@@ -103,12 +104,13 @@ int64_t pi_lmo2(int64_t x)
   int64_t c = PhiTiny::get_c(y);
   int256_t p2 = P2(x, y, 1);
 
-  vector<int32_t> primes = generate_primes(y);
-  vector<int32_t> lpf = generate_lpf(y);
-  vector<int32_t> mu = generate_moebius(y);
+  Vector<int32_t> primes = generate_primes(y);
+  Vector<int32_t> lpf = generate_lpf(y);
+  Vector<int32_t> mu = generate_moebius(y);
 
+  int64_t pi_y = primes.size() - 1;
   int256_t s1 = S1(x, y, c, 1);
-  int256_t s2 = S2(x, y, c, primes, lpf, mu);
+  int256_t s2 = S2(x, y, c, pi_y, primes, lpf, mu);
   int256_t phi = s1 + s2;
   int256_t sum = phi + prime_sum_tiny(y) - 1 - p2;
 

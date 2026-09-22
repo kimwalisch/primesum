@@ -2,106 +2,85 @@
 /// @file   cpu_info.cpp
 /// @brief  Detect the CPUs' cache sizes
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2025 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
 ///
 
-#include <primesieve/CpuInfo.hpp>
-#include <iostream>
+#include <CpuInfo.hpp>
 
-using namespace std;
+#include <iostream>
+#include <string>
+
 using namespace primesieve;
 
 int main()
 {
   const CpuInfo cpu;
-  string error = cpu.getError();
+  std::string error = cpu.getError();
 
   if (!error.empty())
   {
-    cerr << "Error: " << error << endl;
+    std::cerr << "Error: " << error << std::endl;
     return 1;
   }
 
-  if (!cpu.hasCpuCores() &&
-      cpu.cpuCores() > 0)
+  if (!cpu.hasLogicalCpuCores() &&
+      cpu.logicalCpuCores() > 0)
   {
-    cerr << "Invalid CPU cores: " << cpu.cpuCores() << endl;
-    return 1;
-  }
-
-  if (!cpu.hasCpuThreads() &&
-      cpu.cpuThreads() > 0)
-  {
-    cerr << "Invalid CPU threads: " << cpu.cpuThreads() << endl;
+    std::cerr << "Invalid logical CPU cores: " << cpu.logicalCpuCores() << std::endl;
     return 1;
   }
 
   if (!cpu.hasL1Cache() &&
-      cpu.l1CacheSize() > 0)
+      cpu.l1CacheBytes() > 0)
   {
-    cerr << "Invalid L1 cache size: " << cpu.l1CacheSize() << endl;
+    std::cerr << "Invalid L1 cache size: " << cpu.l1CacheBytes() << std::endl;
     return 1;
   }
 
   if (!cpu.hasL2Cache() &&
-      cpu.l2CacheSize() > 0)
+      cpu.l2CacheBytes() > 0)
   {
-    cerr << "Invalid L2 cache size: " << cpu.l2CacheSize() << endl;
+    std::cerr << "Invalid L2 cache size: " << cpu.l2CacheBytes() << std::endl;
     return 1;
   }
 
   if (!cpu.hasL3Cache() &&
-      cpu.l3CacheSize() > 0)
+      cpu.l3CacheBytes() > 0)
   {
-    cerr << "Invalid L3 cache size: " << cpu.l3CacheSize() << endl;
+    std::cerr << "Invalid L3 cache size: " << cpu.l3CacheBytes() << std::endl;
     return 1;
   }
 
   if (!cpu.hasL1Sharing() &&
       cpu.l1Sharing() > 0)
   {
-    cerr << "Invalid L1 cache sharing: " << cpu.l1Sharing() << endl;
+    std::cerr << "Invalid L1 cache sharing: " << cpu.l1Sharing() << std::endl;
     return 1;
   }
 
   if (!cpu.hasL2Sharing() &&
       cpu.l2Sharing() > 0)
   {
-    cerr << "Invalid L2 cache sharing: " << cpu.l2Sharing() << endl;
+    std::cerr << "Invalid L2 cache sharing: " << cpu.l2Sharing() << std::endl;
     return 1;
   }
 
   if (!cpu.hasL3Sharing() &&
       cpu.l3Sharing() > 0)
   {
-    cerr << "Invalid L3 cache sharing: " << cpu.l3Sharing() << endl;
-    return 1;
-  }
-
-  if (!cpu.hasThreadsPerCore() &&
-      cpu.threadsPerCore() > 0)
-  {
-    cerr << "Invalid threads per CPU core: " << cpu.threadsPerCore() << endl;
+    std::cerr << "Invalid L3 cache sharing: " << cpu.l3Sharing() << std::endl;
     return 1;
   }
 
   if (cpu.hasCpuName())
-    cout << cpu.cpuName() << endl;
+    std::cout << cpu.cpuName() << std::endl;
 
-  cout << "L1 cache size: " << (cpu.l1CacheSize() >> 10) << " KiB" << endl;
-  cout << "L2 cache size: " << (cpu.l2CacheSize() >> 10) << " KiB" << endl;
-  cout << "L3 cache size: " << (cpu.l3CacheSize() >> 10) << " KiB" << endl;
-
-  if (cpu.hasL2Cache())
-  {
-    if (cpu.hasPrivateL2Cache())
-      cout << "L2 cache: private" << endl;
-    else
-      cout << "L2 cache: shared"  << endl;
-  }
+  std::cout << "L1 cache size: " << (cpu.l1CacheBytes() >> 10) << " KiB" << std::endl;
+  std::cout << "L2 cache size: " << (cpu.l2CacheBytes() >> 10) << " KiB" << std::endl;
+  std::cout << "L3 cache size: " << (cpu.l3CacheBytes() >> 10) << " KiB" << std::endl;
 
   return 0;
 }

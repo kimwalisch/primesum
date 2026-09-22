@@ -4,7 +4,7 @@
 ///        that packs 128 numbers into 8 bytes i.e. each bit
 ///        corresponds to an odd integer.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -14,25 +14,21 @@
 #include <popcnt.hpp>
 #include <imath.hpp>
 #include <int128_t.hpp>
-#include <SumBits.hpp>
+#include <macros.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
 #include <algorithm>
-#include <cassert>
-#include <array>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
 
 namespace {
 
-const SumBits sumBits;
-
-const array<uint64_t, 10> primes = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+const Array<uint64_t, 10> primes = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
 
 /// bitmasks with multiples of the i-th prime
-const array<uint64_t, 10> masks =
+const Array<uint64_t, 10> masks =
 {
   0x0000000000000000ull,
   0x5555555555555555ull, // 2
@@ -48,50 +44,23 @@ const array<uint64_t, 10> masks =
 
 uint64_t fast_modulo(uint64_t x, uint64_t y)
 {
-  assert(x < y * 2);
+  ASSERT(x < y * 2);
   x = (x < y) ? x : x - y;
   return x;
 }
 
 uint64_t sum_bits(uint64_t bits, uint64_t& low)
 {
-  uint64_t bits0 = bits & 0xffff;
-  uint64_t bits1 = (bits >> 16) & 0xffff;
-  uint64_t bits2 = (bits >> 32) & 0xffff;
-  uint64_t bits3 = (bits >> 48);
-  uint64_t sum = 0;
+  uint64_t sum = low * popcnt64(bits);
 
-  sum += sumBits[bits0];
-  sum += sumBits[bits1];
-  sum += sumBits[bits2];
-  sum += sumBits[bits3];
+  sum +=  2 * popcnt64(bits & 0xaaaaaaaaaaaaaaaaull);
+  sum +=  4 * popcnt64(bits & 0xccccccccccccccccull);
+  sum +=  8 * popcnt64(bits & 0xf0f0f0f0f0f0f0f0ull);
+  sum += 16 * popcnt64(bits & 0xff00ff00ff00ff00ull);
+  sum += 32 * popcnt64(bits & 0xffff0000ffff0000ull);
+  sum += 64 * popcnt64(bits & 0xffffffff00000000ull);
 
-  sum += low * popcnt64(bits0); low += 32;
-  sum += low * popcnt64(bits1); low += 32;
-  sum += low * popcnt64(bits2); low += 32;
-  sum += low * popcnt64(bits3); low += 32;
-
-  return sum;
-}
-
-uint64_t sum_bits(const uint16_t* bits, uint64_t& low)
-{
-  uint64_t bits0 = bits[0];
-  uint64_t bits1 = bits[1];
-  uint64_t bits2 = bits[2];
-  uint64_t bits3 = bits[3];
-  uint64_t sum = 0;
-
-  sum += sumBits[bits0];
-  sum += sumBits[bits1];
-  sum += sumBits[bits2];
-  sum += sumBits[bits3];
-
-  sum += low * popcnt64(bits0); low += 32;
-  sum += low * popcnt64(bits1); low += 32;
-  sum += low * popcnt64(bits2); low += 32;
-  sum += low * popcnt64(bits3); low += 32;
-
+  low += 128;
   return sum;
 }
 
@@ -100,7 +69,7 @@ int128_t sum_bits(const uint64_t* bits, uint64_t size, uint64_t& low)
   int128_t sum = 0;
 
   for (uint64_t i = 0; i < size; i++)
-    sum += sum_bits((uint16_t*) &bits[i], low);
+    sum += sum_bits(bits[i], low);
 
   return sum;
 }
@@ -109,7 +78,7 @@ int128_t sum_bits(const uint64_t* bits, uint64_t size, uint64_t& low)
 
 namespace primesum {
 
-const array<uint64_t, 128> BitSieve::set_bit_ =
+const Array<uint64_t, 128> BitSieve::set_bit_ =
 {
   (1ull <<  0), (1ull <<  0), (1ull <<  1), (1ull <<  1),
   (1ull <<  2), (1ull <<  2), (1ull <<  3), (1ull <<  3),
@@ -156,7 +125,7 @@ BitSieve::BitSieve(std::size_t size) :
 ///
 void BitSieve::pre_sieve(uint64_t c, uint64_t low)
 {
-  assert(c < primes.size());
+  ASSERT(c < primes.size());
 
   if (sieve_.empty())
     return;
@@ -225,7 +194,7 @@ int128_t BitSieve::sum(uint64_t low,
   if (start > stop)
     return 0;
 
-  assert(stop < size_);
+  ASSERT(stop < size_);
 
   uint64_t start_idx = start / 128;
   uint64_t stop_idx = stop / 128;
