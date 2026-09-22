@@ -5,6 +5,11 @@ target_include_directories(libdivide PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_compile_features(libdivide PRIVATE cxx_auto_type)
 add_test(NAME libdivide COMMAND libdivide)
 
+add_executable(fast_div fast_div.cpp)
+target_include_directories(fast_div PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_compile_features(fast_div PRIVATE cxx_auto_type)
+add_test(NAME fast_div COMMAND fast_div)
+
 find_path(BOOST_INCLUDE_DIR boost/multiprecision/cpp_int.hpp)
 
 if(BOOST_INCLUDE_DIR)

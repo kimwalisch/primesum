@@ -2,7 +2,7 @@
 /// @file   int128_t.hpp
 /// @brief  Support for int128_t, uint128_t types.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -70,6 +70,13 @@ namespace primesum {
 /// uint128_t types (2014).
 ///
 namespace prt {
+
+template <typename T> struct make_unsigned {
+  using type = typename std::make_unsigned<T>::type;
+};
+
+template<> struct make_unsigned<int128_t> { using type = uint128_t; };
+template<> struct make_unsigned<uint128_t> { using type = uint128_t; };
 
 template <typename T>
 struct numeric_limits
