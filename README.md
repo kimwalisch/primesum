@@ -9,21 +9,48 @@ been used to compute many new [prime sum world records](#a046731-world-records)!
 **primesum** is a modified version of the author's
 [primecount](https://github.com/kimwalisch/primecount) program.
 
-## Build instructions
+## Prerequisites
 
-You need a C++ compiler with 128-bit integer support, CMake 3.9 or
-later and make. Ideally the compiler should also support OpenMP for
-multithreading (e.g. GCC, Clang, Intel C++ Compiler).
+You need to have installed a C++ compiler which supports 128-bit integers
+and OpenMP (e.g. GNU GCC or LLVM/Clang) and CMake ≥ 3.9.
+
+<table>
+    <tr>
+        <td><b>Arch Linux:</b></td>
+        <td><code>sudo pacman -S gcc cmake</code></td>
+    </tr>
+    <tr>
+        <td><b>Debian/Ubuntu:</b></td>
+        <td><code>sudo apt install g++ cmake</code></td>
+    </tr>
+    <tr>
+        <td><b>Fedora:</b></td>
+        <td><code>sudo dnf install gcc-c++ cmake</code></td>
+    </tr>
+    <tr>
+        <td><b>macOS:</b></td>
+        <td><code>brew install cmake libomp</code></td>
+    </tr>
+    <tr>
+        <td><b>openSUSE:</b></td>
+        <td><code>sudo zypper install gcc-c++ cmake</code></td>
+    </tr>
+</table>
+
+## Build instructions
 
 ```sh
 cmake .
 cmake --build . --parallel
-sudo make install
+
+# Run tests
+./primesum --test
 ```
 
 ## Usage examples
 
 Open a terminal and run primesum using e.g.:
+
 ```sh
 # Sum the primes below 10^14
 ./primesum 1e14
