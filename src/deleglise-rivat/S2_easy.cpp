@@ -1,8 +1,7 @@
 ///
 /// @file  S2_easy.cpp
-/// @brief Calculate the contribution of the clustered easy leaves
-///        and the sparse easy leaves in parallel using OpenMP
-///        (Deleglise-Rivat algorithm).
+/// @brief Calculate the contribution of the easy special leaves
+///        in parallel using OpenMP (Deleglise-Rivat algorithm).
 ///
 /// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
@@ -29,10 +28,6 @@ using namespace primesum;
 
 namespace {
 
-/// Calculate the contribution of the clustered easy leaves
-/// and the sparse easy leaves.
-/// @param T  either int64_t or uint128_t.
-///
 template <typename res_t, typename Primes, typename PrimeSums>
 res_t S2_easy_OpenMP(uint128_t x,
                      int64_t y,
@@ -59,34 +54,14 @@ res_t S2_easy_OpenMP(uint128_t x,
     int64_t prime = primes[b];
     uint128_t x2 = x / prime;
     int64_t min_trivial = min(x2 / prime, y);
-    int64_t min_clustered = (int64_t) isqrt(x2);
     int64_t min_sparse = z / prime;
     int64_t min_hard = max(y / prime, prime);
-
-    min_clustered = in_between(min_hard, min_clustered, y);
     min_sparse = in_between(min_hard, min_sparse, y);
 
     int64_t l = pi[min_trivial];
-    int64_t pi_min_clustered = pi[min_clustered];
     int64_t pi_min_sparse = pi[min_sparse];
 
-    // Find all clustered easy leaves:
-    // n = primes[b] * primes[l]
-    // x / n <= y && phi(x / n, b - 1) == phi(x / m, b - 1)
-    // where phi(x / n, b - 1) = pi(x / n) - b + 2
-    while (l > pi_min_clustered)
-    {
-      int64_t xn = (int64_t) fast_div(x2, primes[l]);
-      int64_t phi_xn = pi[xn] - b + 2;
-      res_t phi_xn_sum = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
-      int64_t xm = (int64_t) fast_div(x2, primes[b + phi_xn - 1]);
-      xm = max(xm, min_clustered);
-      int64_t l2 = pi[xm];
-      s2_easy += (phi_xn_sum * prime) * (prime_sums[l] - prime_sums[l2]);
-      l = l2;
-    }
-
-    // Find all sparse easy leaves:
+    // Find all easy special leaves:
     // n = primes[b] * primes[l]
     // x / n <= y && phi(x / n, b - 1) = pi(x / n) - b + 2
     for (; l > pi_min_sparse; l--)

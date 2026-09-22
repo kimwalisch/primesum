@@ -49,9 +49,6 @@ libdivide_divisors(Primes& primes)
   return fastdiv;
 }
 
-/// Calculate the contribution of the clustered easy
-/// leaves and the sparse easy leaves.
-///
 template <typename res_t, typename Primes, typename PrimeSums>
 res_t S2_easy_OpenMP(uint128_t x,
                      int64_t y,
@@ -78,36 +75,16 @@ res_t S2_easy_OpenMP(uint128_t x,
     int64_t prime = primes[b];
     uint128_t x2 = x / prime;
     int64_t min_trivial = min(x2 / prime, y);
-    int64_t min_clustered = (int64_t) isqrt(x2);
     int64_t min_sparse = z / prime;
     int64_t min_hard = max(y / prime, prime);
-
-    min_clustered = in_between(min_hard, min_clustered, y);
     min_sparse = in_between(min_hard, min_sparse, y);
 
     int64_t l = pi[min_trivial];
-    int64_t pi_min_clustered = pi[min_clustered];
     int64_t pi_min_sparse = pi[min_sparse];
 
     if (is_libdivide(x2))
     {
-      // Find all clustered easy leaves:
-      // n = primes[b] * primes[l]
-      // x / n <= y && phi(x / n, b - 1) == phi(x / m, b - 1)
-      // where phi(x / n, b - 1) = pi(x / n) - b + 2
-      while (l > pi_min_clustered)
-      {
-        int64_t xn = (uint64_t) x2 / fastdiv[l];
-        int64_t phi_xn = pi[xn] - b + 2;
-        res_t phi_xn_sum = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
-        int64_t xm = (uint64_t) x2 / fastdiv[b + phi_xn - 1];
-        xm = max(xm, min_clustered);
-        int64_t l2 = pi[xm];
-        s2_easy += (phi_xn_sum * prime) * (prime_sums[l] - prime_sums[l2]);
-        l = l2;
-      }
-
-      // Find all sparse easy leaves:
+      // Find all easy special leaves:
       // n = primes[b] * primes[l]
       // x / n <= y && phi(x / n, b - 1) = pi(x / n) - b + 2
       for (; l > pi_min_sparse; l--)
@@ -119,23 +96,7 @@ res_t S2_easy_OpenMP(uint128_t x,
     }
     else
     {
-      // Find all clustered easy leaves:
-      // n = primes[b] * primes[l]
-      // x / n <= y && phi(x / n, b - 1) == phi(x / m, b - 1)
-      // where phi(x / n, b - 1) = pi(x / n) - b + 2
-      while (l > pi_min_clustered)
-      {
-        int64_t xn = (int64_t) (x2 / primes[l]);
-        int64_t phi_xn = pi[xn] - b + 2;
-        res_t phi_xn_sum = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
-        int64_t xm = (int64_t) (x2 / primes[b + phi_xn - 1]);
-        xm = max(xm, min_clustered);
-        int64_t l2 = pi[xm];
-        s2_easy += (phi_xn_sum * prime) * (prime_sums[l] - prime_sums[l2]);
-        l = l2;
-      }
-
-      // Find all sparse easy leaves:
+      // Find all easy special leaves:
       // n = primes[b] * primes[l]
       // x / n <= y && phi(x / n, b - 1) = pi(x / n) - b + 2
       for (; l > pi_min_sparse; l--)
