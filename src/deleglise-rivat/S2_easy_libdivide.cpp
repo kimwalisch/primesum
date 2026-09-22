@@ -81,28 +81,69 @@ res_t S2_easy_OpenMP(uint128_t x,
 
     int64_t l = pi[min_trivial];
     int64_t pi_min_sparse = pi[min_sparse];
+    auto prime_sum_b1 = prime_sums[b - 1];
 
     if (is_libdivide(x2))
     {
+      // Unroll loop to increase instruction level parallelism
+      for (; l > pi_min_sparse + 4; l -= 4)
+      {
+        int64_t xn0 = (uint64_t) x2 / fastdiv[l];
+        int64_t xn1 = (uint64_t) x2 / fastdiv[l - 1];
+        int64_t xn2 = (uint64_t) x2 / fastdiv[l - 2];
+        int64_t xn3 = (uint64_t) x2 / fastdiv[l - 3];
+
+        res_t phi0 = prime_sums[pi[xn0]] + 1 - prime_sum_b1;
+        res_t phi1 = prime_sums[pi[xn1]] + 1 - prime_sum_b1;
+        res_t phi2 = prime_sums[pi[xn2]] + 1 - prime_sum_b1;
+        res_t phi3 = prime_sums[pi[xn3]] + 1 - prime_sum_b1;
+
+        s2_easy += phi0 * ((PS) prime * primes[l]) +
+                   phi1 * ((PS) prime * primes[l - 1]) +
+                   phi2 * ((PS) prime * primes[l - 2]) +
+                   phi3 * ((PS) prime * primes[l - 3]);
+      }
+
       // Find all easy special leaves:
       // n = primes[b] * primes[l]
       // x / n <= y && phi(x / n, b - 1) = pi(x / n) - b + 2
+      NO_UNROLL_LOOP
       for (; l > pi_min_sparse; l--)
       {
         int64_t xn = (uint64_t) x2 / fastdiv[l];
-        res_t phi = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
+        res_t phi = prime_sums[pi[xn]] + 1 - prime_sum_b1;
         s2_easy += phi * ((PS) prime * primes[l]);
       }
     }
     else
     {
+      // Unroll loop to increase instruction level parallelism
+      for (; l > pi_min_sparse + 4; l -= 4)
+      {
+        int64_t xn0 = (int64_t) (x2 / primes[l]);
+        int64_t xn1 = (int64_t) (x2 / primes[l - 1]);
+        int64_t xn2 = (int64_t) (x2 / primes[l - 2]);
+        int64_t xn3 = (int64_t) (x2 / primes[l - 3]);
+
+        res_t phi0 = prime_sums[pi[xn0]] + 1 - prime_sum_b1;
+        res_t phi1 = prime_sums[pi[xn1]] + 1 - prime_sum_b1;
+        res_t phi2 = prime_sums[pi[xn2]] + 1 - prime_sum_b1;
+        res_t phi3 = prime_sums[pi[xn3]] + 1 - prime_sum_b1;
+
+        s2_easy += phi0 * ((PS) prime * primes[l]) +
+                   phi1 * ((PS) prime * primes[l - 1]) +
+                   phi2 * ((PS) prime * primes[l - 2]) +
+                   phi3 * ((PS) prime * primes[l - 3]);
+      }
+
       // Find all easy special leaves:
       // n = primes[b] * primes[l]
       // x / n <= y && phi(x / n, b - 1) = pi(x / n) - b + 2
+      NO_UNROLL_LOOP
       for (; l > pi_min_sparse; l--)
       {
         int64_t xn = (int64_t) (x2 / primes[l]);
-        res_t phi = prime_sums[pi[xn]] + 1 - prime_sums[b - 1];
+        res_t phi = prime_sums[pi[xn]] + 1 - prime_sum_b1;
         s2_easy += phi * ((PS) prime * primes[l]);
       }
     }

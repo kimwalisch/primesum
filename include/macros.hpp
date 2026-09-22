@@ -54,6 +54,18 @@
   #define if_unlikely(x) if (x)
 #endif
 
+/// Unrolling loops that execute very few iterations on average
+/// tends to deteriorate performance due to increased branch
+/// mispredictions. Using the NO_UNROLL_LOOP macro we can disable
+/// loop unrolling for such loops.
+#if defined(__clang__)
+  #define NO_UNROLL_LOOP _Pragma("nounroll")
+#elif defined(__GNUC__) && __GNUC__ >= 8
+  #define NO_UNROLL_LOOP _Pragma("GCC unroll 0")
+#else
+  #define NO_UNROLL_LOOP
+#endif
+
 /// Enable expensive debugging assertions.
 /// These assertions enable e.g. bounds checks for the
 /// Vector and Array types.

@@ -4,6 +4,7 @@
 
   * ci.yml: Add GitHub Actions CI tests.
   * S2_easy.cpp: Get rid of slow clustered easy leaves algorithm.
+  * S2_easy.cpp: Manually unroll loop to improve performance.
   * S2_easy_libdivide.cpp: Get rid of slow clustered easy leaves algorithm.
   * BitSieve.cpp: Improve sum_bits().
   * Update iterator boundaries for primesieve >= 11.0.
