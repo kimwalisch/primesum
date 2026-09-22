@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9...4.2)
 project(primesum CXX)
 set(PRIMESUM_VERSION_MAJOR 1)
-set(PRIMESUM_VERSION_MINOR 7)
+set(PRIMESUM_VERSION_MINOR 8)
 set(PRIMESUM_VERSION "${PRIMESUM_VERSION_MAJOR}.${PRIMESUM_VERSION_MINOR}")
 
 # Build options ######################################################
