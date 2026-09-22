@@ -42,6 +42,10 @@ jobs:
       CXX: clang++
     steps:
       - uses: actions/checkout@v7
+      - name: Install dependencies
+        run: |
+            sudo apt update
+            sudo apt install libomp-dev
       - name: Build primesum
         run: |
             cmake . -DCMAKE_BUILD_TYPE=${{matrix.config}} -DCMAKE_C_FLAGS="-O3 -Wall -Wextra -pedantic -Werror" -DCMAKE_CXX_FLAGS="-O3 -Wall -Wextra -pedantic -Werror"
@@ -93,6 +97,8 @@ jobs:
       CXX: clang++
     steps:
       - uses: actions/checkout@v7
+      - name: Install dependencies
+        run: brew install libomp
       - name: Build primesum
         run: |
             cmake . -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{matrix.config}} -DCMAKE_C_FLAGS="-O3 -Wall -Wextra -pedantic -Werror" -DCMAKE_CXX_FLAGS="-O3 -Wall -Wextra -pedantic -Werror"
