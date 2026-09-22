@@ -2,6 +2,7 @@
 
   Unreleased changes.
 
+  * BitSieve.cpp: Improve sum_bits().
   * Update iterator boundaries for primesieve >= 11.0.
   * Adapt CMake compiler and OpenMP checks from primecount.
   * Require CMake >= 3.9 and support Windows shared library builds.
