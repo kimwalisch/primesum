@@ -2,10 +2,10 @@
 /// @file   primesieve.hpp
 /// @brief  primesieve C++ API. primesieve is a library for fast
 ///         prime number generation, in case an error occurs a
-///         primesieve::primesieve_error exception (derived form
+///         primesieve::primesieve_error exception (derived from
 ///         std::runtime_error) is thrown.
 ///
-/// Copyright (C) 2020 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License.
 ///
@@ -13,50 +13,58 @@
 #ifndef PRIMESIEVE_HPP
 #define PRIMESIEVE_HPP
 
-#define PRIMESIEVE_VERSION "7.6"
-#define PRIMESIEVE_VERSION_MAJOR 7
-#define PRIMESIEVE_VERSION_MINOR 6
+#define PRIMESIEVE_VERSION "12.16"
+#define PRIMESIEVE_VERSION_MAJOR 12
+#define PRIMESIEVE_VERSION_MINOR 16
 
 #include <primesieve/iterator.hpp>
 #include <primesieve/primesieve_error.hpp>
 #include <primesieve/StorePrimes.hpp>
 
 #include <stdint.h>
-#include <vector>
 #include <string>
 
-/// Contains primesieve's C++ functions and classes.
 namespace primesieve {
 
-/// Store the primes <= stop in the primes vector.
-template <typename T>
-inline void generate_primes(uint64_t stop, std::vector<T>* primes)
+/// Appends the primes <= stop to the end of the primes vector.
+/// @vect: std::vector or other vector type that is API compatible
+///        with std::vector.
+///
+template <typename vect>
+inline void generate_primes(uint64_t stop, vect* primes)
 {
   if (primes)
     store_primes(0, stop, *primes);
 }
 
-/// Store the primes within the interval [start, stop]
-/// in the primes vector.
+/// Appends the primes inside [start, stop] to the end of the primes vector.
+/// @vect: std::vector or other vector type that is API compatible
+///        with std::vector.
 ///
-template <typename T>
-inline void generate_primes(uint64_t start, uint64_t stop, std::vector<T>* primes)
+template <typename vect>
+inline void generate_primes(uint64_t start, uint64_t stop, vect* primes)
 {
   if (primes)
     store_primes(start, stop, *primes);
 }
 
-/// Store the first n primes in the primes vector.
-template <typename T>
-inline void generate_n_primes(uint64_t n, std::vector<T>* primes)
+/// Appends the first n primes to the end of the primes vector.
+/// @vect: std::vector or other vector type that is API compatible
+///        with std::vector.
+///
+template <typename vect>
+inline void generate_n_primes(uint64_t n, vect* primes)
 {
   if (primes)
     store_n_primes(n, 0, *primes);
 }
 
-/// Store the first n primes >= start in the primes vector.
-template <typename T>
-inline void generate_n_primes(uint64_t n, uint64_t start, std::vector<T>* primes)
+/// Appends the first n primes >= start to the end of the primes vector.
+/// @vect: std::vector or other vector type that is API compatible
+///        with std::vector.
+///
+template <typename vect>
+inline void generate_n_primes(uint64_t n, uint64_t start, vect* primes)
 {
   if (primes)
     store_n_primes(n, start, *primes);
@@ -172,7 +180,7 @@ int get_num_threads();
 /// Set the sieve size in KiB (kibibyte).
 /// The best sieving performance is achieved with a sieve size
 /// of your CPU's L1 or L2 cache size (per core).
-/// @pre sieve_size >= 8 && <= 4096.
+/// @pre sieve_size >= 16 && <= 8192.
 ///
 void set_sieve_size(int sieve_size);
 

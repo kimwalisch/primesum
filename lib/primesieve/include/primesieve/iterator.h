@@ -14,7 +14,7 @@
  *         Furthermore primesieve_iterator.is_error is initialized
  *         to 0 and set to 1 if any error occurs.
  *
- * Copyright (C) 2019 Kim Walisch, <kim.walisch@gmail.com>
+ * Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
  *
  * This file is distributed under the BSD License. See the COPYING
  * file in the top level directory.
@@ -26,6 +26,21 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#if defined(__cplusplus) && \
+    __cplusplus >= 202002L && \
+    defined(__has_cpp_attribute)
+  #if __has_cpp_attribute(unlikely)
+    #define IF_UNLIKELY_PRIMESIEVE(x) if (x) [[unlikely]]
+  #endif
+#elif defined(__has_builtin)
+  #if __has_builtin(__builtin_expect)
+    #define IF_UNLIKELY_PRIMESIEVE(x) if (__builtin_expect(!!(x), 0))
+  #endif
+#endif
+#if !defined(IF_UNLIKELY_PRIMESIEVE)
+  #define IF_UNLIKELY_PRIMESIEVE(x) if (x)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,15 +51,23 @@ extern "C" {
  */
 typedef struct
 {
+  /** Current index of the primes array */
   size_t i;
-  size_t last_idx;
+  /** Current number of primes in the primes array */
+  size_t size;
+  /** Generate primes >= start */
   uint64_t start;
-  uint64_t stop;
+  /** Generate primes <= stop_hint */
   uint64_t stop_hint;
-  uint64_t dist;
+  /**
+   * The primes array.
+   * The current smallest prime can be accessed using primes[0].
+   * The current largest prime can be accessed using primes[size-1].
+   */
   uint64_t* primes;
-  void* vector;
-  void* primeGenerator;
+  /** Pointer to internal IteratorData data structure */
+  void* memory;
+  /** Initialized to 0, set to 1 if any error occurs */
   int is_error;
 } primesieve_iterator;
 
@@ -55,28 +78,84 @@ void primesieve_init(primesieve_iterator* it);
 void primesieve_free_iterator(primesieve_iterator* it);
 
 /**
+ * Reset the start number to 0 and free most memory.
+ * Keeps some smaller data structures in memory
+ * (e.g. the IteratorData object) that are useful if the
+ * primesieve_iterator is reused. The remaining memory
+ * uses at most 2 kilobytes.
+ */
+void primesieve_clear(primesieve_iterator* it);
+
+/**
+ * Reset the primesieve iterator to start.
+ * @param start      Generate primes >= start (or <= start).
+ * @param stop_hint  Stop number optimization hint. E.g. if you want
+ *                   to generate the primes <= 1000 use
+ *                   stop_hint = 1000, if you don't know use
+ *                   UINT64_MAX.
+ */
+void primesieve_jump_to(primesieve_iterator* it, uint64_t start, uint64_t stop_hint);
+
+/**
  * Reset the primesieve iterator to start.
  * @param start      Generate primes > start (or < start).
  * @param stop_hint  Stop number optimization hint. E.g. if you want
- *                   to generate the primes below 1000 use
+ *                   to generate the primes <= 1000 use
  *                   stop_hint = 1000, if you don't know use
- *                   primesieve_get_max_stop().
+ *                   UINT64_MAX.
  */
+#if defined(__STDC_VERSION__) && \
+    __STDC_VERSION__ >= 202301
+  [[deprecated("Use the new primesieve_jump_to() instead. "
+               "Attention: primesieve_jump_to() includes the start number, "
+               "whereas primesieve_skipto() excludes the start number. "
+               "See: https://github.com/kimwalisch/primesieve/blob/master/doc/C_API.md#primesieve_jump_to-since-primesieve-110")]]
+#elif defined(__GNUC__) && \
+      __GNUC__ >= 5
+  __attribute__((deprecated(
+               "Use the new primesieve_jump_to() instead. "
+               "Attention: primesieve_jump_to() includes the start number, "
+               "whereas primesieve_skipto() excludes the start number. "
+               "See: https://github.com/kimwalisch/primesieve/blob/master/doc/C_API.md#primesieve_jump_to-since-primesieve-110")))
+#endif
 void primesieve_skipto(primesieve_iterator* it, uint64_t start, uint64_t stop_hint);
 
-/** Internal use */
+/**
+ * Used internally by primesieve_next_prime().
+ * primesieve_generate_next_primes() fills (overwrites) the primes
+ * array with the next few primes (~ 2^10) that are larger than the
+ * current largest prime in the primes array or with the
+ * primes >= start if the primes array is empty.
+ * Note that this function also updates the i & size member variables
+ * of the primesieve_iterator struct. The size of the primes array
+ * varies, but it is > 0 and usually close to 2^10.
+ * If an error occurs primesieve_iterator.is_error is set to 1
+ * and the primes array will contain PRIMESIEVE_ERROR.
+ */
 void primesieve_generate_next_primes(primesieve_iterator*);
 
-/** Internal use */
+/**
+ * Used internally by primesieve_prev_prime().
+ * primesieve_generate_prev_primes() fills (overwrites) the primes
+ * array with the next few primes ~ O(sqrt(n)) that are smaller than
+ * the current smallest prime in the primes array or with the
+ * primes <= start if the primes array is empty.
+ * Note that this function also updates the i & size member variables
+ * of the primesieve_iterator struct. The size of the primes array
+ * varies, but it is > 0 and ~ O(sqrt(n)).
+ * If an error occurs primesieve_iterator.is_error is set to 1
+ * and the primes array will contain PRIMESIEVE_ERROR.
+ */
 void primesieve_generate_prev_primes(primesieve_iterator*);
 
 /**
  * Get the next prime.
- * Returns UINT64_MAX if next prime > 2^64.
+ * Returns PRIMESIEVE_ERROR (UINT64_MAX) if any error occurs.
  */
 static inline uint64_t primesieve_next_prime(primesieve_iterator* it)
 {
-  if (it->i++ == it->last_idx)
+  it->i += 1;
+  IF_UNLIKELY_PRIMESIEVE(it->i >= it->size)
     primesieve_generate_next_primes(it);
   return it->primes[it->i];
 }
@@ -91,8 +170,9 @@ static inline uint64_t primesieve_next_prime(primesieve_iterator* it)
  */
 static inline uint64_t primesieve_prev_prime(primesieve_iterator* it)
 {
-  if (it->i-- == 0)
+  IF_UNLIKELY_PRIMESIEVE(it->i == 0)
     primesieve_generate_prev_primes(it);
+  it->i -= 1;
   return it->primes[it->i];
 }
 

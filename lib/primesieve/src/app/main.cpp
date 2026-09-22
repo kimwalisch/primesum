@@ -1,66 +1,128 @@
 ///
 /// @file   main.cpp
-/// @brief  primesieve console application.
+/// @brief  Command-line option handling for the primesieve
+///         command-line application. The user's command-line options
+///         are first parsed in CmdOptions.cpp and stored in a
+///         CmdOptions object. Afterwards we execute the function
+///         corresponding to the user's command-line options in the
+///         main() function in main.cpp.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+///         How to add a new command-line option:
+///
+///         1) Add a new option enum in CmdOptions.hpp.
+///         2) Add your option to parseOptions() in CmdOptions.cpp.
+///         3) Add your option to main() in main.cpp.
+///         4) Document your option in help.cpp (--help option summary)
+///            and in doc/primesieve.txt (manpage).
+///
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
 ///
 
-#include <primesieve/ParallelSieve.hpp>
-#include "cmdoptions.hpp"
+#include "CmdOptions.hpp"
+
+#include <CpuInfo.hpp>
+#include <ParallelSieve.hpp>
+#include <RiemannR.hpp>
+#include <primesieve/macros.hpp>
+#include <primesieve/primesieve_error.hpp>
+#include <primesieve/Vector.hpp>
 
 #include <stdint.h>
-#include <iostream>
 #include <exception>
+#include <iostream>
 #include <iomanip>
+#include <sstream>
 #include <string>
 
-using namespace std;
-using namespace primesieve;
+#if defined(ENABLE_MULTIARCH_ARM_SVE)
+
+namespace primesieve {
+
+bool has_arm_sve();
+
+} // namespace
+
+#endif
+
+#if defined(ENABLE_MULTIARCH_AVX512_BW)
+
+namespace primesieve {
+
+bool has_avx512_bw();
+
+} // namespace
+
+#endif
+
+#if defined(ENABLE_MULTIARCH_AVX512_VBMI2)
+
+namespace primesieve {
+
+bool has_avx512_vbmi2();
+
+} // namespace
+
+#endif
+
+void help(int exitCode);
+void version();
+void stressTest(const CmdOptions& opts);
+void test();
+
+using primesieve::Array;
+using primesieve::ParallelSieve;
+using primesieve::primesieve_error;
+using primesieve::PRINT_STATUS;
 
 namespace {
 
 void printSettings(const ParallelSieve& ps)
 {
-  cout << "Sieve size = " << ps.getSieveSize() << " KiB" << endl;
-  cout << "Threads = " << ps.idealNumThreads() << endl;
+  std::cout << "Sieve size = " << ps.getSieveSize() << " KiB" << std::endl;
+  std::cout << "Threads = " << ps.idealNumThreads() << std::endl;
 }
 
 void printSeconds(double sec)
 {
-  cout << "Seconds: " << fixed << setprecision(3) << sec << endl;
+  std::cout << "Seconds: " << std::fixed << std::setprecision(3) << sec << std::endl;
 }
 
 /// Count & print primes and prime k-tuplets
-void sieve(CmdOptions& opt)
+void sieve(const CmdOptions& opts)
 {
-  ParallelSieve ps;
-  auto& numbers = opt.numbers;
+  if (opts.numbers.empty())
+    throw primesieve_error("missing STOP number");
 
-  if (opt.flags)
-    ps.setFlags(opt.flags);
-  if (opt.status)
+  INDETERMINATE ParallelSieve ps;
+
+  if (opts.flags)
+    ps.setFlags(opts.flags);
+  if (opts.status)
     ps.addFlags(PRINT_STATUS);
-  if (opt.sieveSize)
-    ps.setSieveSize(opt.sieveSize);
-  if (opt.threads)
-    ps.setNumThreads(opt.threads);
+  if (opts.sieveSize)
+    ps.setSieveSize(opts.sieveSize);
+  if (opts.threads)
+    ps.setNumThreads(opts.threads);
   if (ps.isPrint())
     ps.setNumThreads(1);
-  if (numbers.size() < 2)
-    numbers.push_front(0);
 
-  ps.setStart(numbers[0]);
-  ps.setStop(numbers[1]);
+  if (opts.numbers.size() < 2)
+    ps.setStop(opts.numbers[0]);
+  else
+  {
+    ps.setStart(opts.numbers[0]);
+    ps.setStop(opts.numbers[1]);
+  }
 
-  if (!opt.quiet)
+  if (!opts.quiet)
     printSettings(ps);
 
   ps.sieve();
 
-  const string text[6] =
+  const Array<std::string, 6> labels =
   {
     "Primes: ",
     "Twin primes: ",
@@ -70,43 +132,197 @@ void sieve(CmdOptions& opt)
     "Prime sextuplets: "
   };
 
-  if (opt.time)
+  if (opts.time)
     printSeconds(ps.getSeconds());
 
+  // Did we count primes & k-tuplets simultaneously?
+  int cnt = 0;
   for (int i = 0; i < 6; i++)
     if (ps.isCount(i))
-      cout << text[i] << ps.getCount(i) << endl;
+      cnt++;
+
+  for (int i = 0; i < 6; i++)
+  {
+    if (ps.isCount(i))
+    {
+      if (opts.quiet && cnt == 1)
+        std::cout << ps.getCount(i) << std::endl;
+      else
+        std::cout << labels[i] << ps.getCount(i) << std::endl;
+    }
+  }
 }
 
-void nthPrime(CmdOptions& opt)
+void nthPrime(const CmdOptions& opts)
 {
-  ParallelSieve ps;
-  auto& numbers = opt.numbers;
+  if (opts.numbers.empty())
+    throw primesieve_error("missing n number");
 
-  if (opt.flags)
-    ps.setFlags(opt.flags);
-  if (opt.sieveSize)
-    ps.setSieveSize(opt.sieveSize);
-  if (opt.threads)
-    ps.setNumThreads(opt.threads);
-  if (numbers.size() < 2)
-    numbers.push_back(0);
+  INDETERMINATE ParallelSieve ps;
+  int64_t n = opts.numbers[0];
+  uint64_t start = 0;
 
-  int64_t n = numbers[0];
-  uint64_t start = numbers[1];
+  if (opts.numbers.size() > 1)
+    start = opts.numbers[1];
+  if (opts.flags)
+    ps.setFlags(opts.flags);
+  if (opts.sieveSize)
+    ps.setSieveSize(opts.sieveSize);
+  if (opts.threads)
+    ps.setNumThreads(opts.threads);
+
   uint64_t nthPrime = 0;
   ps.setStart(start);
-  ps.setStop(start + abs(n * 20));
+  ps.setStop(start + std::abs(n * 20));
 
-  if (!opt.quiet)
+  if (!opts.quiet)
     printSettings(ps);
 
   nthPrime = ps.nthPrime(n, start);
 
-  if (opt.time)
+  if (opts.time)
     printSeconds(ps.getSeconds());
 
-  cout << "Nth prime: " << nthPrime << endl;
+  if (opts.quiet)
+    std::cout << nthPrime << std::endl;
+  else
+    std::cout << "Nth prime: " << nthPrime << std::endl;
+}
+
+void RiemannR(const CmdOptions& opts)
+{
+  if (opts.numbers.empty())
+    throw primesieve_error("missing x number");
+
+  long double x = (long double) opts.numbers[0];
+  long double Rx = primesieve::RiemannR(x);
+
+  std::ostringstream oss;
+  oss << std::fixed << std::setprecision(10) << Rx;
+  std::string res = oss.str();
+
+  // Remove trailing 0 decimal digits
+  if (res.find('.') != std::string::npos)
+  {
+    std::reverse(res.begin(), res.end());
+    res = res.substr(res.find_first_not_of('0'));
+    if (res.at(0) == '.')
+      res = res.substr(1);
+
+    std::reverse(res.begin(), res.end());
+  }
+
+  std::cout << res << std::endl;
+}
+
+void RiemannR_inverse(const CmdOptions& opts)
+{
+  if (opts.numbers.empty())
+    throw primesieve_error("missing x number");
+
+  long double x = (long double) opts.numbers[0];
+  long double R_inv_x = primesieve::RiemannR_inverse(x);
+
+  std::ostringstream oss;
+  oss << std::fixed << std::setprecision(10) << R_inv_x;
+  std::string res = oss.str();
+
+  // Remove trailing 0 decimal digits
+  if (res.find('.') != std::string::npos)
+  {
+    std::reverse(res.begin(), res.end());
+    res = res.substr(res.find_first_not_of('0'));
+    if (res.at(0) == '.')
+      res = res.substr(1);
+
+    std::reverse(res.begin(), res.end());
+  }
+
+  std::cout << res << std::endl;
+}
+
+void cpuInfo()
+{
+  const primesieve::CpuInfo cpu;
+
+  if (cpu.hasCpuName())
+    std::cout << cpu.cpuName() << std::endl;
+  else
+    std::cout << "CPU name: unknown" << std::endl;
+
+  if (cpu.hasLogicalCpuCores())
+    std::cout << "Logical CPU cores: " << cpu.logicalCpuCores() << std::endl;
+  else
+    std::cout << "Logical CPU cores: unknown" << std::endl;
+
+  #if defined(ENABLE_MULTIARCH_ARM_SVE)
+    if (primesieve::has_arm_sve())
+      std::cout << "Has ARM SVE: yes" << std::endl;
+    else
+      std::cout << "Has ARM SVE: no" << std::endl;
+  #endif
+
+  #if defined(ENABLE_MULTIARCH_AVX512_BW)
+    if (primesieve::has_avx512_bw())
+      std::cout << "Has AVX512 BW: yes" << std::endl;
+    else
+      std::cout << "Has AVX512 BW: no" << std::endl;
+  #endif
+
+  #if defined(ENABLE_MULTIARCH_AVX512_VBMI2)
+    if (primesieve::has_avx512_vbmi2())
+      std::cout << "Has AVX512 VBMI2: yes" << std::endl;
+    else
+      std::cout << "Has AVX512 VBMI2: no" << std::endl;
+  #endif
+
+  if (cpu.hasL1Cache())
+    std::cout << "L1 cache size: " << (cpu.l1CacheBytes() >> 10) << " KiB" << std::endl;
+
+  if (cpu.hasL2Cache())
+    std::cout << "L2 cache size: " << (cpu.l2CacheBytes() >> 10) << " KiB" << std::endl;
+
+  if (cpu.hasL3Cache())
+    std::cout << "L3 cache size: " << (cpu.l3CacheBytes() >> 20) << " MiB" << std::endl;
+
+  if (cpu.hasL1Cache())
+  {
+    if (!cpu.hasL1Sharing())
+      std::cout << "L1 cache sharing: unknown" << std::endl;
+    else
+      std::cout << "L1 cache sharing: " << cpu.l1Sharing()
+                << ((cpu.l1Sharing() > 1) ? " threads" : " thread") << std::endl;
+  }
+
+  if (cpu.hasL2Cache())
+  {
+    if (!cpu.hasL2Sharing())
+      std::cout << "L2 cache sharing: unknown" << std::endl;
+    else
+      std::cout << "L2 cache sharing: " << cpu.l2Sharing()
+                << ((cpu.l2Sharing() > 1) ? " threads" : " thread") << std::endl;
+  }
+
+  if (cpu.hasL3Cache())
+  {
+    if (!cpu.hasL3Sharing())
+      std::cout << "L3 cache sharing: unknown" << std::endl;
+    else
+      std::cout << "L3 cache sharing: " << cpu.l3Sharing()
+                << ((cpu.l3Sharing() > 1) ? " threads" : " thread") << std::endl;
+  }
+
+  if (!cpu.hasL1Cache() &&
+      !cpu.hasL2Cache() &&
+      !cpu.hasL3Cache())
+  {
+    std::cout << "L1 cache size: unknown" << std::endl;
+    std::cout << "L2 cache size: unknown" << std::endl;
+    std::cout << "L3 cache size: unknown" << std::endl;
+    std::cout << "L1 cache sharing: unknown" << std::endl;
+    std::cout << "L2 cache sharing: unknown" << std::endl;
+    std::cout << "L3 cache sharing: unknown" << std::endl;
+  }
 }
 
 } // namespace
@@ -115,17 +331,25 @@ int main(int argc, char* argv[])
 {
   try
   {
-    CmdOptions opt = parseOptions(argc, argv);
+    CmdOptions opts = parseOptions(argc, argv);
 
-    if (opt.nthPrime)
-      nthPrime(opt);
-    else
-      sieve(opt);
+    switch (opts.option)
+    {
+      case OPTION_CPU_INFO:    cpuInfo(); break;
+      case OPTION_HELP:        help(/* exitCode */ 0); break;
+      case OPTION_NTH_PRIME:   nthPrime(opts); break;
+      case OPTION_R:           RiemannR(opts); break;
+      case OPTION_R_INVERSE:   RiemannR_inverse(opts); break;
+      case OPTION_STRESS_TEST: stressTest(opts); break;
+      case OPTION_TEST:        test(); break;
+      case OPTION_VERSION:     version(); break;
+      default:                 sieve(opts); break;
+    }
   }
-  catch (exception& e)
+  catch (std::exception& e)
   {
-    cerr << "primesieve: " << e.what() << endl
-         << "Try 'primesieve --help' for more information." << endl;
+    std::cerr << "primesieve: " << e.what() << std::endl
+              << "Try 'primesieve --help' for more information." << std::endl;
     return 1;
   }
 

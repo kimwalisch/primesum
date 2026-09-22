@@ -2,7 +2,7 @@
 /// @file   generate_primes2.c
 /// @brief  Test prime number generation.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2022 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -26,7 +26,7 @@ const uint64_t small_primes[25] =
 };
 
 // primes inside [18446744073709550681, 18446744073709551533]
-const uint64_t large_primes[19] =
+const uint64_t large_primes[20] =
 {
   18446744073709550681ull,
   18446744073709550717ull,
@@ -46,7 +46,8 @@ const uint64_t large_primes[19] =
   18446744073709551427ull,
   18446744073709551437ull,
   18446744073709551521ull,
-  18446744073709551533ull
+  18446744073709551533ull,
+  18446744073709551557ull
 };
 
 void check(int OK)
@@ -60,7 +61,7 @@ void check(int OK)
   }
 }
 
-int main()
+int main(void)
 {
   size_t i;
   size_t size = 0;
@@ -75,9 +76,30 @@ int main()
   }
 
   primesieve_free(primes);
-  primes = (uint64_t*) primesieve_generate_primes(18446744073709550672ull, 18446744073709551556ull, &size, UINT64_PRIMES);
+
+  primes = (uint64_t*) primesieve_generate_primes(0, 1000, &size, UINT64_PRIMES);
   printf("primes.size = %zu", size);
-  check(size == 19);
+  check(size == 168);
+  primesieve_free(primes);
+
+  primes = (uint64_t*) primesieve_generate_primes(0, 1000000, &size, UINT64_PRIMES);
+  printf("primes.size = %zu", size);
+  check(size == 78498);
+  primesieve_free(primes);
+
+  primes = (uint64_t*) primesieve_generate_primes(1000003, 9999991, &size, UINT64_PRIMES);
+  printf("primes.size = %zu", size);
+  check(size == 664579 - 78498);
+  primesieve_free(primes);
+
+  primes = (uint64_t*) primesieve_generate_primes(1000000, 1000000, &size, UINT64_PRIMES);
+  printf("primes.size = %zu", size);
+  check(size == 0);
+  primesieve_free(primes);
+
+  primes = (uint64_t*) primesieve_generate_primes(18446744073709550672ull, 18446744073709551615ull, &size, UINT64_PRIMES);
+  printf("primes.size = %zu", size);
+  check(size == 20);
 
   for (i = 0; i < size; i++)
   {
@@ -86,6 +108,11 @@ int main()
   }
 
   primesieve_free(primes);
+
+  int32_t* primes32 = (int32_t*) primesieve_generate_primes((1ull << 31) - 1000, (1ull << 31) + 1000, &size, INT32_PRIMES);
+  printf("Detect 31-bit overflow:");
+  check(primes32 == NULL);
+
   printf("\n");
   printf("All tests passed successfully!\n");
 

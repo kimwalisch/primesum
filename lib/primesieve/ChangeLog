@@ -1,3 +1,362 @@
+Changes in version 12.16, 16/09/2026
+====================================
+
+* Fix MinGW GCC 16 assertion warning in debug mode.
+* Remove unnecessary integer literal suffixes.
+* primesieve.pc.in: Add missing libatomic dependency.
+* ci.yml: Add pkg-config and CMake find_package() CI tests.
+* iterator.h: Fix -Wundef warnings.
+* C_API.md: Add primesieve_iterator section.
+* CPP_API.md: Add primesieve::iterator section.
+
+Changes in version 12.15, 17/07/2026
+====================================
+
+* Fix LLVM/Clang -Wunused-template warning.
+* CpuInfo.cpp: Use primesieve::Vector instead of std::vector.
+* macros.hpp: Add INDETERMINATE macro to prevent memset zero initialization of large stack arrays.
+* nthPrime.cpp: Fix undefined behavior.
+* util.hpp: Fix undefined behavior in littleendian_cast<T>().
+* PrimeGenerator_x86_avx512.hpp: Fix undefined behavior.
+* CountPrintPrimes.cpp: Fix undefined behavior.
+* popcount.hpp: Fix undefined behavior.
+* PreSieve_arm_sve.hpp: Use __attribute__((target("+sve"))) instead of
+  target("arch=armv8-a+sve") for the ARM SVE multiarch runtime dispatch.
+  The latter reset the CPU architecture baseline to armv8-a.
+* multiarch_sve_arm.cmake: Update the ARM SVE compiler support check
+  to match.
+* CMakeLists.txt: Disable building the shared libprimesieve on
+  Emscripten (WebAssembly) so that the primesieve binary is linked
+  statically. Emscripten now builds shared libraries as side modules,
+  which broke static linking of the binary and the WebAssembly CI build.
+
+Changes in version 12.14, 08/05/2026
+====================================
+
+* ParallelSieve.cpp: Prevent CPU false sharing.
+* PrimeSieveClass.hpp: Prevent CPU false sharing.
+* malloc_vector.h: Fix undefined behavior.
+* calculator.hpp: Fix std::tolower undefined behavior.
+* CpuInfo.cpp: Fix std::isdigit undefined behavior.
+* CmdOptions.cpp: Fix 64-bit integer overflow in optionTimeout().
+* PrimeSieveClass.cpp: Reduce mutex contention.
+* iterator-c.cpp: Fix use after free in primesieve_free_iterator().
+* config.hpp: Add MAX_CACHE_LINE_SIZE.
+* macros.hpp: Add MAYBE_UNUSED.
+* Vector.hpp: Improve Vector exception safety.
+* GitHub Actions CI: Fix node 20 deprecation warning.
+* CMakeLists.txt: On Windows rename static library to primesieve_static.lib #183.
+* CMakeLists.txt: Remove WITH_MSVC_CRT_STATIC option.
+
+Changes in version 12.13, 01/02/2026
+====================================
+
+* Fix missing version in .pc file #176.
+
+Changes in version 12.12, 09/01/2026
+====================================
+
+* CMakeLists.txt: Fix CMAKE_PROJECT_VERSION not defined.
+* doc/Doxyfile.in: REVERSE workaround for Doxygen/LaTeX broken tables #172.
+* Automated building Windows binaries using GitHub Actions CI.
+* build_clang_x64.ps1: New Clang Windows x64 build script.
+* build_clang_arm64.ps1: New Clang Windows ARM64 build script.
+
+Changes in version 12.11, 12/12/2025
+====================================
+
+* calculator.hpp: Update to version 2.0 with improved error handling.
+  This version detects most integer overflows and underflows.
+* test/calculator.cpp: Add much more tests for calculator.hpp.
+* PreSieve.cpp: Simplify SIMD runtime dispatching.
+* CountPrintPrimes.cpp: Faster printing of primes to stdout.
+* CmdOptions.cpp: Prevent multiple different --print options.
+* CMakeLists.txt: Set CMAKE_VISIBILITY_INLINES_HIDDEN=ON by default.
+* BUILD.md: Update MSVC build instructions.
+
+Changes in version 12.10, 03/11/2025
+====================================
+
+* src/MemoryPool.cpp: Fix undefined behavior in Bucket allocation.
+* build_mingw64_arm64.sh: Enable ARM SVE for Mingw-w64 on ARM64.
+* test/CMakeLists.txt: Improve Windows libprimesieve.dll support.
+* examples/c/CMakeLists.txt: Improve Windows libprimesieve.dll support.
+* examples/cpp/CMakeLists.txt: Improve Windows libprimesieve.dll support.
+* ci.yml: Add WebAssembly/Emscripten test.
+* BUILD.md: Add WebAssembly/Emscripten build instructions.
+
+Changes in version 12.9, 14/05/2025
+===================================
+
+* CMakeLists.txt: Speed up build by removing compile dependencies.
+* Move private header files from /include to /src.
+* src/CMakeLists.txt: Update for private header files in /src.
+* test/CMakeLists.txt: Update for private header files in /src.
+* Vector.hpp: Get rid of std::is_trivial which is deprecated in C++26.
+
+Changes in version 12.8, 12/04/2025
+===================================
+
+* Vectorize primesieve::iterator.prev_prime() using AVX512.
+* api.cpp: Tune sieve array size.
+* PreSieve.cpp: Simplify SIMD code.
+* PreSieve_default.hpp: New algorithm that is also fast using -Os and -O2.
+* PreSieve_arm_neon.hpp: New file, contains ARM NEON algorithm.
+* PreSieve_arm_sve.hpp: New file, contains ARM SVE algorithm.
+* PreSieve_x86_avx512.hpp: New file, contains AVX512 algorithm.
+* PreSieve_x86_sse2.hpp: New file, contains SSE2 algorithm.
+* ci/benchmark.yaml: Add CI test to detect performance regressions.
+* README.md: Fix Markdown math formula.
+* README.md: Add stress testing section.
+* C_API.md: Fix Markdown math formula.
+* CPP_API.md: Fix Markdown math formula.
+
+Changes in version 12.7, 28/02/2025
+===================================
+
+* multiarch_sve_arm.cmake: Improve ARM SVE detection.
+* src/arch/arm/sve.cpp: Detect ARM SVE on Linux and Windows.
+* EratBig.cpp: Simplify bucket handling.
+* Erat.cpp: Tune sieve size using FACTOR_SIEVESIZE.
+* README.md: Add Sponsors section.
+
+Changes in version 12.6, 11/11/2024
+===================================
+
+* CpuInfo.cpp: Correctly detect Intel Arrow Lake CPU cache
+  topology on Windows and Linux.
+* PreSieve.cpp: Increased pre-sieving from primes <= 100 to
+  primes <= 163. Memory usage of pre-sieve lookup tables has been
+  reduced from 210 kilobytes to 123 kilobytes.
+* PreSieve.cpp: Added AVX512 and ARM SVE multiarch support.
+
+Changes in version 12.5, 22/10/2024
+===================================
+
+* Improve thread load balancing for large number of CPU cores.
+
+Changes in version 12.4, 22/06/2024
+===================================
+
+* Move x86 CPUID code from cpuid.hpp to src/x86/cpuid.cpp.
+* multiarch_x86_popcnt.cmake: Detect x86 POPCNT support.
+* CMakeLists.txt: Use CMake list for all compile time definitions.
+* CMakeLists.txt: Use CMake list for all link libraries.
+
+Changes in version 12.3, 15/04/2024
+===================================
+
+* Improve Windows multiarch support (now works with MinGW64).
+* Add runtime POPCNT detection using CPUID for x86 CPUs.
+* Improve GCC/Clang multiarch preprocessor logic.
+* CMakeLists.txt: Remove POPCNT/BMI check for x86 CPUs.
+
+Changes in version 12.2, 30/03/2024
+===================================
+
+* RiemannR.cpp: Fix infinite loop on Linux i386,
+  see https://github.com/kimwalisch/primecount/issues/66.
+* RiemannR.cpp: Faster and simpler RiemannR_inverse(x).
+* config.hpp: Tune FACTOR_ERATMEDIUM for AMD Zen 4.
+* test/Riemann_R.cpp: Add more tests.
+
+Changes in version 12.1, 09/03/2024
+===================================
+
+CMakeLists.txt: Fix undefined reference to pthread_create #146.
+PrimeSieve.cpp: Improve status output.
+src/app/test.cpp: Fix -ffast-math failure.
+test/count_primes2.cpp: Fix -ffast-math failure.
+test/Riemann_R.cpp: Fix musl libc issue #147.
+
+Changes in version 12.0, 17/02/2024
+===================================
+
+* stressTest.cpp: New --stress-test[=MODE] command-line option.
+* RiemannR.cpp: Faster Riemann R function implementation #144.
+* CmdOptions.cpp: New -R && --RiemannR command line options.
+* CmdOptions.cpp: New --RiemannR-inverse command line option.
+* CmdOptions.cpp: Add new --timeout option for stress testing.
+* main.cpp: Improve command-line option handling.
+
+Changes in version 11.2, 08/01/2024
+===================================
+
+* nthPrime.cpp: Rewritten using faster nth prime approximation.
+* nthPrimeApprox.cpp: Logarithmic integral and Riemann R implementations.
+* cmake/libatomic.cmake: Fix failed to find libatomic #141.
+* .github/workflows/ci.yml: Port AppVeyor CI tests to GitHub Actions.
+* doc/C_API.md: Fix off by 1 error in OpenMP example #137.
+* doc/CPP_API.md: Fix off by 1 error in OpenMP example #137.
+* Vector.hpp: Rename pod_vector to Vector and pod_array to Array.
+* iterator.h: Improve documentation.
+* iterator.hpp: Improve documentation.
+* C_API.md: Add SIMD (vectorization) section.
+* CPP_API.md: Add SIMD (vectorization) section.
+* README.md: Add C & C++ API badges.
+
+Changes in version 11.1, 12/05/2023
+===================================
+
+When primesieve is distributed via distro package managers, it is often
+not compiled using the highest optimization level -O3. Because of this
+primesieve's pre-sieving algorithm was not auto-vectorized in many
+cases. As a workaround for this issue I have now manually vectorized
+the pre-sieving algorithm for x64 CPUs (using portable SSE2) and for
+ARM64 CPUs (using portable ARM NEON). This can improve performance by
+up to 40%.
+
+* PreSieve.cpp: Vectorize loop using x64 SSE2 & ARM NEON.
+* popcount.cpp: Add POPCNT algorithm for x64 & AArch64.
+* primesieve.h: Fix -Wstrict-prototypes warning.
+* examples/c/*.c: Fix -Wstrict-prototypes warning.
+* test/*.c: Fix -Wstrict-prototypes warning.
+* CMakeLists.txt: New WITH_AUTO_VECTORIZATION option (with default ON).
+* cmake/auto_vectorize.cmake: Enable auto-vectorization if the compiler
+  supports it.
+* scripts/build_mingw64_x64.sh: Build primesieve x64 release binary.
+* scripts/build_mingw64_arm64.sh: Build primesieve arm64 release binary.
+
+Changes in version 11.0, 02/12/2022
+===================================
+
+The primesieve major version has been increased from 8 to 11 in order
+for the primesieve major version to match the libprimesieve.so (ABI)
+version. From now on, the primesieve version and the libprimesieve.so
+version will be kept in sync.
+
+The libprimesieve C API and ABI remain backwards compatible with
+primesieve-8.*. In primesieve-11.0 the C primesieve_skipto() function
+has been marked as deprecated and primesieve_jump_to() has been added
+as a replacement.
+
+The libprimesieve C++ API and ABI are not backwards compatible. The
+primesieve::iterator::skipto() method has been removed and replaced by
+the new primesieve::iterator::jump_to().
+
+Please note that the new primesieve_jump_to(iter, start, stop) includes
+the start number (generates primes >= start), whereas the old
+primesieve_skipto(iter, start, stop) excludes the start number
+(generates primes > start). In practice, the use of primesieve_jump_to()
+requires up to 2x less start number corrections (e.g. start-1) compared
+to primesieve_skipto().
+
+* CMakeLists.txt: Improve Emscripten WebAssembly support.
+* iterator.cpp: Add new primesieve::iterator::jump_to().
+* iterator.cpp: Fix use after free in primesieve::iterator::clear().
+* iterator-c.cpp: Add new primesieve_jump_to().
+* iterator-c.cpp: Mark primesieve_skipto() as deprecated.
+* iterator-c.cpp: Fix use after free in primesieve_iterator_clear().
+* pod_vector.hpp: Added support for types with destructors.
+* malloc_vector.hpp: Fix potential memory leak.
+* api.cpp: Support non power of 2 sieve sizes.
+* PrimeSieve.cpp: Support non power of 2 sieve sizes.
+* PreSieve.cpp: Use std::initializer_list instead of std::vector.
+* Erat.cpp: Improve documentation.
+* C_API.md: Improve next_prime() and prev_prime() documentation.
+* CPP_API.md: Improve next_prime() and prev_prime() documentation.
+
+Changes in version 8.0, 26/06/2022
+==================================
+
+There has been a minor change in the ABI (Application binary interface) of
+libprimesieve-8.0 compared to libprimesieve-7.x. This ABI break was necessary
+to fix undefined behavior present in libprimesieve-7.x
+(in primesieve::iterator). For more information, please read:
+https://github.com/kimwalisch/primesieve/wiki/libprimesieve-8.0-ABI-changes
+
+* primesieve::iterator's ABI has been modified in both the C & C++ API.
+  primesieve::iterator's API remains backwards compatible.
+* CPP_API.md: Renamed doc/CPP_Examples.md to doc/CPP_API.md.
+* C_API.md: Renamed doc/C_Examples.md to doc/C_API.md.
+* Fix undefined behavior (g++-12 issue) caused by resizeUninitialized.hpp,
+  use new pod_vector<uint64_t> from pod_vector.hpp instead.
+* iterator.cpp: Enable pre-sieving for primesieve::iterator.prev_prime().
+* iterator-c.cpp: Enable pre-sieving for primesieve::iterator.prev_prime().
+* PreSieve.cpp: Detect if the user sieves many consective intervals.
+* PrimeGenerator.cpp: Improve AVX512 of fillNextPrimes().
+* PrimeGenerator.cpp: Reduce memory usage for tiny stop numbers.
+* PrimeGenerator.hpp: Add GCC/Clang's function multiversioning for AVX512.
+* Erat.cpp: Dynamically grow the sieve size: use a small sieve size for
+  small stop numbers and a large sieve size for large stop numbers.
+* Erat.cpp: Reduce memory usage, allocate the minimum required
+  memory to store all sieving primes.
+* CpuInfo.cpp: Detect AVX512 using CPUID.
+* pmath.hpp: Use compiler instrinsics for ilog2() & floorPow2().
+* StorePrimes.hpp: Use vector::insert() instead of vector::push_back(),
+                   see: https://github.com/kimwalisch/primesieve/issues/123.
+* CMakeLists.txt: Automatically enable expensive debug assertions in debug
+                  mode (if CMAKE_BUILD_TYPE=Debug).
+
+Changes in version 7.9, 03/05/2022
+==================================
+
+* intrinsics.hpp: Improved x64 BSF assembly.
+* iterator.cpp: Reduce memory allocations in generate_prev_primes().
+* iterator-c.cpp: Reduce memory allocations.
+* CpuInfo.cpp: Improve hybrid CPU detection on Linux.
+* Erat.cpp: Reduce memory usage when sieving a single segment.
+* EratBig.cpp: Improve instruction level parallelism.
+* EratBig.cpp: Improve next wheel index code.
+* EratBig.cpp: Use std::copy() instead of std::rotate().
+* SievingPrimes.cpp: Reduce branch mispredictions.
+* PreSieve.cpp: Hardcode buffersDist.
+* MemoryPool.cpp: Reduce memory usage.
+* StorePrimes.hpp: Improve nth prime approximation.
+* config.hpp: Tune FACTOR_ERATMEDIUM constant.
+* Use a single MemoryPool per thread (previously 2).
+* Increase max sieve array size to 8 KiB.
+
+Changes in version 7.8, 21/01/2022
+==================================
+
+primesieve can now pre-sieve the multiples of small primes < 100
+(previously <= 19) using about only half as much memory. Instead
+of using a single large pre-sieved buffer primesieve now uses
+8 smaller pre-sieved buffers which are bitwise AND together before
+being copied into the sieve array. The new pre-sieveing algorithm
+provides a speedup of up to 10% when generating the primes < 10^11.
+Thanks to @zielaj for this amazing work!
+
+* PreSieve.cpp: Add multiple pre-sieve buffers #110.
+* PrimeGenerator.cpp: Reduce branch mispredictions #109.
+* PrimeGenerator.cpp: Add AVX512 algorithm #109.
+* iterator.cpp: Avoid default initialization of primes vector.
+* iterator-c.cpp: Avoid default initialization of primes vector.
+* ParallelSieve.cpp: Initialize PreSieve.
+* ALGORITHMS.md: Update documentation.
+
+Changes in version 7.7, 13/11/2021
+==================================
+
+The CPU cache size detection has been improved. The code now better
+handles uncertain situations when CPU cache information is only
+partially available. If the CPU cache detection fails entirely, then
+the new code uses a larger sieve size (than before) that will most
+likely provide a significant speedup. Most BSD operating systems
+that are currently not supported in CpuInfo.cpp will benefit from
+this change.
+
+The behavior of the -q/--quiet option has been modified. Before it
+printed e.g. "Primes: 1229", while with the new behavior the
+"Primes:" label will not be printed anymore. Hence the new output
+will be "1229". This is a backwards incompatible change, however I
+won't increase primesieve's major version since this change does not
+affect primesieve's API/ABI.
+
+* CpuInfo.cpp: Fix issues with big.LITTLE CPUs #105.
+* api.cpp: Simplify private L2 cache size detection #103.
+* config.cpp: Add fallback sieve size & L1 data cache size.
+* Erat.cpp: If runtime CPU cache detection fails use
+  config::L1D_CACHE_BYTES. 
+* main.cpp: Improve -q/--quiet option #102.
+* api-c.cpp: Print error messages to stderr.
+* iterator-c.cpp: Print error messages to stderr.
+* doc/primesieve.1: Update man page.
+* CMakeLists.txt: Add WITH_MSVC_CRT_STATIC option to force static linking.
+* C_Examples.md: Add CMake build instructions.
+* CPP_Examples.md: Add CMake build instructions.
+
 Changes in version 7.6, 18/12/2020
 ==================================
 
@@ -39,7 +398,7 @@ https://github.com/kimwalisch/primesieve
 * StorePrimes.hpp: Add workaround for windows.h max/min macros.
 * PrimeGenerator.cpp: Cache more primes.
 * SievingPrimes.cpp: Cache more primes.
-* cmdoptions.cpp: Support options of type: --option VALUE.
+* CmdOptions.cpp: Support options of type: --option VALUE.
 * help.cpp: Improve help menu.
 * CMakeLists.txt: Require CMake 3.4 instead 3.9.
 * primesieve.pc.in: Fix libdir and includedir.
@@ -78,7 +437,7 @@ of 25% near 1e19.
 * MemoryPoop.cpp: Allocate buckets aligned by sizeof(Bucket).
 * Bucket.hpp: sizeof(Bucket) is now a power of 2.
 * primesieve::iterator: Support C++ move semantics.
-* cmdoptions.cpp: Fix array out of bounds bug.
+* CmdOptions.cpp: Fix array out of bounds bug.
 * CpuInfo.cpp: Fix MinGW/MSYS2 -Wcast-function-type warning.
 
 Changes in version 7.2, 26/10/2018

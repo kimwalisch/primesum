@@ -5,14 +5,22 @@
 #     In your CMakeLists.txt, add these lines:
 #
 #     find_package(primesieve REQUIRED)
-#     target_link_libraries(your_target primesieve::primesieve)
+#     target_link_libraries(your_program primesieve::primesieve)
 #
 #     To link against the static libprimesieve use:
 #
 #     find_package(primesieve REQUIRED static)
-#     target_link_libraries(your_target primesieve::primesieve)
+#     target_link_libraries(your_program primesieve::primesieve)
 #
 # ====================================================================
+
+@PACKAGE_INIT@
+
+# Nothing to do if primesieve is included as a subdirectory in
+# another project that uses CMake as its build system.
+if(TARGET primesieve::primesieve)
+    return()
+endif()
 
 include(CMakeFindDependencyMacro)
 find_dependency(Threads QUIET)

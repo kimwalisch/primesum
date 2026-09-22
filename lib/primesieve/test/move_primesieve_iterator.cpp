@@ -3,7 +3,7 @@
 /// @brief  Test the move constructor and move assignment operators
 ///         of the primesieve::iterator class.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -14,13 +14,11 @@
 #include <memory>
 #include <vector>
 
-using namespace std;
-
 void check(bool OK)
 {
-  cout << "   " << (OK ? "OK" : "ERROR") << "\n";
+  std::cout << "   " << (OK ? "OK" : "ERROR") << "\n";
   if (!OK)
-    exit(1);
+    std::exit(1);
 }
 
 int main()
@@ -32,54 +30,54 @@ int main()
   uint64_t sum = 0;
 
   // use 1st iterator up to 5e8
-  for (; prime < 500000000ull; prime = it.next_prime())
+  for (; prime < 500000000; prime = it.next_prime())
     sum += prime;
 
   // move constructor
   primesieve::iterator it2(std::move(it));
 
   // use 2nd iterator up to 1e9
-  for (; prime < 1000000000ull; prime = it2.next_prime())
+  for (; prime <= 1000000000; prime = it2.next_prime())
     sum += prime;
 
-  cout << "Sum of the primes below 10^9 = " << sum;
-  check(sum == 24739512092254535ull);
+  std::cout << "Sum of the primes <= 10^9: " << sum;
+  check(sum == 24739512092254535);
 
   // test move assignment operator ///////////////////////////////////
 
   // moved from objects can be reused
   // but they need to be reset
-  it.skipto(0);
+  it.jump_to(0);
   prime = it.next_prime();
   sum = 0;
 
   // use 1st iterator up to 6e8
-  for (; prime < 600000000ull; prime = it.next_prime())
+  for (; prime < 600000000; prime = it.next_prime())
     sum += prime;
 
   // move assignment operator
   it2 = std::move(it);
 
   // use 2nd iterator up to 1e9
-  for (; prime < 1000000000ull; prime = it2.next_prime())
+  for (; prime <= 1000000000; prime = it2.next_prime())
     sum += prime;
 
-  cout << "Sum of the primes below 10^9 = " << sum;
-  check(sum == 24739512092254535ull);
+  std::cout << "Sum of the primes <= 10^9: " << sum;
+  check(sum == 24739512092254535);
 
   // test std::vector ////////////////////////////////////////////////
 
-  vector<primesieve::iterator> vect;
+  std::vector<primesieve::iterator> vect;
   vect.emplace_back(1000);
   prime = vect.back().prev_prime();
-  cout << "1st prime < 1000 = " << prime;
+  std::cout << "1st prime < 1000 = " << prime;
   check(prime == 997);
 
-  it2.skipto(5);
+  it2.jump_to(5);
   vect.emplace_back(std::move(it2));
   prime = vect.back().next_prime();
-  cout << "1st prime > 5 = " << prime;
-  check(prime == 7);
+  std::cout << "1st prime >= 5 = " << prime;
+  check(prime == 5);
 
   return 0;
 }

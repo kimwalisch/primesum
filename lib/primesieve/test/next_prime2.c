@@ -2,7 +2,7 @@
 /// @file   next_prime2.c
 /// @brief  Test primesieve_next_prime().
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -26,7 +26,7 @@ void check(int OK)
   }
 }
 
-int main()
+int main(void)
 {
   size_t size = 0;
   uint64_t* primes = (uint64_t*) primesieve_generate_primes(0, 100000, &size, UINT64_PRIMES);
@@ -41,27 +41,27 @@ int main()
 
   for (i = 0; i < size - 1; i++)
   {
-    primesieve_skipto(&it, primes[i] - 1, max_prime);
-    prime = primesieve_next_prime(&it);
-    printf("next_prime(%" PRIu64 ") = %" PRIu64, primes[i] - 1, prime);
-    check(prime == primes[i]);
-
-    primesieve_skipto(&it, primes[i], max_prime);
+    primesieve_jump_to(&it, primes[i], max_prime);
     prime = primesieve_next_prime(&it);
     printf("next_prime(%" PRIu64 ") = %" PRIu64, primes[i], prime);
+    check(prime == primes[i]);
+
+    primesieve_jump_to(&it, primes[i] + 1, max_prime);
+    prime = primesieve_next_prime(&it);
+    printf("next_prime(%" PRIu64 ") = %" PRIu64, primes[i] + 1, prime);
     check(prime == primes[i + 1]);
   }
 
-  primesieve_skipto(&it, 0, max_prime);
+  primesieve_jump_to(&it, 0, max_prime);
 
-  // iterate over the primes below 10^9
-  while ((prime = primesieve_next_prime(&it)) < 1000000000)
+  // Iterate over the primes <= 10^9
+  while ((prime = primesieve_next_prime(&it)) <= 1000000000)
     sum += prime;
 
-  printf("Sum of the primes below 10^9 = %" PRIu64, sum);
-  check(sum == 24739512092254535ull);
+  printf("Sum of the primes <= 10^9: %" PRIu64, sum);
+  check(sum == 24739512092254535);
 
-  primesieve_skipto(&it, max_prime / 2, max_prime);
+  primesieve_jump_to(&it, max_prime / 2, max_prime);
   prime = primesieve_next_prime(&it);
 
   while (prime <= max_prime)
@@ -75,18 +75,30 @@ int main()
     check(prime == primes[size - i]);
   }
 
-  primesieve_skipto(&it, 18446744073709551556ull, 0);
+  primesieve_jump_to(&it, 18446744073709551556ull, 0);
   prime = primesieve_next_prime(&it);
   printf("next_prime(18446744073709551556) = %" PRIu64, prime);
   check(prime == 18446744073709551557ull);
 
-  for (i = 0; i < 100; i++)
+// This test triggers a GCC bug if GCC version <= 12,
+// hence we avoid running this test with GCC <= 12.
+// See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=106627
+#if __GNUC__ >= 14 || \
+    !defined(__GNUC__) || \
+    defined(__clang__)
+
+  // Make sure that primesieve_next_prime() returns
+  // PRIMESIEVE_ERROR indefinitely when trying to
+  // generate primes > 2^64.
+  for (i = 0; i < 1000; i++)
   {
     old = prime;
     prime = primesieve_next_prime(&it);
-    printf("next_prime(%" PRIu64 ") = %" PRIu64, old, prime);
-    check(prime == 18446744073709551615ull);
+    printf("next_prime(%" PRIu64 ") = PRIMESIEVE_ERROR:", old);
+    check(prime == PRIMESIEVE_ERROR);
   }
+
+#endif
 
   primesieve_free(primes);
   primesieve_free_iterator(&it);
