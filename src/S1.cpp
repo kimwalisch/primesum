@@ -1,7 +1,7 @@
 ///
 /// @file  S1.cpp
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -89,7 +89,6 @@ int256_t S1(int128_t x,
 {
   print("");
   print("=== S1(x, y) ===");
-  print("Computation of the ordinary leaves");
   print(x, y, c, threads);
 
   double time = get_time();

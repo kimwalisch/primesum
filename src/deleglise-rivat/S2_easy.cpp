@@ -4,7 +4,7 @@
 ///        and the sparse easy leaves in parallel using OpenMP
 ///        (Deleglise-Rivat algorithm).
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -115,7 +115,6 @@ int256_t S2_easy(int128_t x,
 {
   print("");
   print("=== S2_easy(x, y) ===");
-  print("Computation of the easy special leaves");
   print(x, y, c, threads);
 
   double time = get_time();

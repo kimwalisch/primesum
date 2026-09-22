@@ -7,7 +7,7 @@
 ///        Computation, 44 (1985), by J. C. Lagarias, V. S. Miller and
 ///        A. M. Odlyzko.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -63,7 +63,6 @@ int64_t S2(int64_t x,
 {
   print("");
   print("=== S2(x, y) ===");
-  print("Computation of the special leaves");
 
   double time = get_time();
   int64_t limit = x / y + 1;

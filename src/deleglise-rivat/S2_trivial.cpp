@@ -77,7 +77,6 @@ int256_t S2_trivial(int128_t x,
 {
   print("");
   print("=== S2_trivial(x, y) ===");
-  print("Computation of the trivial special leaves");
   print(x, y, c, threads);
 
   double time = get_time();
