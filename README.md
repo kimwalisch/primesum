@@ -51,7 +51,7 @@ cmake --build . --parallel
 
 ## Usage examples
 
-Open a terminal and run primesum using e.g.:
+Open a terminal and run primesum using:
 
 ```sh
 # Sum the primes below 10^14
