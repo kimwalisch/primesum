@@ -114,7 +114,7 @@ int main()
      int32_t y = dist_i32(gen);
     int128_t res = fast_div(x, y);
 
-    std::cout << "fast_div(int128_t < 2^64, int32_t)";
+    std::cout << "fast_div(" << x << ", " << y << ") = " << res;
     check(res == x / y);
 
     // Test x > 2^64
@@ -124,7 +124,7 @@ int main()
     y = dist_i32(gen);
     res = fast_div(x, y);
 
-    std::cout << "fast_div(int128_t > 2^64, int32_t)";
+    std::cout << "fast_div(" << x << ", " << y << ") = " << res;
     check(res == x / y);
   }
 

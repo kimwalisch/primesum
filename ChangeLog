@@ -19,6 +19,7 @@
   * Update integer math functions from primecount.
   * Replace min_max.hpp with primecount's latest min.hpp.
   * Fix the OpenMP feature check with out-of-line 128-bit printing.
+  * Build libprimesum and link the command-line app and tests against it.
 
 2019-02-20 Kim Walisch  <kim.walisch@gmail.com>
 
