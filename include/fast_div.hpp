@@ -101,6 +101,53 @@ fast_div(X x, Y y)
   return UX(x) / UY(y);
 }
 
+/// Used for (128-bit / 32-bit) = 64-bit.
+/// Used for (128-bit / 64-bit) = 64-bit.
+/// Use this function only when you know for sure
+/// that the result is < 2^64.
+///
+template <typename X, typename Y>
+ALWAYS_INLINE typename std::enable_if<(sizeof(X) > sizeof(uint64_t) &&
+                                       sizeof(Y) <= sizeof(uint64_t)), uint64_t>::type
+fast_div64(X x, Y y)
+{
+  ASSERT(x >= 0);
+  ASSERT(y > 0);
+
+#if defined(__x86_64__) && \
+   (defined(__GNUC__) || defined(__clang__))
+
+  using UX = typename pstd::make_unsigned<X>::type;
+
+  uint64_t low = uint64_t(x);
+  uint64_t high = uint64_t(UX(x) >> 64);
+  uint64_t d = y;
+
+  ASSERT(high < d);
+
+  // (128-bit / 64-bit) = 64-bit.
+  // When we know the result fits into 64-bit (even
+  // though the numerator is 128-bit) we can use the divq
+  // instruction instead of doing a full 128-bit division.
+  __asm__("div %[divider]"
+          : "+a"(low), "+d"(high) : [divider] "r"(d));
+
+  return low;
+#else
+  return (uint64_t) fast_div(x, y);
+#endif
+}
+
+/// Used for (64-bit / 32-bit) = 64-bit.
+/// Used for (64-bit / 64-bit) = 64-bit.
+template <typename X, typename Y>
+ALWAYS_INLINE typename std::enable_if<(sizeof(X) <= sizeof(uint64_t) &&
+                                       sizeof(Y) <= sizeof(X)), uint64_t>::type
+fast_div64(X x, Y y)
+{
+  return (uint64_t) fast_div(x, y);
+}
+
 } // namespace
 
 #endif

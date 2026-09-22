@@ -176,7 +176,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
           if (prime < factors.lpf(m))
           {
             int64_t fm = factors.get_number(m);
-            int64_t xn = (int64_t) fast_div(x2, fm);
+            int64_t xn = fast_div64(x2, fm);
             int64_t stop = xn - low;
             sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
             int128_t phi_xn = phi[b] + sum;
@@ -211,7 +211,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
 
         for (; primes[l] > min_hard; l--)
         {
-          int64_t xn = (int64_t) fast_div(x2, primes[l]);
+          int64_t xn = fast_div64(x2, primes[l]);
           int64_t stop = xn - low;
           sum += sieve.sum(start, stop, low, high, sum, sum_low_high);
           int128_t phi_xn = phi[b] + sum;
@@ -257,7 +257,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
           if (prime < factors.lpf(m))
           {
             int64_t fm = factors.get_number(m);
-            int64_t xn = (int64_t) fast_div(x2, fm);
+            int64_t xn = fast_div64(x2, fm);
             int128_t sum = tree.sum(xn - low);
             int128_t phi_xn = phi[b] + sum;
             int64_t mu_m = factors.mu(m);
@@ -288,7 +288,7 @@ T S2_hard_OpenMP_thread(uint128_t x,
 
         for (; primes[l] > min_hard; l--)
         {
-          int64_t xn = (int64_t) fast_div(x2, primes[l]);
+          int64_t xn = fast_div64(x2, primes[l]);
           int128_t sum = tree.sum(xn - low);
           int128_t phi_xn = phi[b] + sum;
           T pmul = primes[l] * (int128_t) prime;

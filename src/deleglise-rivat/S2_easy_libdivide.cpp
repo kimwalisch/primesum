@@ -13,6 +13,7 @@
 
 #include <PiTable.hpp>
 #include <primesum-internal.hpp>
+#include <fast_div.hpp>
 #include <generate.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
@@ -120,10 +121,10 @@ res_t S2_easy_OpenMP(uint128_t x,
       // Unroll loop to increase instruction level parallelism
       for (; l > pi_min_sparse + 4; l -= 4)
       {
-        int64_t xn0 = (int64_t) (x2 / primes[l]);
-        int64_t xn1 = (int64_t) (x2 / primes[l - 1]);
-        int64_t xn2 = (int64_t) (x2 / primes[l - 2]);
-        int64_t xn3 = (int64_t) (x2 / primes[l - 3]);
+        int64_t xn0 = fast_div64(x2, primes[l]);
+        int64_t xn1 = fast_div64(x2, primes[l - 1]);
+        int64_t xn2 = fast_div64(x2, primes[l - 2]);
+        int64_t xn3 = fast_div64(x2, primes[l - 3]);
 
         res_t phi0 = prime_sums[pi[xn0]] + 1 - prime_sum_b1;
         res_t phi1 = prime_sums[pi[xn1]] + 1 - prime_sum_b1;
@@ -142,7 +143,7 @@ res_t S2_easy_OpenMP(uint128_t x,
       NO_UNROLL_LOOP
       for (; l > pi_min_sparse; l--)
       {
-        int64_t xn = (int64_t) (x2 / primes[l]);
+        int64_t xn = fast_div64(x2, primes[l]);
         res_t phi = prime_sums[pi[xn]] + 1 - prime_sum_b1;
         s2_easy += phi * ((PS) prime * primes[l]);
       }
