@@ -10,6 +10,15 @@ target_include_directories(fast_div PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_compile_features(fast_div PRIVATE cxx_auto_type)
 add_test(NAME fast_div COMMAND fast_div)
 
+add_executable(popcnt popcnt.cpp)
+target_include_directories(popcnt PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_compile_features(popcnt PRIVATE cxx_auto_type)
+add_test(NAME popcnt COMMAND popcnt)
+
+if(WITH_POPCNT AND POPCNT_FLAG)
+    target_compile_options(popcnt PRIVATE "${POPCNT_FLAG}")
+endif()
+
 find_path(BOOST_INCLUDE_DIR boost/multiprecision/cpp_int.hpp)
 
 if(BOOST_INCLUDE_DIR)

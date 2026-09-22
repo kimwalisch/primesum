@@ -9,6 +9,7 @@
   * Add CTest support for integration and arithmetic tests.
   * Port fast_div.hpp from primecount without ARM SVE, fast_div64()
     or legacy 32-bit division.
+  * Copy scalar POPCNT code from primecount without runtime dispatch.
 
 2019-02-20 Kim Walisch  <kim.walisch@gmail.com>
 
