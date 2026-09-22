@@ -2,6 +2,7 @@
 
   Unreleased changes.
 
+  * ci.yml: Add GitHub Actions CI tests.
   * S2_easy.cpp: Get rid of slow clustered easy leaves algorithm.
   * S2_easy_libdivide.cpp: Get rid of slow clustered easy leaves algorithm.
   * BitSieve.cpp: Improve sum_bits().
