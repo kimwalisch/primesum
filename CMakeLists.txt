@@ -78,32 +78,28 @@ include("${PROJECT_SOURCE_DIR}/cmake/compiler_supports_cpp11.cmake")
 
 include("${PROJECT_SOURCE_DIR}/cmake/int128_t.cmake")
 
-# Check if libdivide.h compiles ######################################
+# Enable/Disable libdivide ###########################################
 
-if(WITH_LIBDIVIDE)
-    cmake_push_check_state()
-    set(CMAKE_REQUIRED_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include")
-    if(NOT compiler_supports_cpp11)
-        set(CMAKE_REQUIRED_FLAGS "${CMAKE_CXX11_STANDARD_COMPILE_OPTION}")
+# Historically, integer division has been one of the slowest
+# instructions on most CPU architectures. Hence by default we
+# enable libdivide which replaces expensive integer division
+# instructions by a sequence of shift, add and multiply
+# instructions which is often much faster.
+
+set(DEFAULT_LIBDIVIDE ON)
+
+# Apple Silicon CPUs first released in 2020 have very fast integer
+# division instructions. For Apple Silicon CPUs on Apple OSes
+# we disable libdivide to get the best performance.
+
+if(APPLE)
+    include("${PROJECT_SOURCE_DIR}/cmake/Apple_ARM64.cmake")
+    if(Apple_ARM64)
+        set(DEFAULT_LIBDIVIDE OFF)
     endif()
-
-    check_cxx_source_compiles("
-        #include <libdivide.h>
-        #include <stdint.h>
-        int main() {
-            libdivide::divider<uint64_t, libdivide::BRANCHFREE> d(3);
-            uint64_t n = 1000000000;
-            return (n / d == n / 3) ? 0 : 1;
-        }" libdivide_branchfree)
-
-    cmake_pop_check_state()
 endif()
 
-if(WITH_LIBDIVIDE AND libdivide_branchfree)
-    set(SRC ${SRC} src/deleglise-rivat/S2_easy_libdivide.cpp)
-else()
-    set(SRC ${SRC} src/deleglise-rivat/S2_easy.cpp)
-endif()
+option(WITH_LIBDIVIDE "Use libdivide.h" ${DEFAULT_LIBDIVIDE})
 
 # Check for OpenMP ###################################################
 
