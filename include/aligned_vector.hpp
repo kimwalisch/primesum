@@ -30,7 +30,13 @@ class aligned_vector
 {
 public:
   aligned_vector(std::size_t size)
-    : vect_(size) { }
+    : vect_(size)
+  {
+    // Zero initialize memory
+    for (auto &v : vect_)
+      v.val[0] = 0;
+  }
+
   std::size_t size() const { return vect_.size(); }
   T& operator[](std::size_t pos) { return vect_[pos].val[0]; }
 private:
