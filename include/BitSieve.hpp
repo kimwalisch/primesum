@@ -4,7 +4,7 @@
 ///        that packs 128 numbers into 8 bytes i.e. each bit
 ///        corresponds to an odd integer.
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -14,9 +14,9 @@
 #define BITSIEVE_HPP
 
 #include <int128_t.hpp>
-#include <stdint.h>
+#include <macros.hpp>
 
-#include <cassert>
+#include <stdint.h>
 #include <cstddef>
 #include <array>
 #include <vector>
@@ -62,22 +62,22 @@ public:
 
   void set(uint64_t pos)
   {
-    assert(pos < size_);
-    assert(pos % 2 == 0);
+    ASSERT(pos < size_);
+    ASSERT(pos % 2 == 0);
     sieve_[pos >> 7] |= set_bit_[pos & 127];
   }
 
   void unset(uint64_t pos)
   {
-    assert(pos < size_);
-    assert(pos % 2 == 0);
+    ASSERT(pos < size_);
+    ASSERT(pos % 2 == 0);
     sieve_[pos >> 7] &= ~set_bit_[pos & 127];
   }
 
   bool operator[](uint64_t pos) const
   {
-    assert(pos < size_);
-    assert(pos % 2 == 0);
+    ASSERT(pos < size_);
+    ASSERT(pos % 2 == 0);
     return (sieve_[pos >> 7] & set_bit_[pos & 127]) != 0;
   }
 

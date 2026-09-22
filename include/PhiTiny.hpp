@@ -9,7 +9,7 @@
 ///        pp = 2 * 3 * ... * prime[a]
 ///        φ(a) = \prod_{i=1}^{a} (prime[i] - 1)
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -18,9 +18,10 @@
 #ifndef PHITINY_HPP
 #define PHITINY_HPP
 
+#include <macros.hpp>
+
 #include <stdint.h>
 #include <array>
-#include <cassert>
 #include <limits>
 #include <vector>
 
@@ -34,7 +35,7 @@ public:
   template <typename T>
   T phi(T x, int64_t a) const
   {
-    assert(a <= max_a());
+    ASSERT(a <= max_a());
 
     T pp = prime_products[a];
     return (x / pp) * totients[a] + phi_[a][x % pp];
@@ -42,7 +43,7 @@ public:
 
   static int64_t get_c(int64_t y)
   {
-    assert(y >= 0);
+    ASSERT(y >= 0);
 
     if (y >= primes.back())
       return max_a();

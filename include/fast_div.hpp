@@ -17,7 +17,6 @@
 #include <macros.hpp>
 #include <int128_t.hpp>
 
-#include <cassert>
 #include <stdint.h>
 #include <type_traits>
 
@@ -29,8 +28,8 @@ ALWAYS_INLINE typename std::enable_if<(sizeof(X) == sizeof(uint64_t) &&
                                        sizeof(Y) <= sizeof(uint32_t)), X>::type
 fast_div(X x, Y y)
 {
-  assert(x >= 0);
-  assert(y > 0);
+  ASSERT(x >= 0);
+  ASSERT(y > 0);
 
   // Unsigned integer division is usually
   // faster than signed integer division.
@@ -47,8 +46,8 @@ ALWAYS_INLINE typename std::enable_if<(sizeof(X) > sizeof(uint64_t) &&
                                        sizeof(Y) <= sizeof(uint64_t)), X>::type
 fast_div(X x, Y y)
 {
-  assert(x >= 0);
-  assert(y > 0);
+  ASSERT(x >= 0);
+  ASSERT(y > 0);
 
   // Unsigned integer division is usually
   // faster than signed integer division.
@@ -92,8 +91,8 @@ ALWAYS_INLINE typename std::enable_if<(sizeof(X) >= sizeof(uint64_t) &&
                                        sizeof(Y) == sizeof(X)), X>::type
 fast_div(X x, Y y)
 {
-  assert(x >= 0);
-  assert(y > 0);
+  ASSERT(x >= 0);
+  ASSERT(y > 0);
 
   // Unsigned integer division is usually
   // faster than signed integer division.

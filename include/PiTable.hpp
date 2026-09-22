@@ -5,7 +5,7 @@
 ///        and returns the number of primes <= n in O(1)
 ///        operations.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -14,10 +14,10 @@
 #ifndef PITABLE_HPP
 #define PITABLE_HPP
 
+#include <macros.hpp>
 #include <popcnt.hpp>
 
 #include <stdint.h>
-#include <cassert>
 #include <vector>
 
 namespace primesum {
@@ -30,7 +30,7 @@ public:
   /// Get number of primes <= n
   int64_t operator[](uint64_t n) const
   {
-    assert(n <= max_);
+    ASSERT(n <= max_);
     uint64_t bitmask = 0xffffffffffffffffull >> (63 - n % 64);
     return pi_[n / 64].prime_count + popcnt64(pi_[n / 64].bits & bitmask);
   }

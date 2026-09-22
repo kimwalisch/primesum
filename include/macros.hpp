@@ -30,4 +30,34 @@
   #define ALWAYS_INLINE inline
 #endif
 
+/// Enable expensive debugging assertions.
+/// These assertions enable e.g. bounds checks for the
+/// Vector and Array types.
+///
+#if defined(ENABLE_ASSERT)
+  namespace primesum {
+  [[noreturn]]
+  void assert_failed(const char* assertion,
+                     const char* file,
+                     unsigned int line,
+                     const char* function);
+  } // namespace
+
+  #if defined(_MSC_VER)
+    #define ASSERT_FUNCTION __FUNCSIG__
+  #elif defined(__GNUC__) || defined(__clang__)
+    #define ASSERT_FUNCTION __PRETTY_FUNCTION__
+  #else
+    #define ASSERT_FUNCTION __func__
+  #endif
+
+  #define ASSERT(x) \
+    do { \
+      if(!(x)) \
+        primesum::assert_failed(#x, __FILE__, __LINE__, ASSERT_FUNCTION); \
+    } while (0)
+#else
+  #define ASSERT(x) ((void) 0)
+#endif
+
 #endif

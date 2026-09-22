@@ -14,10 +14,10 @@
 #include <popcnt.hpp>
 #include <imath.hpp>
 #include <int128_t.hpp>
+#include <macros.hpp>
 
 #include <stdint.h>
 #include <algorithm>
-#include <cassert>
 #include <array>
 #include <vector>
 
@@ -45,7 +45,7 @@ const array<uint64_t, 10> masks =
 
 uint64_t fast_modulo(uint64_t x, uint64_t y)
 {
-  assert(x < y * 2);
+  ASSERT(x < y * 2);
   x = (x < y) ? x : x - y;
   return x;
 }
@@ -126,7 +126,7 @@ BitSieve::BitSieve(std::size_t size) :
 ///
 void BitSieve::pre_sieve(uint64_t c, uint64_t low)
 {
-  assert(c < primes.size());
+  ASSERT(c < primes.size());
 
   if (sieve_.empty())
     return;
@@ -195,7 +195,7 @@ int128_t BitSieve::sum(uint64_t low,
   if (start > stop)
     return 0;
 
-  assert(stop < size_);
+  ASSERT(stop < size_);
 
   uint64_t start_idx = start / 128;
   uint64_t stop_idx = stop / 128;

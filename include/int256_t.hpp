@@ -4,7 +4,7 @@
 ///         128-bit signed integer type:
 ///         https://gist.github.com/Bananattack/6242ba7b8265c90ce6f3c2d84670c52d
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -13,7 +13,9 @@
 #ifndef INT256_T_HPP
 #define INT256_T_HPP
 
-#include <cassert>
+#include "int128_t.hpp"
+#include <macros.hpp>
+
 #include <cstdint>
 #include <cstddef>
 #include <cstdlib>
@@ -22,8 +24,6 @@
 #include <limits>
 #include <type_traits>
 #include <utility>
-
-#include "int128_t.hpp"
 
 namespace primesum {
 
@@ -542,7 +542,7 @@ private:
 
         if (other == 0)
         {
-            assert(other != 0);
+            ASSERT(other != 0);
             std::abort();
             return { zero, zero };
         }

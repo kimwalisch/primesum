@@ -2,7 +2,7 @@
 /// @file  imath.hpp
 /// @brief Integer math functions used in primesum.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -12,10 +12,10 @@
 #define IMATH_HPP
 
 #include <isqrt.hpp>
+#include <macros.hpp>
 
 #include <stdint.h>
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <limits>
 #include <vector>
@@ -30,7 +30,7 @@ inline int64_t isquare(int64_t x)
 template <typename A, typename B>
 inline A ceil_div(A a, B b)
 {
-  assert(b > 0);
+  ASSERT(b > 0);
   return (A) ((a + b - 1) / b);
 }
 
@@ -119,7 +119,7 @@ inline T2 in_between(T1 min, T2 x, T3 max)
 template <typename T1, typename T2>
 inline T2 pi_bsearch(const std::vector<T1>& primes, T2 x)
 {
-  assert(primes.size() < 2 || primes[1] == 2);
+  ASSERT(primes.size() < 2 || primes[1] == 2);
   auto start = primes.begin() + 1;
   return (T2) (std::upper_bound(start, primes.end(), x) - start);
 }

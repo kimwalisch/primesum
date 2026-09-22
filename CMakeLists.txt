@@ -44,6 +44,7 @@ set(SRC src/app/cmdoptions.cpp
         src/S2LoadBalancer.cpp
         src/S2Status.cpp
         src/test.cpp
+        src/util.cpp
         src/Wheel.cpp
         src/deleglise-rivat/S2_trivial.cpp
         src/deleglise-rivat/S2_hard.cpp
@@ -113,6 +114,7 @@ include("${PROJECT_SOURCE_DIR}/cmake/OpenMP.cmake")
 add_executable(primesum "${SRC}")
 target_link_libraries(primesum PRIVATE primesieve::primesieve ${PRIMESUM_LINK_LIBRARIES})
 target_include_directories(primesum PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_compile_definitions(primesum PRIVATE $<$<CONFIG:Debug>:ENABLE_ASSERT>)
 install(TARGETS primesum DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
 get_target_property(PRIMESIEVE_LIBRARY_TYPE primesieve::primesieve TYPE)

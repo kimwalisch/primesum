@@ -33,9 +33,9 @@
 #include <primesieve.hpp>
 #include <imath.hpp>
 #include <int128_t.hpp>
+#include <macros.hpp>
 
 #include <algorithm>
-#include <cassert>
 #include <limits>
 #include <stdint.h>
 #include <vector>
@@ -55,13 +55,13 @@ protected:
 public:
   static void to_index(int64_t* number)
   {
-    assert(*number > 0);
+    ASSERT(*number > 0);
     *number = get_index(*number);
   }
 
   static int64_t get_index(uint64_t number)
   {
-    assert(number > 0);
+    ASSERT(number > 0);
     uint64_t q = number / 210;
     uint64_t r = number % 210;
     return 48 * q + indexes_[r];
@@ -164,7 +164,7 @@ public:
   ///
   int64_t mu(int64_t index) const
   {
-    assert(factor_[index] != 0);
+    ASSERT(factor_[index] != 0);
     return (factor_[index] & 1) ? -1 : 1;
   }
 
