@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4...3.19)
+cmake_minimum_required(VERSION 3.9...4.2)
 project(primesum CXX)
 set(PRIMESUM_VERSION_MAJOR 1)
 set(PRIMESUM_VERSION_MINOR 7)
@@ -12,14 +12,11 @@ option(WITH_OPENMP       "Enable OpenMP support"          ON)
 option(BUILD_STATIC_LIBS "Build static libprimesieve"     ON)
 option(BUILD_SHARED_LIBS "Build shared libprimesieve"     OFF)
 option(BUILD_PRIMESIEVE  "Build primesieve binary"        OFF)
+option(BUILD_TESTS       "Build test programs"            OFF)
 
 # Set default build type to Release ##################################
 
-if(NOT CMAKE_VERSION VERSION_LESS 3.9)
-    get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-elseif(CMAKE_CONFIGURATION_TYPES)
-    set(isMultiConfig TRUE)
-endif()
+get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
 if(NOT isMultiConfig AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING
@@ -60,7 +57,6 @@ set(SRC src/app/cmdoptions.cpp
 
 # Include Check* #####################################################
 
-include(CheckTypeSize)
 include(CheckCXXCompilerFlag)
 include(CheckCXXSourceCompiles)
 include(CMakePushCheckState)
@@ -68,23 +64,27 @@ include(GNUInstallDirs)
 
 # libprimesieve ######################################################
 
+set(COPY_BUILD_TESTS "${BUILD_TESTS}")
+set(BUILD_TESTS OFF CACHE BOOL "Build primesieve tests" FORCE)
 add_subdirectory(lib/primesieve)
+set(BUILD_TESTS "${COPY_BUILD_TESTS}" CACHE BOOL "Build test programs" FORCE)
+
+# Check if compiler supports C++11 or later ##########################
+
+include("${PROJECT_SOURCE_DIR}/cmake/compiler_supports_cpp11.cmake")
 
 # Check if int128_t type exists ######################################
 
-check_type_size("__int128_t" __INT128_T LANGUAGE CXX)
-if(NOT HAVE___INT128_T)
-    check_type_size("int128_t" INT128_T LANGUAGE CXX)
-    if(NOT HAVE_INT128_T)
-        message(FATAL_ERROR "Compiler does not support int128_t!")
-    endif()
-endif()
+include("${PROJECT_SOURCE_DIR}/cmake/int128_t.cmake")
 
 # Check if libdivide.h compiles ######################################
 
 if(WITH_LIBDIVIDE)
     cmake_push_check_state()
     set(CMAKE_REQUIRED_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    if(NOT compiler_supports_cpp11)
+        set(CMAKE_REQUIRED_FLAGS "${CMAKE_CXX11_STANDARD_COMPILE_OPTION}")
+    endif()
 
     check_cxx_source_compiles("
         #include <libdivide.h>
@@ -98,7 +98,7 @@ if(WITH_LIBDIVIDE)
     cmake_pop_check_state()
 endif()
 
-if(libdivide_branchfree)
+if(WITH_LIBDIVIDE AND libdivide_branchfree)
     set(SRC ${SRC} src/deleglise-rivat/S2_easy_libdivide.cpp)
 else()
     set(SRC ${SRC} src/deleglise-rivat/S2_easy.cpp)
@@ -106,83 +106,22 @@ endif()
 
 # Check for OpenMP ###################################################
 
-if(WITH_OPENMP)
-    find_package(OpenMP QUIET)
-
-    if(OpenMP_FOUND OR OpenMP_CXX_FOUND)
-        cmake_push_check_state()
-        set(CMAKE_REQUIRED_FLAGS "${OpenMP_CXX_FLAGS} ${CMAKE_CXX11_STANDARD_COMPILE_OPTION}")
-        set(CMAKE_REQUIRED_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-        check_cxx_source_compiles("
-            #include <int128_t.hpp>
-            int main() {
-                primesum::int128_t sum = 0;
-                #pragma omp parallel for reduction(+: sum)
-                for (int i = 0; i < 100; i++)
-                    sum += i;
-                return 0;
-            }" OpenMP)
-
-        if(NOT OpenMP)
-            find_library(LIB_ATOMIC NAMES atomic libatomic.so.1)
-
-            if(NOT LIB_ATOMIC)
-                set(LIB_ATOMIC "")
-            else()
-                set(CMAKE_REQUIRED_LIBRARIES "${LIB_ATOMIC}")
-
-                check_cxx_source_compiles("
-                    #include <int128_t.hpp>
-                    int main() {
-                        primesum::int128_t sum = 0;
-                        #pragma omp parallel for reduction(+: sum)
-                        for (int i = 0; i < 100; i++)
-                            sum += i;
-                        return 0;
-                    }" OpenMP_with_libatomic)
-
-                if(NOT OpenMP_with_libatomic)
-                    set(LIB_ATOMIC "")
-                endif()
-            endif()
-        endif()
-
-        if(OpenMP OR OpenMP_with_libatomic)
-
-            check_cxx_source_compiles("
-                #include <int256_t.hpp>
-                using namespace primesum;
-                int main() {
-                    int256_t sum = 0;
-                    #pragma omp parallel for reduction(+: sum)
-                    for (int i = 0; i < 100; i++)
-                        sum += i;
-                    return 0;
-                }" OpenMP_declare_reduction)
-
-            if(OpenMP_declare_reduction)
-                if(TARGET OpenMP::OpenMP_CXX)
-                    set(LIB_OPENMP "OpenMP::OpenMP_CXX")
-                else()
-                    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-                endif()
-            endif()
-        endif()
-
-        cmake_pop_check_state()
-    else()
-        message(STATUS "Performing Test OpenMP")
-        message(STATUS "Performing Test OpenMP - Failed")
-    endif()
-endif()
+include("${PROJECT_SOURCE_DIR}/cmake/OpenMP.cmake")
 
 # Build binary #######################################################
 
 add_executable(primesum "${SRC}")
-target_link_libraries(primesum PRIVATE primesieve::primesieve "${LIB_OPENMP}" "${LIB_ATOMIC}")
+target_link_libraries(primesum PRIVATE primesieve::primesieve ${PRIMESUM_LINK_LIBRARIES})
 target_include_directories(primesum PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 install(TARGETS primesum DESTINATION "${CMAKE_INSTALL_BINDIR}")
+
+get_target_property(PRIMESIEVE_LIBRARY_TYPE primesieve::primesieve TYPE)
+if(WIN32 AND PRIMESIEVE_LIBRARY_TYPE STREQUAL "SHARED_LIBRARY")
+    add_custom_command(TARGET primesum POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:primesieve::primesieve>
+            $<TARGET_FILE_DIR:primesum>)
+endif()
 
 target_compile_features(primesum
 PRIVATE
@@ -216,6 +155,13 @@ if(WITH_POPCNT)
     endif()
 endif()
 
-if(POPCNT_FLAG)
+if(WITH_POPCNT AND POPCNT_FLAG)
     target_compile_options(primesum PRIVATE "${POPCNT_FLAG}")
+endif()
+
+# Testing ############################################################
+
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(test)
 endif()

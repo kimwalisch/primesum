@@ -1,0 +1,20 @@
+add_test(NAME primesum COMMAND primesum --test)
+
+add_executable(libdivide libdivide.cpp)
+target_include_directories(libdivide PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_compile_features(libdivide PRIVATE cxx_auto_type)
+add_test(NAME libdivide COMMAND libdivide)
+
+find_path(BOOST_INCLUDE_DIR boost/multiprecision/cpp_int.hpp)
+
+if(BOOST_INCLUDE_DIR)
+    foreach(binary_name division_256-bit modulo_256-bit)
+        add_executable(${binary_name} ${binary_name}.cpp)
+        target_include_directories(${binary_name} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+        target_include_directories(${binary_name} SYSTEM PRIVATE ${BOOST_INCLUDE_DIR})
+        target_compile_features(${binary_name} PRIVATE cxx_auto_type)
+        add_test(NAME ${binary_name} COMMAND ${binary_name})
+    endforeach()
+else()
+    message(STATUS "Boost headers not found: skipping 256-bit division and modulo tests")
+endif()

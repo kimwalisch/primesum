@@ -1,3 +1,13 @@
+2026-09-22 Kim Walisch  <kim.walisch@gmail.com>
+
+  Unreleased changes.
+
+  * Update iterator boundaries for primesieve >= 11.0.
+  * Adapt CMake compiler and OpenMP checks from primecount.
+  * Require CMake >= 3.9 and support Windows shared library builds.
+  * Copy libdivide 5.3.0 and divisor initialization from primecount.
+  * Add CTest support for integration and arithmetic tests.
+
 2019-02-20 Kim Walisch  <kim.walisch@gmail.com>
 
   Version 1.7 released.

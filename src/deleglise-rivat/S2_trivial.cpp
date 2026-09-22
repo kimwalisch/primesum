@@ -3,7 +3,7 @@
 /// @brief Calculate the contribution of the trivial special leaves
 ///        in parallel using OpenMP.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -51,7 +51,7 @@ int256_t S2_trivial_OpenMP(int128_t x,
     int64_t thread_interval = ceil_div(y - start, threads);
     start += thread_interval * i;
     int64_t stop = min(start + thread_interval, y);
-    primesieve::iterator iter(start - 1, stop);
+    primesieve::iterator iter(start, stop);
     int128_t prime;
 
     while ((prime = iter.next_prime()) < stop)

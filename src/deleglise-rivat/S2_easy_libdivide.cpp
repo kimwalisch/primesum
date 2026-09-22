@@ -5,7 +5,7 @@
 ///        divides with comparatively cheap multiplication and
 ///        bitshifts.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -42,8 +42,10 @@ template <typename Primes>
 vector<fastdiv_t>
 libdivide_divisors(Primes& primes)
 {
-  vector<fastdiv_t> fastdiv(1);
-  fastdiv.insert(fastdiv.end(), primes.begin() + 1, primes.end());
+  // Initialize libdivide vector from primes vector
+  vector<fastdiv_t> fastdiv(primes.size());
+  for (std::size_t i = 1; i < fastdiv.size(); i++)
+    fastdiv[i] = primes[i];
   return fastdiv;
 }
 

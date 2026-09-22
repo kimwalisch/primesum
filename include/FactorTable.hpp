@@ -19,7 +19,7 @@
 ///         3) lpf          if moebius(n) = -1
 ///         4) INT_MAX      if n is a prime
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -104,7 +104,7 @@ public:
       int64_t low = 1;
       low += thread_distance * t;
       int64_t high = std::min(low + thread_distance, y);
-      primesieve::iterator it(get_number(1) - 1);
+      primesieve::iterator it(get_number(1));
 
       while (true)
       {

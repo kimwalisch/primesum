@@ -24,13 +24,13 @@ POPCNT instruction (2010 or later).
 
 ## Build instructions
 
-You need to have installed a C++ compiler, cmake and make. Ideally
-primesum should be compiled using a C++ compiler that supports both
-OpenMP and 128-bit integers (e.g. GCC, Clang, Intel C++ Compiler).
+You need a C++ compiler with 128-bit integer support, CMake 3.9 or
+later and make. Ideally the compiler should also support OpenMP for
+multithreading (e.g. GCC, Clang, Intel C++ Compiler).
 
 ```sh
 cmake .
-make -j
+cmake --build . --parallel
 sudo make install
 ```
 
