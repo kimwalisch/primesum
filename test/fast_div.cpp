@@ -28,9 +28,9 @@ void check(bool OK)
 template <typename X, typename Y>
 void test_boundaries()
 {
-  using UX = typename prt::make_unsigned<X>::type;
-  X max = prt::numeric_limits<X>::max();
-  Y divisors[] = { 1, 2, 3, prt::numeric_limits<Y>::max() };
+  using UX = typename pstd::make_unsigned<X>::type;
+  X max = pstd::numeric_limits<X>::max();
+  Y divisors[] = { 1, 2, 3, pstd::numeric_limits<Y>::max() };
 
   for (Y y : divisors)
   {
@@ -83,8 +83,8 @@ int main()
   std::random_device rd;
   std::mt19937 gen(rd());
 
-  std::uniform_int_distribution<int32_t> dist_i32(1, prt::numeric_limits<int32_t>::max());
-  std::uniform_int_distribution<uint64_t> dist_u64(0, prt::numeric_limits<uint64_t>::max());
+  std::uniform_int_distribution<int32_t> dist_i32(1, pstd::numeric_limits<int32_t>::max());
+  std::uniform_int_distribution<uint64_t> dist_u64(0, pstd::numeric_limits<uint64_t>::max());
 
   // Test unsigned/signed
   for (int i = 0; i < 10000; i++)
@@ -114,7 +114,7 @@ int main()
      int32_t y = dist_i32(gen);
     int128_t res = fast_div(x, y);
 
-    std::cout << "fast_div(" << x << ", " << y << ") = " << res;
+    std::cout << "fast_div(int128_t < 2^64, int32_t)";
     check(res == x / y);
 
     // Test x > 2^64
@@ -124,7 +124,7 @@ int main()
     y = dist_i32(gen);
     res = fast_div(x, y);
 
-    std::cout << "fast_div(" << x << ", " << y << ") = " << res;
+    std::cout << "fast_div(int128_t > 2^64, int32_t)";
     check(res == x / y);
   }
 

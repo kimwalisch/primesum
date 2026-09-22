@@ -4,7 +4,7 @@
 ///        different types if both types are integral
 ///        and sizeof(A) >= sizeof(B).
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -32,12 +32,12 @@ struct is_comparable
 {
   enum {
     value = std::is_same<A, B>::value || ((
-            prt::is_integral<A>::value &&
-            prt::is_integral<B>::value) && (
+            pstd::is_integral<A>::value &&
+            pstd::is_integral<B>::value) && (
             sizeof(A) > sizeof(B) || (
             sizeof(A) == sizeof(B) &&
-            prt::is_unsigned<A>::value &&
-            prt::is_signed<B>::value)))
+            pstd::is_unsigned<A>::value &&
+            pstd::is_signed<B>::value)))
   };
 };
 

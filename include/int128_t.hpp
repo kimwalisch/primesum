@@ -1,6 +1,8 @@
 ///
 /// @file   int128_t.hpp
-/// @brief  Support for int128_t, uint128_t types.
+/// @brief  Defines int128_t and uint128_t integer types and adds
+///         functions for 128-bit integers that are missing
+///         in the C++ standard library.
 ///
 /// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
@@ -12,127 +14,162 @@
 #define INT128_T_HPP
 
 #include <stdint.h>
+#include <string>
 #include <limits>
 #include <type_traits>
 
-/// The __int128_t type (GCC/Clang) is not well supported by
-/// the C++ standard library (in 2016) so we have to define
-/// some functions ourselves. We also define typedefs so we
-/// can use int128_t instead of __int128_t. Once this is done
-/// int128_t can be used like a regular integer type.
+/// If INT128_MAX is defined we know that int128_t and
+/// uint128_t are available in <stdint.h>.
 ///
-#if !defined(INT128_MAX) && \
-     defined(__SIZEOF_INT128__)
+#if defined(INT128_MAX) && \
+   !defined(DISABLE_INT128)
 
-#include <ostream>
-#include <string>
+#define HAVE_INT128_T
 
 namespace primesum {
 
-using int128_t = __int128_t;
+using maxint_t = int128_t ;
+using maxuint_t = uint128_t;
+using std::to_string;
+
+} // namespace
+
+#elif defined(__SIZEOF_INT128__) && \
+     !defined(DISABLE_INT128)
+
+#define HAVE_INT128_T
+#define ENABLE_INT128_TO_STRING
+
+#include <ostream>
+
+namespace primesum {
+
+using int128_t = __int128_t ;
 using uint128_t = __uint128_t;
+using maxint_t = __int128_t ;
+using maxuint_t = __uint128_t;
 
-inline std::ostream& operator<<(std::ostream& stream, uint128_t n)
-{
-  std::string str;
+/// These functions are defined in print.cpp
+std::string to_string(int128_t x);
+std::string to_string(uint128_t x);
 
-  while (n > 0)
-  {
-    str += '0' + n % 10;
-    n /= 10;
-  }
-  if (str.empty())
-    str = "0";
+std::ostream& operator<<(std::ostream& stream, int128_t n);
+std::ostream& operator<<(std::ostream& stream, uint128_t n);
 
-  stream << std::string(str.rbegin(), str.rend());
-  return stream;
-}
+} // namespace
 
-inline std::ostream& operator<<(std::ostream& stream, int128_t n)
-{
-  if (n < 0)
-  {
-    stream << "-";
-    n = -n;
-  }
-  stream << (uint128_t) n;
-  return stream;
-}
+#else // int128_t not supported
+
+namespace primesum {
+
+using maxint_t = int64_t ;
+using maxuint_t = uint64_t;
+using std::to_string;
 
 } // namespace
 
 #endif
 
-namespace primesum {
+// Portable C++ type traits that support int128_t and uint128_t.
+// This is required for GCC/Clang if the user compiles with -std=c++*
+// instead of -std=gnu++* and also for LLVM/Clang on Windows.
+namespace pstd {
 
-/// Portable namespace, includes functions which (unlike the versions
-/// form the C++ standard library) work with the int128_t and
-/// uint128_t types (2014).
-///
-namespace prt {
+using namespace primesum;
 
+// pstd::is_same
+template<class T, class U>
+struct is_same : std::false_type {};
+
+template<class T>
+struct is_same<T, T> : std::true_type {};
+
+// pstd::conditional
+template <bool Cond, class T, class F>
+struct conditional {
+  using type = T;
+};
+
+template <class T, class F>
+struct conditional<false, T, F> {
+  using type = F;
+};
+
+// pstd::is_integral
+template <typename T> struct is_integral {
+  static constexpr bool value = std::is_integral<T>::value;
+};
+
+#if defined(HAVE_INT128_T)
+  template<> struct is_integral<int128_t> : std::true_type {};
+  template<> struct is_integral<uint128_t> : std::true_type {};
+#endif
+
+// pstd::is_floating_point
+template <typename T> struct is_floating_point {
+  static constexpr bool value = std::is_floating_point<T>::value;
+};
+
+#if defined(HAVE_INT128_T)
+  template<> struct is_floating_point<int128_t> : std::false_type {};
+  template<> struct is_floating_point<uint128_t> : std::false_type {};
+#endif
+
+// pstd::is_signed
+template <typename T> struct is_signed {
+  static constexpr bool value = std::is_signed<T>::value;
+};
+
+#if defined(HAVE_INT128_T)
+  template<> struct is_signed<int128_t> : std::true_type {};
+  template<> struct is_signed<uint128_t> : std::false_type {};
+#endif
+
+// pstd::is_unsigned
+template <typename T> struct is_unsigned {
+  static constexpr bool value = std::is_unsigned<T>::value;
+};
+
+#if defined(HAVE_INT128_T)
+  template<> struct is_unsigned<int128_t> : std::false_type {};
+  template<> struct is_unsigned<uint128_t> : std::true_type {};
+#endif
+
+// pstd::make_unsigned
 template <typename T> struct make_unsigned {
   using type = typename std::make_unsigned<T>::type;
 };
 
-template<> struct make_unsigned<int128_t> { using type = uint128_t; };
-template<> struct make_unsigned<uint128_t> { using type = uint128_t; };
+#if defined(HAVE_INT128_T)
+  template<> struct make_unsigned<int128_t> { using type = uint128_t; };
+  template<> struct make_unsigned<uint128_t> { using type = uint128_t; };
+#endif
 
-template <typename T>
-struct numeric_limits
-{
-  static constexpr T max()
+// pstd::numeric_limits
+template <typename T> struct numeric_limits {
+  static constexpr T min() { return std::numeric_limits<T>::min(); }
+  static constexpr T max() { return std::numeric_limits<T>::max(); }
+  static constexpr T infinity() { return std::numeric_limits<T>::infinity(); }
+  static constexpr T epsilon() { return std::numeric_limits<T>::epsilon(); }
+  static constexpr int digits = std::numeric_limits<T>::digits;
+};
+
+#if defined(HAVE_INT128_T)
+  template<> struct numeric_limits<int128_t>
   {
-    return std::numeric_limits<T>::max();
-  }
-};
-
-template <>
-struct numeric_limits<int128_t>
-{
-  static constexpr int128_t min() { return ((int128_t) 1) << 127; }
-  static constexpr int128_t max() { return ~min(); }
-};
-
-template <>
-struct numeric_limits<uint128_t>
-{
-  static constexpr uint128_t min() { return 0; }
-  static constexpr uint128_t max() { return ~min(); }
-};
-
-template <typename T>
-struct is_integral
-{
-  enum
-  {
-    value = std::is_integral<T>::value ||
-            std::is_same<T, int128_t>::value ||
-            std::is_same<T, uint128_t>::value
+    static constexpr int128_t min() { return int128_t(uint128_t(1) << 127); }
+    static constexpr int128_t max() { return int128_t((uint128_t(1) << 127) - 1); }
+    static constexpr int digits = 127;
   };
-};
 
-template <typename T>
-struct is_signed
-{
-  enum
+  template<> struct numeric_limits<uint128_t>
   {
-    value = std::is_signed<T>::value ||
-            std::is_same<T, int128_t>::value
+    static constexpr uint128_t min() { return 0; }
+    static constexpr uint128_t max() { return ~uint128_t(0); }
+    static constexpr int digits = 128;
   };
-};
+#endif
 
-template <typename T>
-struct is_unsigned
-{
-  enum
-  {
-    value = std::is_unsigned<T>::value ||
-            std::is_same<T, uint128_t>::value
-  };
-};
-
-} // namespace prt
-} // namespace primesum
+} // namespace
 
 #endif

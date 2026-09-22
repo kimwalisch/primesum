@@ -33,8 +33,8 @@ fast_div(X x, Y y)
 
   // Unsigned integer division is usually
   // faster than signed integer division.
-  using UX = typename prt::make_unsigned<X>::type;
-  using UY = typename prt::make_unsigned<Y>::type;
+  using UX = typename pstd::make_unsigned<X>::type;
+  using UY = typename pstd::make_unsigned<Y>::type;
 
   return UX(x) / UY(y);
 }
@@ -51,8 +51,8 @@ fast_div(X x, Y y)
 
   // Unsigned integer division is usually
   // faster than signed integer division.
-  using UX = typename prt::make_unsigned<X>::type;
-  using UY = typename prt::make_unsigned<Y>::type;
+  using UX = typename pstd::make_unsigned<X>::type;
+  using UY = typename pstd::make_unsigned<Y>::type;
   uint64_t high = uint64_t(UX(x) >> 64);
 
 #if defined(__x86_64__) && \
@@ -96,8 +96,8 @@ fast_div(X x, Y y)
 
   // Unsigned integer division is usually
   // faster than signed integer division.
-  using UX = typename prt::make_unsigned<X>::type;
-  using UY = typename prt::make_unsigned<Y>::type;
+  using UX = typename pstd::make_unsigned<X>::type;
+  using UY = typename pstd::make_unsigned<Y>::type;
   return UX(x) / UY(y);
 }
 

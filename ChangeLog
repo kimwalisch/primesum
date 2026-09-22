@@ -14,6 +14,7 @@
     or legacy 32-bit division.
   * Copy scalar POPCNT code from primecount without runtime dispatch.
   * Replace std::vector and std::array with Vector and Array.
+  * Update int128_t.hpp and move 128-bit printing into print.cpp.
 
 2019-02-20 Kim Walisch  <kim.walisch@gmail.com>
 

@@ -37,7 +37,7 @@ public:
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     int256_t(T x)
         : low(x),
           high((x < 0) ? -1 : 0)
@@ -155,7 +155,7 @@ public:
 
     int256_t operator*(const int256_t& other) const
     {
-        auto max64 = prt::numeric_limits<std::uint64_t>::max();
+        auto max64 = pstd::numeric_limits<std::uint64_t>::max();
 
         if (low <= max64 &&
             other.low <= max64 &&
@@ -288,112 +288,112 @@ public:
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     bool operator==(T x) const
     {
         return *this == int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     bool operator!=(T x) const
     {
         return *this != int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     bool operator<(T x) const
     {
         return *this < int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     bool operator<=(T x) const
     {
         return *this <= int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     bool operator>(T x) const
     {
         return *this > int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     bool operator>=(T x) const
     {
         return *this >= int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     int256_t operator + (T x) const
     {
         return *this + int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     int256_t operator - (T x) const
     {
         return *this - int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     int256_t operator * (T x) const
     {
         return *this * int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     int256_t operator / (T x) const
     {
         return *this / int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     int256_t operator % (T x) const
     {
         return *this % int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     int256_t operator & (T x) const
     {
         return *this & int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     int256_t operator | (T x) const
     {
         return *this | int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     int256_t operator ^ (T x) const
     {
         return *this ^ int256_t(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     int256_t operator << (T x) const
     {
         return *this << static_cast<std::size_t>(x);
     }
 
     template <typename T,
-              typename = typename std::enable_if<prt::is_integral<T>::value>::type>
+              typename = typename std::enable_if<pstd::is_integral<T>::value>::type>
     int256_t operator >> (T x) const
     {
         return *this >> static_cast<std::size_t>(x);
@@ -403,7 +403,7 @@ public:
     {
         return (*this < 0)
             ? -static_cast<std::int8_t>(
-                  (low - 1) ^ prt::numeric_limits<uint128_t>::max())
+                  (low - 1) ^ pstd::numeric_limits<uint128_t>::max())
             : static_cast<std::int8_t>(low);
     }
 
@@ -411,7 +411,7 @@ public:
     {
         return (*this < 0)
             ? -static_cast<std::int16_t>(
-                  (low - 1) ^ prt::numeric_limits<uint128_t>::max())
+                  (low - 1) ^ pstd::numeric_limits<uint128_t>::max())
             : static_cast<std::int16_t>(low);
     }
 
@@ -419,7 +419,7 @@ public:
     {
         return (*this < 0)
             ? -static_cast<std::int32_t>(
-                  (low - 1) ^ prt::numeric_limits<uint128_t>::max())
+                  (low - 1) ^ pstd::numeric_limits<uint128_t>::max())
             : static_cast<std::int32_t>(low);
     }
 
@@ -427,7 +427,7 @@ public:
     {
         return (*this < 0)
             ? -static_cast<std::int64_t>(
-                  (low - 1) ^ prt::numeric_limits<uint128_t>::max())
+                  (low - 1) ^ pstd::numeric_limits<uint128_t>::max())
             : static_cast<std::int64_t>(low);
     }
 
@@ -435,7 +435,7 @@ public:
     {
         return (*this < 0)
             ? -static_cast<int128_t>(
-                  (low - 1) ^ prt::numeric_limits<uint128_t>::max())
+                  (low - 1) ^ pstd::numeric_limits<uint128_t>::max())
             : static_cast<int128_t>(low);
     }
 
@@ -478,13 +478,13 @@ private:
 
     static int256_t min_value()
     {
-        return int256_t(0, prt::numeric_limits<int128_t>::min());
+        return int256_t(0, pstd::numeric_limits<int128_t>::min());
     }
   
     static int256_t max_value()
     {
-        return int256_t(prt::numeric_limits<uint128_t>::max(),
-                        prt::numeric_limits<int128_t>::max());
+        return int256_t(pstd::numeric_limits<uint128_t>::max(),
+                        pstd::numeric_limits<int128_t>::max());
     }
 
     bool get_bit(std::size_t bit) const
