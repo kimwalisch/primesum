@@ -63,7 +63,7 @@ S1_OpenMP_master(X x,
                  int64_t c,
                  int threads)
 {
-  int64_t thread_threshold = ipow(10, 6);
+  int64_t thread_threshold = ipow<6>(10);
   threads = ideal_num_threads(threads, y, thread_threshold);
   Vector<Y> primes = generate_primes<Y>(y);
   auto s1_sum = phi_sum(x, c);

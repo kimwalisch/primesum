@@ -132,7 +132,7 @@ private:
   bool is_pix(int64_t x, int64_t a) const
   {
     return x < pi_.size() &&
-           x < isquare(primes_[a + 1]);
+           x < int64_t(primes_[a + 1]) * primes_[a + 1];
   }
 
   bool is_cached(uint64_t x, uint64_t a) const
@@ -175,7 +175,7 @@ int64_t phi(int64_t x, int64_t a, int threads)
 
       int64_t c = PhiTiny::get_c(sqrtx);
       int64_t pi_sqrtx = min(pi[sqrtx], a);
-      int64_t thread_threshold = ipow(10ll, 10);
+      int64_t thread_threshold = ipow<10>(10ll);
       threads = ideal_num_threads(threads, x, thread_threshold);
 
       sum = phi_tiny(x, c) - a + pi_sqrtx;

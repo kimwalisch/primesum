@@ -53,13 +53,13 @@ void cross_off(int64_t prime,
 int64_t S2(int64_t x,
            int64_t y,
            int64_t c,
+           int64_t pi_y,
            Vector<int32_t>& primes,
            Vector<int32_t>& lpf,
            Vector<int32_t>& mu)
 {
   int64_t limit = x / y + 1;
   int64_t segment_size = next_power_of_2(isqrt(limit));
-  int64_t pi_y = pi_bsearch(primes, y);
   int64_t S2_result = 0;
 
   Vector<char> sieve(segment_size);
@@ -147,8 +147,9 @@ int64_t pi_lmo3(int64_t x)
   Vector<int32_t> lpf = generate_lpf(y);
   Vector<int32_t> primes = generate_primes(y);
 
+  int64_t pi_y = primes.size() - 1;
   int256_t s1 = S1(x, y, c, 1);
-  int256_t s2 = S2(x, y, c, primes, lpf, mu);
+  int256_t s2 = S2(x, y, c, pi_y, primes, lpf, mu);
   int256_t phi = s1 + s2;
   int256_t sum = phi + prime_sum_tiny(y) - 1 - p2;
 

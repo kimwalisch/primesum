@@ -33,7 +33,7 @@ int256_t S2_trivial_OpenMP(int128_t x,
                            PrimeSums& prime_sums,
                            int threads)
 {
-  int64_t thread_threshold = ipow(10, 7);
+  int64_t thread_threshold = ipow<7>(10);
   threads = ideal_num_threads(threads, y, thread_threshold);
 
   PiTable pi(y);

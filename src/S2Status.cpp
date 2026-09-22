@@ -3,7 +3,7 @@
 /// @brief Print the status of S2(x, y) in percent.
 ///        Requires use of --status[=N] command-line flag.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -11,7 +11,6 @@
 
 #include <S2Status.hpp>
 #include <primesum-internal.hpp>
-#include <imath.hpp>
 #include <int128_t.hpp>
 
 #include <algorithm>
@@ -28,8 +27,9 @@ namespace primesum {
 S2Status::S2Status(int128_t x)
 {
   precision_ = get_status_precision(x);
-  int q = ipow(10, precision_);
-  epsilon_ = 1.0 / q;
+  epsilon_ = 1.0;
+  for (int i = 0; i < precision_; i++)
+    epsilon_ /= 10.0;
 }
 
 /// Dirty hack!

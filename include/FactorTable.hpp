@@ -95,7 +95,7 @@ public:
     std::fill(factor_.begin(), factor_.end(), T_MAX);
 
     int64_t sqrty = isqrt(y);
-    int64_t thread_threshold = ipow(10, 7);
+    int64_t thread_threshold = ipow<7>(10);
     threads = ideal_num_threads(threads, y, thread_threshold);
     int64_t thread_distance = ceil_div(y, threads);
 
@@ -172,7 +172,7 @@ public:
   static int128_t max()
   {
     int128_t T_MAX = std::numeric_limits<T>::max();
-    return ipow(T_MAX - 1, 2) - 1;
+    return ipow<2>(T_MAX - 1) - 1;
   }
 
 private:
