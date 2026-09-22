@@ -34,11 +34,11 @@
 #include <imath.hpp>
 #include <int128_t.hpp>
 #include <macros.hpp>
+#include <Vector.hpp>
 
 #include <algorithm>
 #include <limits>
 #include <stdint.h>
-#include <vector>
 
 namespace primesum {
 
@@ -91,7 +91,8 @@ public:
 
     y = std::max<int64_t>(8, y);
     T T_MAX = std::numeric_limits<T>::max();
-    factor_.resize(get_index(y) + 1, T_MAX);
+    factor_.resize(get_index(y) + 1);
+    std::fill(factor_.begin(), factor_.end(), T_MAX);
 
     int64_t sqrty = isqrt(y);
     int64_t thread_threshold = ipow(10, 7);
@@ -194,7 +195,7 @@ private:
     return multiple;
   }
 
-  std::vector<T> factor_;
+  Vector<T> factor_;
 };
 
 } // namespace

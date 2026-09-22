@@ -15,21 +15,20 @@
 #include <imath.hpp>
 #include <int128_t.hpp>
 #include <macros.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
 #include <algorithm>
-#include <array>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
 
 namespace {
 
-const array<uint64_t, 10> primes = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+const Array<uint64_t, 10> primes = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
 
 /// bitmasks with multiples of the i-th prime
-const array<uint64_t, 10> masks =
+const Array<uint64_t, 10> masks =
 {
   0x0000000000000000ull,
   0x5555555555555555ull, // 2
@@ -79,7 +78,7 @@ int128_t sum_bits(const uint64_t* bits, uint64_t size, uint64_t& low)
 
 namespace primesum {
 
-const array<uint64_t, 128> BitSieve::set_bit_ =
+const Array<uint64_t, 128> BitSieve::set_bit_ =
 {
   (1ull <<  0), (1ull <<  0), (1ull <<  1), (1ull <<  1),
   (1ull <<  2), (1ull <<  2), (1ull <<  3), (1ull <<  3),

@@ -18,6 +18,10 @@
   #define __has_builtin(x) 0
 #endif
 
+#ifndef __has_cpp_attribute
+  #define __has_cpp_attribute(x) 0
+#endif
+
 #ifndef __has_include
   #define __has_include(x) 0
 #endif
@@ -28,6 +32,26 @@
   #define ALWAYS_INLINE inline __forceinline
 #else
   #define ALWAYS_INLINE inline
+#endif
+
+#if __cplusplus >= 202002L && \
+    __has_cpp_attribute(likely)
+  #define if_likely(x) if (x) [[likely]]
+#elif defined(__GNUC__) || \
+      __has_builtin(__builtin_expect)
+  #define if_likely(x) if (__builtin_expect(!!(x), 1))
+#else
+  #define if_likely(x) if (x)
+#endif
+
+#if __cplusplus >= 202002L && \
+    __has_cpp_attribute(unlikely)
+  #define if_unlikely(x) if (x) [[unlikely]]
+#elif defined(__GNUC__) || \
+      __has_builtin(__builtin_expect)
+  #define if_unlikely(x) if (__builtin_expect(!!(x), 0))
+#else
+  #define if_unlikely(x) if (x)
 #endif
 
 /// Enable expensive debugging assertions.

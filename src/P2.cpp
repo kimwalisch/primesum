@@ -12,6 +12,7 @@
 
 #include <primesum-internal.hpp>
 #include <primesieve.hpp>
+#include <aligned_vector.hpp>
 #include <generate.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
@@ -22,7 +23,6 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
-#include <vector>
 
 using namespace std;
 using namespace primesum;

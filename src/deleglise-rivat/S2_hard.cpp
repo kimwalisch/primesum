@@ -25,10 +25,10 @@
 #include <S2.hpp>
 #include <S2LoadBalancer.hpp>
 #include <BinaryIndexedTree.hpp>
+#include <Vector.hpp>
 #include <Wheel.hpp>
 
 #include <stdint.h>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -115,8 +115,8 @@ T S2_hard_OpenMP_thread(uint128_t x,
                         FactorTable& factors,
                         PiTable& pi,
                         Primes& primes,
-                        vector<T>& mu_sum,
-                        vector<int128_t>& phi)
+                        Vector<T>& mu_sum,
+                        Vector<int128_t>& phi)
 {
   low += segment_size * segments_per_thread * thread_num;
   limit = min(low + segment_size * segments_per_thread, limit);
@@ -129,8 +129,10 @@ T S2_hard_OpenMP_thread(uint128_t x,
 
   BitSieve sieve(segment_size);
   Wheel wheel(primes, max_b + 1, low);
-  phi.resize(max_b + 1, 0);
-  mu_sum.resize(max_b + 1, 0);
+  phi.resize(max_b + 1);
+  mu_sum.resize(max_b + 1);
+  fill(phi.begin(), phi.end(), 0);
+  fill(mu_sum.begin(), mu_sum.end(), 0);
   BinaryIndexedTree tree;
 
   // Segmented sieve of Eratosthenes
@@ -337,7 +339,8 @@ S2_hard_OpenMP_master(X x,
   int64_t segments_per_thread = 1;
 
   PiTable pi(max_prime);
-  vector<int128_t> phi_total(pi[isqrt(z)] + 1, 0);
+  Vector<int128_t> phi_total(pi[isqrt(z)] + 1);
+  fill(phi_total.begin(), phi_total.end(), 0);
   double alpha = get_alpha(x, y);
 
   while (low < limit)
@@ -346,8 +349,8 @@ S2_hard_OpenMP_master(X x,
     threads = in_between(1, threads, segments);
     segments_per_thread = in_between(1, segments_per_thread, ceil_div(segments, threads));
 
-    aligned_vector<vector<int128_t>> phi(threads);
-    aligned_vector<vector<res_t>> mu_sum(threads);
+    aligned_vector<Vector<int128_t>> phi(threads);
+    aligned_vector<Vector<res_t>> mu_sum(threads);
     aligned_vector<double> timings(threads);
 
     #pragma omp parallel for num_threads(threads) reduction(+: s2_hard)

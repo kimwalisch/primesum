@@ -16,9 +16,9 @@
 
 #include <macros.hpp>
 #include <popcnt.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
-#include <vector>
 
 namespace primesum {
 
@@ -46,7 +46,7 @@ private:
     uint64_t bits = 0;
   };
 
-  std::vector<PiData> pi_;
+  Vector<PiData> pi_;
   uint64_t max_;
 };
 

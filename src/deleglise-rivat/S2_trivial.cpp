@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include <algorithm>
-#include <vector>
 
 using namespace std;
 using namespace primesum;

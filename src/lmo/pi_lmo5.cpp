@@ -23,9 +23,9 @@
 #include <Wheel.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -57,9 +57,9 @@ void cross_off(BitSieve& sieve,
 int64_t S2(int64_t x,
            int64_t y,
            int64_t c,
-           vector<int32_t>& primes,
-           vector<int32_t>& lpf,
-           vector<int32_t>& mu)
+           Vector<int32_t>& primes,
+           Vector<int32_t>& lpf,
+           Vector<int32_t>& mu)
 {
   print("");
   print("=== S2(x, y) ===");
@@ -70,8 +70,9 @@ int64_t S2(int64_t x,
 
   BitSieve sieve(segment_size);
   Wheel wheel(primes, (int64_t) primes.size(), /*low = */ 1);
-  vector<int32_t> pi = generate_pi(y);
-  vector<int64_t> phi(primes.size(), 0);
+  Vector<int32_t> pi = generate_pi(y);
+  Vector<int64_t> phi(primes.size());
+  fill(phi.begin(), phi.end(), 0);
 
   int64_t S2_result = 0;
   int64_t pi_sqrty = pi[isqrt(y)];
@@ -176,9 +177,9 @@ int64_t pi_lmo5(int64_t x)
   print(x, y, z, c, alpha, 1);
 
   int256_t p2 = P2(x, y, 1);
-  vector<int32_t> mu = generate_moebius(y);
-  vector<int32_t> lpf = generate_lpf(y);
-  vector<int32_t> primes = generate_primes(y);
+  Vector<int32_t> mu = generate_moebius(y);
+  Vector<int32_t> lpf = generate_lpf(y);
+  Vector<int32_t> primes = generate_primes(y);
 
   int256_t s1 = S1(x, y, c, 1);
   int256_t s2 = S2(x, y, c, primes, lpf, mu);

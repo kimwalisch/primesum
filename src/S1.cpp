@@ -13,9 +13,9 @@
 #include <imath.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -35,7 +35,7 @@ S1_OpenMP_thread(X x,
                  int64_t b,
                  int64_t c,
                  X square_free,
-                 vector<P>& primes)
+                 Vector<P>& primes)
 {
   using res_t = typename next_larger_type<X>::type;
 
@@ -65,7 +65,7 @@ S1_OpenMP_master(X x,
 {
   int64_t thread_threshold = ipow(10, 6);
   threads = ideal_num_threads(threads, y, thread_threshold);
-  vector<Y> primes = generate_primes<Y>(y);
+  Vector<Y> primes = generate_primes<Y>(y);
   auto s1_sum = phi_sum(x, c);
 
   #pragma omp parallel for schedule(static, 1) num_threads(threads) reduction (+: s1_sum)

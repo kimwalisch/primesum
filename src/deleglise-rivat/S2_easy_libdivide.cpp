@@ -20,10 +20,10 @@
 #include <imath.hpp>
 #include <S2Status.hpp>
 #include <S2.hpp>
+#include <Vector.hpp>
 
 #include <libdivide.h>
 #include <stdint.h>
-#include <vector>
 
 using namespace std;
 using namespace primesum;
@@ -39,11 +39,11 @@ bool is_libdivide(T x)
 using fastdiv_t = libdivide::branchfree_divider<uint64_t>;
 
 template <typename Primes>
-vector<fastdiv_t>
+Vector<fastdiv_t>
 libdivide_divisors(Primes& primes)
 {
   // Initialize libdivide vector from primes vector
-  vector<fastdiv_t> fastdiv(primes.size());
+  Vector<fastdiv_t> fastdiv(primes.size());
   for (std::size_t i = 1; i < fastdiv.size(); i++)
     fastdiv[i] = primes[i];
   return fastdiv;
@@ -61,7 +61,7 @@ res_t S2_easy_OpenMP(uint128_t x,
   res_t s2_easy = 0;
   int64_t x13 = iroot<3>(x);
   threads = ideal_num_threads(threads, x13, 1000);
-  vector<fastdiv_t> fastdiv = libdivide_divisors(primes);
+  Vector<fastdiv_t> fastdiv = libdivide_divisors(primes);
   using PS = typename PrimeSums::value_type;
 
   PiTable pi(y);

@@ -3,7 +3,7 @@
 /// @brief  Parse command-line options for the primesum console
 ///         (terminal) application.
 ///
-/// Copyright (C) 2018 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2018-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -12,9 +12,9 @@
 #include "cmdoptions.hpp"
 #include <primesum-internal.hpp>
 #include <int128_t.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
-#include <vector>
 #include <string>
 #include <sstream>
 #include <map>
@@ -116,7 +116,7 @@ PrimeSumOptions parseOptions(int argc, char** argv)
 {
   initOptionMap();
   PrimeSumOptions pco;
-  std::vector<int128_t> numbers;
+  Vector<int128_t> numbers;
 
   try
   {

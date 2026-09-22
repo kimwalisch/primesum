@@ -15,11 +15,10 @@
 
 #include <int128_t.hpp>
 #include <macros.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
 #include <cstddef>
-#include <array>
-#include <vector>
 
 namespace primesum {
 
@@ -87,8 +86,8 @@ public:
   }
 
 private:
-  static const std::array<uint64_t, 128> set_bit_;
-  std::vector<uint64_t> sieve_;
+  static const Array<uint64_t, 128> set_bit_;
+  Vector<uint64_t> sieve_;
   std::size_t size_;
 };
 

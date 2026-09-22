@@ -19,11 +19,10 @@
 #define PHITINY_HPP
 
 #include <macros.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
-#include <array>
 #include <limits>
-#include <vector>
 
 namespace primesum {
 
@@ -57,11 +56,11 @@ public:
   }
 
 private:
-  std::array<std::vector<int16_t>, 7> phi_;
-  static const std::array<int, 7> primes;
-  static const std::array<int, 7> prime_products;
-  static const std::array<int, 7> totients;
-  static const std::array<int, 13> pi;
+  Array<Vector<int16_t>, 7> phi_;
+  static const Array<int, 7> primes;
+  static const Array<int, 7> prime_products;
+  static const Array<int, 7> totients;
+  static const Array<int, 13> pi;
 };
 
 extern const PhiTiny phiTiny;

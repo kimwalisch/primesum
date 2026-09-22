@@ -21,7 +21,6 @@
 #include <S2.hpp>
 
 #include <stdint.h>
-#include <vector>
 
 using namespace std;
 using namespace primesum;

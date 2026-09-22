@@ -7,7 +7,7 @@
 ///        implementation calculates phi(x, a) using the recursive
 ///        formula with caching.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2016-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -20,10 +20,10 @@
 #include <imath.hpp>
 #include <int128_t.hpp>
 #include <int256_t.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
 #include <algorithm>
-#include <vector>
 
 using namespace std;
 
@@ -44,9 +44,9 @@ int256_t pi_lmo1(int128_t x)
   int256_t S1 = 0;
   int256_t S2 = 0;
 
-  vector<int32_t> primes = generate_primes(y);
-  vector<int32_t> lpf = generate_lpf(y);
-  vector<int32_t> mu = generate_moebius(y);
+  Vector<int32_t> primes = generate_primes(y);
+  Vector<int32_t> lpf = generate_lpf(y);
+  Vector<int32_t> mu = generate_moebius(y);
 
   // Calculate the contribution of the ordinary leaves
   for (int64_t n = 1; n <= y; n++)

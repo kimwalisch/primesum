@@ -2,7 +2,7 @@
 /// @file  nth_prime.cpp
 /// @brief Find the nth prime
 ///
-/// Copyright (C) 2017 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2017-2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -10,16 +10,18 @@
 
 #include <primesum.hpp>
 #include <primesum-internal.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
-#include <array>
 #include <string>
 
 namespace {
 
-const std::array<int, 10> primes = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+using namespace primesum;
 
-}
+const Array<int, 10> primes = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+
+} // namespace
 
 namespace primesum {
 

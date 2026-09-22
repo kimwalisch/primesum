@@ -13,12 +13,12 @@
 
 #include <isqrt.hpp>
 #include <macros.hpp>
+#include <Vector.hpp>
 
 #include <stdint.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
-#include <vector>
 
 namespace primesum {
 
@@ -117,7 +117,7 @@ inline T2 in_between(T1 min, T2 x, T3 max)
 /// @pre x <= primes.back()
 ///
 template <typename T1, typename T2>
-inline T2 pi_bsearch(const std::vector<T1>& primes, T2 x)
+inline T2 pi_bsearch(const Vector<T1>& primes, T2 x)
 {
   ASSERT(primes.size() < 2 || primes[1] == 2);
   auto start = primes.begin() + 1;
