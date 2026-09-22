@@ -135,26 +135,13 @@ include("${PROJECT_SOURCE_DIR}/cmake/OpenMP.cmake")
 # Find POPCNT compiler flag ##########################################
 
 if(WITH_POPCNT)
-    if("${CMAKE_CXX_COMPILER}" MATCHES "icpc")
-        cmake_push_check_state()
-        set(CMAKE_REQUIRED_FLAGS -Werror)
-        check_cxx_compiler_flag(-msse4.2 msse42)
-        cmake_pop_check_state()
+    cmake_push_check_state()
+    set(CMAKE_REQUIRED_FLAGS -Werror)
+    check_cxx_compiler_flag(-mpopcnt mpopcnt)
+    cmake_pop_check_state()
 
-        if(msse42)
-            set(POPCNT_FLAG "-msse4.2")
-        endif()
-    endif()
-
-    if(NOT POPCNT_FLAG)
-        cmake_push_check_state()
-        set(CMAKE_REQUIRED_FLAGS -Werror)
-        check_cxx_compiler_flag(-mpopcnt mpopcnt)
-        cmake_pop_check_state()
-
-        if(mpopcnt)
-            set(POPCNT_FLAG "-mpopcnt")
-        endif()
+    if(mpopcnt)
+        set(POPCNT_FLAG "-mpopcnt")
     endif()
 endif()
 
