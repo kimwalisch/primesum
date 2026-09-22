@@ -40,11 +40,13 @@ and OpenMP (e.g. GNU GCC or LLVM/Clang) and CMake ≥ 3.9.
 ## Build instructions
 
 ```sh
+# Linux
 cmake .
 cmake --build . --parallel
 
-# Run tests
-./primesum --test
+# macOS
+CXXFLAGS="-I$(brew --prefix libomp)/include" LDFLAGS="-L$(brew --prefix libomp)/lib" cmake .
+cmake --build . --parallel
 ```
 
 ## Usage examples
@@ -58,8 +60,11 @@ Open a terminal and run primesum using e.g.:
 # Print progress and status information during computation
 ./primesum 1e18 --status
 
-# Use 4 threads
+# Use 4 threads and print time elapsed
 ./primesum 1e14 --threads=4 --time
+
+# Run tests
+./primesum --test
 ```
 
 ## Command-line options
