@@ -2,6 +2,7 @@
 
   Unreleased changes.
 
+  * Use const for read-only pointer and reference parameters.
   * pi_lmo1.cpp: Use 64-bit input and 128-bit intermediate and result types.
   * pi_lmo2.cpp: Use 128-bit special-leaf sums and return values.
   * pi_lmo3.cpp: Use 128-bit special-leaf sums and return values.

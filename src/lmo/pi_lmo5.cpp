@@ -57,9 +57,9 @@ void cross_off(BitSieve& sieve,
 int128_t S2(int64_t x,
             int64_t y,
             int64_t c,
-            Vector<int32_t>& primes,
-            Vector<int32_t>& lpf,
-            Vector<int32_t>& mu)
+            const Vector<int32_t>& primes,
+            const Vector<int32_t>& lpf,
+            const Vector<int32_t>& mu)
 {
   print("");
   print("=== S2(x, y) ===");

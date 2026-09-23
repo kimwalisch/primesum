@@ -27,7 +27,7 @@ const Array<int, 10> small_primes_ = { 0, 2, 3, 5, 7, 11, 13, 17, 19, 23 };
 template <int SIGN, typename Primes>
 int128_t phi_sum128(int64_t x,
                     int64_t a,
-                    Primes&& primes)
+                    const Primes& primes)
 {
   int128_t sum = 0;
 
@@ -50,7 +50,7 @@ int128_t phi_sum128(int64_t x,
 template <int SIGN, typename Primes>
 int256_t phi_sum256(int128_t x,
                     int64_t a,
-                    Primes&& primes)
+                    const Primes& primes)
 {
   int256_t sum = 0;
 

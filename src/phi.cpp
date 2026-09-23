@@ -52,8 +52,8 @@ const int MAX_A = 100;
 class PhiCache
 {
 public:
-  PhiCache(Vector<int32_t>& primes,
-           PiTable& pi) :
+  PhiCache(const Vector<int32_t>& primes,
+           const PiTable& pi) :
     primes_(primes),
     pi_(pi)
   { }
@@ -110,8 +110,8 @@ public:
 private:
   using T = uint16_t;
   Array<Vector<T>, MAX_A> cache_;
-  Vector<int32_t>& primes_;
-  PiTable& pi_;
+  const Vector<int32_t>& primes_;
+  const PiTable& pi_;
 
   void update_cache(uint64_t x, uint64_t a, int64_t sum)
   {

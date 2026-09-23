@@ -27,7 +27,7 @@ public:
               int64_t threads,
               int64_t* segment_size,
               int64_t* segments_per_thread,
-              aligned_vector<double>& timings);
+              const aligned_vector<double>& timings);
 private:
   void init(int128_t x, int64_t y, int64_t threads);
   void set_min_size(int64_t z);

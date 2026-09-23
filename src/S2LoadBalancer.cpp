@@ -62,7 +62,7 @@ using namespace primesum;
 
 namespace {
 
-double get_avg(aligned_vector<double>& timings)
+double get_avg(const aligned_vector<double>& timings)
 {
   size_t n = timings.size();
   double sum = 0;
@@ -74,7 +74,7 @@ double get_avg(aligned_vector<double>& timings)
 }
 
 /// Relative standard deviation
-double rel_std_dev(aligned_vector<double>& timings)
+double rel_std_dev(const aligned_vector<double>& timings)
 {
   size_t n = timings.size();
   double avg = get_avg(timings);
@@ -190,7 +190,7 @@ void S2LoadBalancer::update(int64_t low,
                             int64_t threads,
                             int64_t* segment_size,
                             int64_t* segments_per_thread,
-                            aligned_vector<double>& timings)
+                            const aligned_vector<double>& timings)
 {
   count_++;
   double seconds = get_avg(timings);

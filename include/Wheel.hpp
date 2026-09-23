@@ -69,7 +69,7 @@ public:
   /// and primes are crossed-off.
   ///
   template <typename Primes>
-  Wheel(Primes& primes,
+  Wheel(const Primes& primes,
         int64_t size,
         int64_t low)
   {

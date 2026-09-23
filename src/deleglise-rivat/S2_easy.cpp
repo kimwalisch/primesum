@@ -33,8 +33,8 @@ res_t S2_easy_OpenMP(uint128_t x,
                      int64_t y,
                      int64_t z,
                      int64_t c,
-                     Primes& primes,
-                     PrimeSums& prime_sums,
+                     const Primes& primes,
+                     const PrimeSums& prime_sums,
                      int threads)
 {
   res_t s2_easy = 0;

@@ -30,7 +30,7 @@ int256_t S2_trivial_OpenMP(int128_t x,
                            int64_t y,
                            int64_t z,
                            int64_t c,
-                           PrimeSums& prime_sums,
+                           const PrimeSums& prime_sums,
                            int threads)
 {
   int64_t thread_threshold = ipow<7>(10);

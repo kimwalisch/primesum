@@ -35,7 +35,7 @@ S1_OpenMP_thread(X x,
                  int64_t b,
                  int64_t c,
                  X square_free,
-                 Vector<P>& primes)
+                 const Vector<P>& primes)
 {
   using res_t = typename next_larger_type<X>::type;
 

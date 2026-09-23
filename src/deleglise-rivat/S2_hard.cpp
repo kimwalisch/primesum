@@ -112,9 +112,9 @@ T S2_hard_OpenMP_thread(uint128_t x,
                         int64_t low,
                         int64_t limit,
                         double alpha,
-                        FactorTable& factors,
-                        PiTable& pi,
-                        Primes& primes,
+                        const FactorTable& factors,
+                        const PiTable& pi,
+                        const Primes& primes,
                         Vector<T>& mu_sum,
                         Vector<int128_t>& phi)
 {
@@ -321,8 +321,8 @@ S2_hard_OpenMP_master(X x,
                       int64_t y,
                       int64_t z,
                       int64_t c,
-                      Primes& primes,
-                      FactorTable& factors,
+                      const Primes& primes,
+                      const FactorTable& factors,
                       int threads)
 {
   using res_t = typename next_larger_type<X>::type;

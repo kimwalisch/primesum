@@ -36,6 +36,7 @@ public:
 
   std::size_t size() const { return vect_.size(); }
   T& operator[](std::size_t pos) { return vect_[pos].val[0]; }
+  const T& operator[](std::size_t pos) const { return vect_[pos].val[0]; }
 private:
   struct align_t
   {

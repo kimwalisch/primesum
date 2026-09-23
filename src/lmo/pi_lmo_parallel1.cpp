@@ -66,10 +66,10 @@ T S2_thread(uint128_t x,
             int64_t thread_num,
             int64_t low,
             int64_t limit,
-            Vector<int32_t>& pi,
-            Vector<int32_t>& primes,
-            Vector<int32_t>& lpf,
-            Vector<int32_t>& mu,
+            const Vector<int32_t>& pi,
+            const Vector<int32_t>& primes,
+            const Vector<int32_t>& lpf,
+            const Vector<int32_t>& mu,
             Vector<T>& mu_sum,
             Vector<T>& phi)
 {
@@ -178,9 +178,9 @@ T S2_thread(uint128_t x,
 int256_t S2(uint128_t x,
             int64_t y,
             int64_t c,
-            Vector<int32_t>& primes,
-            Vector<int32_t>& lpf,
-            Vector<int32_t>& mu,
+            const Vector<int32_t>& primes,
+            const Vector<int32_t>& lpf,
+            const Vector<int32_t>& mu,
             int threads)
 {
   print("");
