@@ -12,8 +12,8 @@
   * Require CMake >= 3.9 and support Windows shared library builds.
   * Copy libdivide 5.3.0 and divisor initialization from primecount.
   * Add CTest support for integration and arithmetic tests.
-  * Port fast_div.hpp from primecount without ARM SVE, fast_div64()
-    or legacy 32-bit division.
+  * Port fast_div.hpp from primecount without ARM SVE or legacy
+    32-bit division.
   * Copy scalar POPCNT code from primecount without runtime dispatch.
   * Replace std::vector and std::array with Vector and Array.
   * Update int128_t.hpp and move 128-bit printing into print.cpp.
@@ -22,6 +22,7 @@
   * Fix the OpenMP feature check with out-of-line 128-bit printing.
   * Build libprimesum and link the command-line app and tests against it.
   * Use fast_div64() when the quotient is known to fit into 64 bits.
+  * Add scripts for building Windows x64 and ARM64 release binaries.
 
 2019-02-20 Kim Walisch  <kim.walisch@gmail.com>
 
