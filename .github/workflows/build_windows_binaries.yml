@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: primesum-${{ env.PROJECT_VERSION }}-win-x64
-          path: build-release/primesum-${{ env.PROJECT_VERSION }}-win-x64.zip
+          path: build-release/primesum-${{ env.PROJECT_VERSION }}-win-x64/*
           if-no-files-found: error
           retention-days: 7
 
@@ -96,6 +96,6 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: primesum-${{ env.PROJECT_VERSION }}-win-arm64
-          path: build-release/primesum-${{ env.PROJECT_VERSION }}-win-arm64.zip
+          path: build-release/primesum-${{ env.PROJECT_VERSION }}-win-arm64/*
           if-no-files-found: error
           retention-days: 7
