@@ -107,63 +107,62 @@ Advanced Deleglise-Rivat options:
   <tr align="right">
     <td>10<sup>10</sup></td>
     <td>2,220,822,432,581,729,238</td>
-    <td>0.01s</td>
+    <td>0.00s</td>
   </tr>
   <tr align="right">
     <td>10<sup>11</sup></td>
     <td>201,467,077,743,744,681,014</td>
-    <td>0.02s</td>
+    <td>0.01s</td>
   </tr>
   <tr align="right">
     <td>10<sup>12</sup></td>
     <td>18,435,588,552,550,705,911,377</td>
-    <td>0.04s</td>
+    <td>0.02s</td>
   </tr>
   <tr align="right">
     <td>10<sup>13</sup></td>
     <td>1,699,246,443,377,779,418,889,494</td>
-    <td>0.11s</td>
+    <td>0.04s</td>
   </tr>
   <tr align="right">
     <td>10<sup>14</sup></td>
     <td>157,589,260,710,736,940,541,561,021</td>
-    <td>0.36s</td>
+    <td>0.11s</td>
   </tr>
   <tr align="right">
     <td>10<sup>15</sup></td>
     <td>14,692,398,516,908,006,398,225,702,366</td>
-    <td>1.16s</td>
+    <td>0.35s</td>
   </tr>
   <tr align="right">
     <td>10<sup>16</sup></td>
     <td>1,376,110,854,313,351,899,159,632,866,552</td>
-    <td>3.66s</td>
+    <td>1.04s</td>
   </tr>
   <tr align="right">
     <td>10<sup>17</sup></td>
     <td>129,408,626,276,669,278,966,252,031,311,350</td>
-    <td>14.60s</td>
+    <td>3.67s</td>
   </tr>
   <tr align="right">
     <td>10<sup>18</sup></td>
     <td>12,212,914,292,949,226,570,880,576,733,896,687</td>
-    <td>66.66s</td>
+    <td>16.75s</td>
   </tr>
   <tr align="right">
     <td>10<sup>19</sup></td>
     <td>1,156,251,260,549,368,082,781,614,413,945,980,126</td>
-    <td>330.01s</td>
+    <td>91.60s</td>
   </tr>
   <tr align="right">
     <td>10<sup>20</sup></td>
     <td>109,778,913,483,063,648,128,485,839,045,703,833,541</td>
-    <td>1486.87s</td>
+    <td>486.25s</td>
   </tr>
 </table>
 
-The benchmarks above were run on an Intel Core i7-6700 CPU (4 x 3.4 GHz) from
-2015 using a Linux x64 operating system and primesum was compiled using
-GCC 6.4.
+The benchmarks above were run on an Intel Core Ultra 5 245K CPU from 2024
+with 14 CPU cores and primesum was compiled using GCC 16.2.
 
 ## [A046731](https://oeis.org/A046731) world records
 
