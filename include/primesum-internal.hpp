@@ -59,15 +59,15 @@ int64_t pi_legendre(int64_t x, int threads);
 
 int256_t pi_lmo(int128_t x, int threads);
 
-int256_t pi_lmo1(int128_t x);
+int128_t pi_lmo1(int64_t x);
 
-int64_t pi_lmo2(int64_t x);
+int128_t pi_lmo2(int64_t x);
 
-int64_t pi_lmo3(int64_t x);
+int128_t pi_lmo3(int64_t x);
 
-int64_t pi_lmo4(int64_t x);
+int128_t pi_lmo4(int64_t x);
 
-int64_t pi_lmo5(int64_t x);
+int128_t pi_lmo5(int64_t x);
 
 int256_t pi_lmo_parallel1(int128_t x, int threads);
 

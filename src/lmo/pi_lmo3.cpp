@@ -50,21 +50,21 @@ void cross_off(int64_t prime,
 /// Calculate the contribution of the special leaves.
 /// @pre y > 0 && c > 1
 ///
-int64_t S2(int64_t x,
-           int64_t y,
-           int64_t c,
-           int64_t pi_y,
-           Vector<int32_t>& primes,
-           Vector<int32_t>& lpf,
-           Vector<int32_t>& mu)
+int128_t S2(int64_t x,
+            int64_t y,
+            int64_t c,
+            int64_t pi_y,
+            Vector<int32_t>& primes,
+            Vector<int32_t>& lpf,
+            Vector<int32_t>& mu)
 {
   int64_t limit = x / y + 1;
   int64_t segment_size = next_power_of_2(isqrt(limit));
-  int64_t S2_result = 0;
+  int128_t S2_result = 0;
 
   Vector<char> sieve(segment_size);
   Vector<int64_t> next(primes.size());
-  Vector<int64_t> phi(primes.size());
+  Vector<int128_t> phi(primes.size());
   copy(primes.begin(), primes.end(), next.begin());
   fill(phi.begin(), phi.end(), 0);
 
@@ -132,7 +132,7 @@ namespace primesum {
 /// Lagarias-Miller-Odlyzko algorithm.
 /// Run time: O(x^(2/3)) operations, O(x^(1/3) * (log x)^2) space.
 ///
-int64_t pi_lmo3(int64_t x)
+int128_t pi_lmo3(int64_t x)
 {
   if (x < 2)
     return 0;
@@ -149,11 +149,11 @@ int64_t pi_lmo3(int64_t x)
 
   int64_t pi_y = primes.size() - 1;
   int256_t s1 = S1(x, y, c, 1);
-  int256_t s2 = S2(x, y, c, pi_y, primes, lpf, mu);
+  int128_t s2 = S2(x, y, c, pi_y, primes, lpf, mu);
   int256_t phi = s1 + s2;
   int256_t sum = phi + prime_sum_tiny(y) - 1 - p2;
 
-  return int64_t(sum);
+  return int128_t(sum);
 }
 
 } // namespace

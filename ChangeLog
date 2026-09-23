@@ -2,6 +2,11 @@
 
   Unreleased changes.
 
+  * pi_lmo1.cpp: Use 64-bit input and 128-bit intermediate and result types.
+  * pi_lmo2.cpp: Use 128-bit special-leaf sums and return values.
+  * pi_lmo3.cpp: Use 128-bit special-leaf sums and return values.
+  * pi_lmo4.cpp: Return the prime sum as a 128-bit integer.
+  * pi_lmo5.cpp: Use 128-bit special-leaf sums and return values.
   * ci.yml: Add GitHub Actions CI tests.
   * S2_easy.cpp: Get rid of slow clustered easy leaves algorithm.
   * S2_easy.cpp: Manually unroll loop to improve performance.
