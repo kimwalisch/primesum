@@ -13,6 +13,7 @@
   * S2_easy.cpp: Fix LLVM/Clang status output.
   * S2_easy_libdivide.cpp: Get rid of slow clustered easy leaves algorithm.
   * S2_easy_libdivide.cpp: Fix LLVM/Clang status output.
+  * BitSieve.cpp: Fix overflow in hard special leaf sieve sums.
   * BitSieve.cpp: Improve sum_bits().
   * Update iterator boundaries for primesieve >= 11.0.
   * Adapt CMake compiler and OpenMP checks from primecount.
