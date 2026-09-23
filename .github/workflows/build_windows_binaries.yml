@@ -1,0 +1,101 @@
+name: Build Windows binaries
+
+# Run ONLY when manually triggered from the GitHub Actions UI
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-x64:
+    name: Windows x64 (MSYS2 / MinGW-w64 / GCC)
+    runs-on: windows-2022
+
+    steps:
+      - name: Configure Git line endings
+        shell: powershell
+        run: git config --global core.autocrlf input
+
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup MSYS2 (MINGW64)
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          msystem: MINGW64
+          install: >-
+            base-devel
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            git
+            zip
+            unzip
+            wget
+
+      - name: Get Project Version
+        shell: msys2 {0}
+        run: |
+          VERSION=$(grep 'PRIMESUM_VERSION "' include/primesum.hpp | cut -f2 -d'"')
+          echo "PROJECT_VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Build Windows x64 binary
+        shell: msys2 {0}
+        run: |
+          chmod +x ./scripts/build_mingw64_x64.sh
+          ./scripts/build_mingw64_x64.sh
+
+      - name: Upload Windows x64 CI artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: primesum-${{ env.PROJECT_VERSION }}-win-x64
+          path: build-release/primesum-${{ env.PROJECT_VERSION }}-win-x64.zip
+          if-no-files-found: error
+          retention-days: 7
+
+  windows-arm64:
+    name: Windows ARM64 (MSYS2 / Clang / ARM64)
+    runs-on: windows-11-arm
+
+    steps:
+      - name: Configure Git line endings
+        shell: powershell
+        run: git config --global core.autocrlf input
+
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup MSYS2 (CLANGARM64)
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          msystem: CLANGARM64
+          install: >-
+            mingw-w64-clang-aarch64-clang
+            mingw-w64-clang-aarch64-llvm-openmp
+            make
+            git
+            zip
+            unzip
+            wget
+
+      - name: Get Project Version
+        shell: msys2 {0}
+        run: |
+          VERSION=$(grep 'PRIMESUM_VERSION "' include/primesum.hpp | cut -f2 -d'"')
+          echo "PROJECT_VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Build Windows ARM64 binary
+        shell: msys2 {0}
+        run: |
+          chmod +x ./scripts/build_mingw64_arm64.sh
+          ./scripts/build_mingw64_arm64.sh
+
+      - name: Upload Windows ARM64 CI artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: primesum-${{ env.PROJECT_VERSION }}-win-arm64
+          path: build-release/primesum-${{ env.PROJECT_VERSION }}-win-arm64.zip
+          if-no-files-found: error
+          retention-days: 7
