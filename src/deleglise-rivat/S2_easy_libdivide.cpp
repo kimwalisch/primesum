@@ -19,6 +19,7 @@
 #include <int256_t.hpp>
 #include <min.hpp>
 #include <imath.hpp>
+#include <RelaxedAtomic.hpp>
 #include <S2Status.hpp>
 #include <S2.hpp>
 #include <Vector.hpp>
@@ -65,13 +66,14 @@ res_t S2_easy_OpenMP(uint128_t x,
   Vector<fastdiv_t> fastdiv = libdivide_divisors(primes);
   using PS = typename PrimeSums::value_type;
 
+  S2Status status(x);
   PiTable pi(y);
   int64_t pi_sqrty = pi[isqrt(y)];
   int64_t pi_x13 = pi[x13];
-  S2Status status(x);
+  RelaxedAtomic<int64_t> atomic_b(max(c, pi_sqrty) + 1);
 
-  #pragma omp parallel for schedule(dynamic) num_threads(threads) reduction(+: s2_easy)
-  for (int64_t b = max(c, pi_sqrty) + 1; b <= pi_x13; b++)
+  #pragma omp parallel num_threads(threads) reduction(+: s2_easy)
+  for (int64_t b = atomic_b++; b <= pi_x13; b = atomic_b++)
   {
     int64_t prime = primes[b];
     uint128_t x2 = x / prime;
@@ -149,6 +151,11 @@ res_t S2_easy_OpenMP(uint128_t x,
       }
     }
 
+    #if defined(_OPENMP) && _OPENMP >= 202011
+      #pragma omp masked
+    #else
+      #pragma omp master
+    #endif
     if (is_print())
       status.print(b, pi_x13);
   }

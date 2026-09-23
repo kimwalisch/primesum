@@ -54,6 +54,25 @@
   #define if_unlikely(x) if (x)
 #endif
 
+#if __cplusplus >= 201703L && \
+    __has_cpp_attribute(maybe_unused)
+  #define MAYBE_UNUSED [[maybe_unused]]
+#elif __has_attribute(unused)
+  #define MAYBE_UNUSED __attribute__((unused))
+#else
+  #define MAYBE_UNUSED
+#endif
+
+// Silence GCC < 12 warning:
+// warning: 'unused' attribute ignored [-Wattributes]
+#if defined(__GNUC__) && \
+   !defined(__clang__)
+  #if __GNUC__ < 12
+    #undef MAYBE_UNUSED
+    #define MAYBE_UNUSED
+  #endif
+#endif
+
 /// Unrolling loops that execute very few iterations on average
 /// tends to deteriorate performance due to increased branch
 /// mispredictions. Using the NO_UNROLL_LOOP macro we can disable

@@ -1,11 +1,13 @@
-2026-09-22 Kim Walisch  <kim.walisch@gmail.com>
+2026-09-23 Kim Walisch  <kim.walisch@gmail.com>
 
   Unreleased changes.
 
   * ci.yml: Add GitHub Actions CI tests.
   * S2_easy.cpp: Get rid of slow clustered easy leaves algorithm.
   * S2_easy.cpp: Manually unroll loop to improve performance.
+  * S2_easy.cpp: Fix LLVM/Clang status output.
   * S2_easy_libdivide.cpp: Get rid of slow clustered easy leaves algorithm.
+  * S2_easy_libdivide.cpp: Fix LLVM/Clang status output.
   * BitSieve.cpp: Improve sum_bits().
   * Update iterator boundaries for primesieve >= 11.0.
   * Adapt CMake compiler and OpenMP checks from primecount.

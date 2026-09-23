@@ -10,13 +10,10 @@
 #ifndef ALIGNED_VECTOR_HPP
 #define ALIGNED_VECTOR_HPP
 
+#include <primesum-config.hpp>
 #include <Vector.hpp>
-#include <cstddef>
 
-// Maximum cache line size of current CPUs
-#ifndef CACHE_LINE_SIZE
-  #define CACHE_LINE_SIZE 512
-#endif
+#include <cstddef>
 
 namespace primesum {
 
@@ -42,7 +39,7 @@ public:
 private:
   struct align_t
   {
-    T val[CACHE_LINE_SIZE / sizeof(T)];
+    T val[MAX_CACHE_LINE_SIZE / sizeof(T)];
   };
   Vector<align_t> vect_;
 };
