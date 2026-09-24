@@ -120,7 +120,7 @@ void S2LoadBalancer::init(int128_t x,
                           int64_t threads)
 {
   // determined by benchmarking
-  double log_threads = std::max(1.0, std::log((double) threads));
+  double log_threads = std::max(1.0, std::log(threads));
   decrease_dividend_ = std::max(0.5, log_threads / 3);
 
   min_seconds_ = 0.01 * log_threads;
@@ -232,7 +232,7 @@ void S2LoadBalancer::update(int64_t low,
   // slightly increase min_size_
   if (high >= smallest_hard_leaf_)
   {
-    update_min_size(std::log((double) y_));
+    update_min_size(std::log(y_));
     *segment_size = std::max(min_size_, *segment_size);
   }
 }

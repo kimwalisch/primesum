@@ -67,7 +67,7 @@ S2Status::S2Status(int128_t x, int64_t y)
 
   if (y > 0)
   {
-    y_log_y_ = int64_t(y * std::log(double(y)));
+    y_log_y_ = int64_t(y * std::log(y));
     x_tune_ = in_between(0.0, (std::log10(double(x)) - 20.0) / 2.0, 1.0);
   }
 }
