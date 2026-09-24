@@ -15,6 +15,7 @@
 #include <int128_t.hpp>
 #include <int256_t.hpp>
 #include <imath.hpp>
+#include <min.hpp>
 
 #include <algorithm>
 #include <chrono>
@@ -151,9 +152,9 @@ double get_time()
 
 int ideal_num_threads(int threads, int64_t sieve_limit, int64_t thread_threshold)
 {
-  thread_threshold = std::max((int64_t) 1, thread_threshold);
-  threads = (int) std::min((int64_t) threads, sieve_limit / thread_threshold);
-  threads = std::max(1, threads);
+  thread_threshold = max(thread_threshold, 1);
+  threads = min(sieve_limit / thread_threshold, threads);
+  threads = max(threads, 1);
   return threads;
 }
 
