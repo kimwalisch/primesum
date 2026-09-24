@@ -41,7 +41,7 @@
 ///    relative standard deviation to the previous one in order to
 ///    decide whether to increase or decrease the interval size.
 ///
-/// Copyright (C) 2016 Kim Walisch, <kim.walisch@gmail.com>
+/// Copyright (C) 2026 Kim Walisch, <kim.walisch@gmail.com>
 ///
 /// This file is distributed under the BSD License. See the COPYING
 /// file in the top level directory.
@@ -102,14 +102,17 @@ namespace primesum {
 S2LoadBalancer::S2LoadBalancer(int128_t x,
                                int64_t y,
                                int64_t z,
-                               int64_t threads) :
+                               int64_t threads,
+                               bool is_print) :
   x_((double) x),
   y_((double) y),
-  z_((double) z),
+  z_(z),
   rsd_(40),
   count_(0),
   total_seconds_(0),
-  sqrtz_(isqrt(z))
+  sqrtz_(isqrt(z)),
+  is_print_(is_print),
+  status_(x, y)
 {
   init(x, y, threads);
 }
@@ -192,6 +195,9 @@ void S2LoadBalancer::update(int64_t low,
                             int64_t* segments_per_thread,
                             const aligned_vector<double>& timings)
 {
+  if (is_print_)
+    status_.print_S2_hard(low, z_);
+
   count_++;
   double seconds = get_avg(timings);
   total_seconds_ += seconds;

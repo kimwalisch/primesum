@@ -333,7 +333,7 @@ S2_hard_OpenMP_master(X x,
   int64_t limit = z + 1;
   int64_t max_prime = z / isqrt(y);
 
-  S2LoadBalancer loadBalancer(x, y, z, threads);
+  S2LoadBalancer loadBalancer(x, y, z, threads, is_print());
   int64_t min_segment_size = loadBalancer.get_min_segment_size();
   int64_t segment_size = min_segment_size;
   int64_t segments_per_thread = 1;
