@@ -114,10 +114,13 @@ void S2Status::print_S2_hard(int64_t low, int64_t limit)
     {
       percent_ = percent;
       ostringstream status;
-      status << "Status: " << fixed << setprecision(precision_)
-             << percent << '%';
-      cout << '\r' << string(status.str().length(), ' ') << '\r'
-           << status.str() << flush;
+      ostringstream out;
+
+      status << "Status: " << fixed << setprecision(precision_) << percent << "%";
+      size_t spaces = status.str().length();
+      string reset_line = "\r" + string(spaces,' ') + "\r";
+      out << reset_line << status.str();
+      cout << out.str() << flush;
     }
   }
 }
