@@ -13,10 +13,6 @@
 #include <int128_t.hpp>
 #include <stdint.h>
 
-#if defined(_OPENMP)
-  #include <OmpLock.hpp>
-#endif
-
 namespace primesum {
 
 class S2Status
@@ -36,10 +32,6 @@ private:
   double x_tune_ = 0;
   int64_t y_log_y_ = 0;
   int precision_;
-
-#if defined(_OPENMP)
-  OmpLock lock_;
-#endif
 };
 
 } // namespace
