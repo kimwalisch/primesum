@@ -104,8 +104,7 @@ S2LoadBalancer::S2LoadBalancer(int128_t x,
                                int64_t z,
                                int64_t threads,
                                bool is_print) :
-  x_((double) x),
-  y_((double) y),
+  y_(y),
   z_(z),
   rsd_(40),
   count_(0),
@@ -126,7 +125,8 @@ void S2LoadBalancer::init(int128_t x,
   decrease_dividend_ = max(0.5, log_threads / 3);
 
   min_seconds_ = 0.01 * log_threads;
-  double divisor = log(log(x_)) * log(x_);
+  double log_x = log((double) x);
+  double divisor = log(log_x) * log_x;
   update_min_size(divisor);
 
   double alpha = get_alpha(x, y);
@@ -233,7 +233,7 @@ void S2LoadBalancer::update(int64_t low,
   // slightly increase min_size_
   if (high >= smallest_hard_leaf_)
   {
-    update_min_size(log(y_));
+    update_min_size(log((double) y_));
     *segment_size = max(min_size_, *segment_size);
   }
 }

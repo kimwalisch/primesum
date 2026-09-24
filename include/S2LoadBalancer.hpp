@@ -39,8 +39,7 @@ private:
   double get_pivot(double seconds) const;
   bool is_increase(double seconds, double pivot) const;
   bool is_decrease(double seconds, double pivot) const;
-  double x_;
-  double y_;
+  int64_t y_;
   int64_t z_;
   double rsd_;
   double count_;
