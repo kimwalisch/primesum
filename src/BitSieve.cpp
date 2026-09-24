@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <algorithm>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -141,16 +140,16 @@ void BitSieve::pre_sieve(uint64_t c, uint64_t low)
   for (uint64_t i = 2; i <= c; i++)
   {
     uint64_t prime = primes[i];
-    uint64_t end_copy = min(sieved * prime, sieve_size);
+    uint64_t end_copy = std::min(sieved * prime, sieve_size);
 
     // pre-sieve multiples of primes < i-th prime
     // by copying a small pre-sieved buffer
     while (last < end_copy)
     {
-      uint64_t copy_words = min(sieved, sieve_size - last);
-      copy(sieve_.begin(),
-           sieve_.begin() + copy_words,
-           sieve_.begin() + last);
+      uint64_t copy_words = std::min(sieved, sieve_size - last);
+      std::copy(sieve_.begin(),
+                sieve_.begin() + copy_words,
+                sieve_.begin() + last);
       last += copy_words;
     }
 
@@ -174,10 +173,10 @@ void BitSieve::pre_sieve(uint64_t c, uint64_t low)
   // fill up the rest of the sieve
   while (last < sieve_size)
   {
-    uint64_t copy_words = min(sieved, sieve_size - last);
-    copy(sieve_.begin(),
-         sieve_.begin() + copy_words,
-         sieve_.begin() + last);
+    uint64_t copy_words = std::min(sieved, sieve_size - last);
+    std::copy(sieve_.begin(),
+              sieve_.begin() + copy_words,
+              sieve_.begin() + last);
     last += copy_words;
   }
 }

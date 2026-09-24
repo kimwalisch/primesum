@@ -30,7 +30,6 @@
 
 #include <stdint.h>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -90,7 +89,7 @@ bool few_leaves(int64_t low,
                 int64_t y,
                 double alpha)
 {
-  double threshold = y * alpha * sqrt(alpha);
+  double threshold = y * alpha * std::sqrt(alpha);
   return (high < y || low > threshold);
 }
 
@@ -131,8 +130,8 @@ T S2_hard_OpenMP_thread(uint128_t x,
   Wheel wheel(primes, max_b + 1, low);
   phi.resize(max_b + 1);
   mu_sum.resize(max_b + 1);
-  fill(phi.begin(), phi.end(), 0);
-  fill(mu_sum.begin(), mu_sum.end(), 0);
+  std::fill(phi.begin(), phi.end(), 0);
+  std::fill(mu_sum.begin(), mu_sum.end(), 0);
   BinaryIndexedTree tree;
 
   // Segmented sieve of Eratosthenes
@@ -340,7 +339,7 @@ S2_hard_OpenMP_master(X x,
 
   PiTable pi(max_prime);
   Vector<int128_t> phi_total(pi[isqrt(z)] + 1);
-  fill(phi_total.begin(), phi_total.end(), 0);
+  std::fill(phi_total.begin(), phi_total.end(), 0);
   double alpha = get_alpha(x, y);
 
   while (low < limit)
@@ -369,7 +368,7 @@ S2_hard_OpenMP_master(X x,
     //
     for (int i = 0; i < threads; i++)
     {
-      for (size_t j = 1; j < phi[i].size(); j++)
+      for (std::size_t j = 1; j < phi[i].size(); j++)
       {
         s2_hard += mu_sum[i][j] * phi_total[j];
         phi_total[j] += phi[i][j];
@@ -407,7 +406,7 @@ int256_t S2_hard(int128_t x,
     int64_t max_prime = z / isqrt(y);
     auto primes = generate_primes<uint32_t>(max_prime);
 
-    if (x <= numeric_limits<int64_t>::max())
+    if (x <= std::numeric_limits<int64_t>::max())
       s2_hard = S2_hard_OpenMP_master((int64_t) x, y, z, c, primes, factors, threads);
     else
       s2_hard = S2_hard_OpenMP_master(x, y, z, c, primes, factors, threads);

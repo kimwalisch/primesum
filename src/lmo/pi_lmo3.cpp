@@ -23,7 +23,6 @@
 #include <stdint.h>
 #include <algorithm>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -65,16 +64,16 @@ int128_t S2(int64_t x,
   Vector<char> sieve(segment_size);
   Vector<int64_t> next(primes.size());
   Vector<int128_t> phi(primes.size());
-  copy(primes.begin(), primes.end(), next.begin());
-  fill(phi.begin(), phi.end(), 0);
+  std::copy(primes.begin(), primes.end(), next.begin());
+  std::fill(phi.begin(), phi.end(), 0);
 
   // Segmented sieve of Eratosthenes
   for (int64_t low = 1; low < limit; low += segment_size)
   {
-    fill(sieve.begin(), sieve.end(), 1);
+    std::fill(sieve.begin(), sieve.end(), 1);
 
     // Current segment = interval [low, high[
-    int64_t high = min(low + segment_size, limit);
+    int64_t high = std::min(low + segment_size, limit);
 
     // phi(y, b) nodes with b <= c do not contribute to S2, so we
     // simply sieve out the multiples of the first c primes
@@ -89,8 +88,8 @@ int128_t S2(int64_t x,
     for (int64_t b = c + 1; b < pi_y; b++)
     {
       int64_t prime = primes[b];
-      int64_t min_m = max(x / (prime * high), y / prime);
-      int64_t max_m = min(x / (prime * low), y);
+      int64_t min_m = std::max(x / (prime * high), y / prime);
+      int64_t max_m = std::min(x / (prime * low), y);
       int64_t i = 0;
 
       // Obviously if (prime >= max_m) then (prime >= lpf[max_m])

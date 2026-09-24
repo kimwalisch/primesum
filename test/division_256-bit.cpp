@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include <random>
 #include <limits>
 
@@ -6,24 +7,23 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 using namespace primesum;
-using namespace std;
 
 typedef boost::multiprecision::int256_t boost_int256_t;
 
 int main(int argc, char** argv)
 {
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<int64_t> dist(1, std::numeric_limits<int64_t>::max());
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int64_t> dist(1, std::numeric_limits<int64_t>::max());
 
-    random_device rd2;
-    mt19937 gen2(rd2());
-    uniform_int_distribution<int64_t> dist2(1, std::numeric_limits<int16_t>::max());
+    std::random_device rd2;
+    std::mt19937 gen2(rd2());
+    std::uniform_int_distribution<int64_t> dist2(1, std::numeric_limits<int16_t>::max());
 
     int iters = 10000;
 
     if (argc > 1)
-        iters = atoi(argv[1]);
+        iters = std::atoi(argv[1]);
 
     // Test random dividends and small quotients    
     for (int i = 0; i < iters; i++)

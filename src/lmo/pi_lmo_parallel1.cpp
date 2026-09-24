@@ -28,7 +28,6 @@
 
 #include <stdint.h>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -87,8 +86,8 @@ T S2_thread(uint128_t x,
   Wheel wheel(primes, size, low);
   phi.resize(size);
   mu_sum.resize(size);
-  fill(phi.begin(), phi.end(), 0);
-  fill(mu_sum.begin(), mu_sum.end(), 0);
+  std::fill(phi.begin(), phi.end(), 0);
+  std::fill(mu_sum.begin(), mu_sum.end(), 0);
 
   // Process the segments assigned to the current thread
   for (; low < limit; low += segment_size)
@@ -199,7 +198,7 @@ int256_t S2(uint128_t x,
   double time = get_time();
   Vector<int32_t> pi = generate_pi(y);
   Vector<int256_t> phi_total(primes.size());
-  fill(phi_total.begin(), phi_total.end(), 0);
+  std::fill(phi_total.begin(), phi_total.end(), 0);
 
   while (low < limit)
   {
@@ -227,7 +226,7 @@ int256_t S2(uint128_t x,
     //
     for (int i = 0; i < threads; i++)
     {
-      for (size_t j = 1; j < phi[i].size(); j++)
+      for (std::size_t j = 1; j < phi[i].size(); j++)
       {
         S2_total += mu_sum[i][j] * phi_total[j];
         phi_total[j] += phi[i][j];

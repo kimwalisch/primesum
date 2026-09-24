@@ -18,8 +18,6 @@
 #include <iomanip>
 #include <string>
 
-using namespace std;
-
 namespace {
 
 bool print_ = false;
@@ -110,22 +108,22 @@ bool print_variables()
   return print_variables_;
 }
 
-void print(const string& str)
+void print(const std::string& str)
 {
   if (is_print())
-    cout << str << endl;
+    std::cout << str << std::endl;
 }
 
 void print(int128_t x, int64_t y, int64_t z, int64_t c, double alpha, int threads)
 {
   if (is_print())
   {
-    cout << "x = " << x << endl;
-    cout << "y = " << y << endl;
-    cout << "z = " << z << endl;
-    cout << "c = " << c << endl;
-    cout << "alpha = " << fixed << setprecision(3) << alpha << endl;
-    cout << "threads = " << threads << endl;
+    std::cout << "x = " << x << std::endl;
+    std::cout << "y = " << y << std::endl;
+    std::cout << "z = " << z << std::endl;
+    std::cout << "c = " << c << std::endl;
+    std::cout << "alpha = " << std::fixed << std::setprecision(3) << alpha << std::endl;
+    std::cout << "threads = " << threads << std::endl;
   }
 }
 
@@ -134,12 +132,12 @@ void print(int128_t x, int64_t y, int threads)
   if (print_variables())
   {
     int128_t z = x / y;
-    cout << "x = " << x << endl;
-    cout << "y = " << y << endl;
-    cout << "z = " << z << endl;
-    cout << "alpha = " << fixed << setprecision(3) << get_alpha(x, y) << endl;
-    cout << "threads = " << threads << endl;
-    cout << endl;
+    std::cout << "x = " << x << std::endl;
+    std::cout << "y = " << y << std::endl;
+    std::cout << "z = " << z << std::endl;
+    std::cout << "alpha = " << std::fixed << std::setprecision(3) << get_alpha(x, y) << std::endl;
+    std::cout << "threads = " << threads << std::endl;
+    std::cout << std::endl;
   }
 }
 
@@ -148,30 +146,30 @@ void print(int128_t x, int64_t y, int64_t c, int threads)
   if (print_variables())
   {
     int128_t z = x / y;
-    cout << "x = " << x << endl;
-    cout << "y = " << y << endl;
-    cout << "z = " << z << endl;
-    cout << "c = " << c << endl;
-    cout << "alpha = " << fixed << setprecision(3) << get_alpha(x, y) << endl;
-    cout << "threads = " << threads << endl;
-    cout << endl;
+    std::cout << "x = " << x << std::endl;
+    std::cout << "y = " << y << std::endl;
+    std::cout << "z = " << z << std::endl;
+    std::cout << "c = " << c << std::endl;
+    std::cout << "alpha = " << std::fixed << std::setprecision(3) << get_alpha(x, y) << std::endl;
+    std::cout << "threads = " << threads << std::endl;
+    std::cout << std::endl;
   }
 }
 
-void print(const string& res_str, int256_t res, double time)
+void print(const std::string& res_str, int256_t res, double time)
 {
   if (is_print())
   {
-    cout << "\r" << string(50,' ') << "\r";
-    cout << "Status: 100%" << endl;
-    cout << res_str << " = " << res << endl;
+    std::cout << "\r" << std::string(50,' ') << "\r";
+    std::cout << "Status: 100%" << std::endl;
+    std::cout << res_str << " = " << res << std::endl;
     print_seconds(get_time() - time);
   }
 }
 
 void print_seconds(double seconds)
 {
-  cout << "Seconds: " << fixed << setprecision(3) << seconds << endl;
+  std::cout << "Seconds: " << std::fixed << std::setprecision(3) << seconds << std::endl;
 }
 
 } // namespace

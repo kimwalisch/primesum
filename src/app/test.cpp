@@ -32,7 +32,7 @@
 
 #define CHECK_EQUAL(f1, f2, check, iters) \
 { \
-  cout << "Testing " << #f1 << "(x)" << flush; \
+  std::cout << "Testing " << #f1 << "(x)" << std::flush; \
  \
   /* test for 0 <= x < 10000 */ \
   for (int64_t x = 0; x < 10000; x++) \
@@ -44,13 +44,12 @@
   { \
     check(f1, f2); \
     double percent = 100.0 * (i + 1.0) / iters; \
-    cout << "\rTesting " << #f1 "(x) " << (int) percent << "%" << flush; \
+    std::cout << "\rTesting " << #f1 "(x) " << (int) percent << "%" << std::flush; \
   } \
  \
-  cout << endl; \
+  std::cout << std::endl; \
 }
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -61,11 +60,11 @@ int get_rand()
   return (rand() % 10000) * 1000 + 1;
 }
 
-void check_equal(const string& f1, int64_t x, int256_t res1, int256_t res2)
+void check_equal(const std::string& f1, int64_t x, int256_t res1, int256_t res2)
 {
   if (res1 != res2)
   {
-    ostringstream oss;
+    std::ostringstream oss;
     oss << f1 << "(" << x << ") = " << res1
         << " is an error, the correct result is " << res2;
     throw primesum_error(oss.str());
@@ -76,7 +75,7 @@ void check_equal(const string& f1, int64_t x, int256_t res1, int256_t res2)
 
 void test_phi_thread_safety(int64_t iters)
 {
-  cout << "Testing phi(x, a)" << flush;
+  std::cout << "Testing phi(x, a)" << std::flush;
 
   int64_t sum1 = 0;
   int64_t sum2 = 0;
@@ -91,7 +90,7 @@ void test_phi_thread_safety(int64_t iters)
   if (sum1 != sum2)
     throw primesum_error("Error: multi-threaded phi(x, a) is broken.");
 
-  std::cout << "\rTesting phi(x, a) 100%" << endl;
+  std::cout << "\rTesting phi(x, a) 100%" << std::endl;
 }
 
 #endif
@@ -119,13 +118,13 @@ bool test()
     CHECK_EQUAL(pi_lmo_parallel1,                pi_lmo5,             CHECK_21,  600);
     CHECK_EQUAL(pi_deleglise_rivat_parallel1,    pi_lmo_parallel1,    CHECK_22,  900);
   }
-  catch (exception& e)
+  catch (std::exception& e)
   {
-    cerr << endl << e.what() << endl;
+    std::cerr << std::endl << e.what() << std::endl;
     return false;
   }
 
-  cout << "All tests passed successfully!" << endl;
+  std::cout << "All tests passed successfully!" << std::endl;
   return true;
 }
 

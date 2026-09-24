@@ -25,14 +25,13 @@
 #include <limits>
 #include <string>
 
-using namespace std;
 using namespace primesum;
 
 namespace primesum {
 
 int64_t int64_cast(int128_t x)
 {
-  if (x > numeric_limits<int64_t>::max())
+  if (x > std::numeric_limits<int64_t>::max())
     throw primesum_error("this is a 63-bit function, x must be < 2^63");
   return (int64_t) x;
 }
@@ -43,7 +42,7 @@ int256_t P2(int128_t x, int threads)
     return 0;
 
   double alpha = get_alpha_deleglise_rivat(x);
-  string limit = get_max_x(alpha);
+  std::string limit = get_max_x(alpha);
 
   if (x > to_int128(limit))
     throw primesum_error("P2(x): x must be <= " + limit);
@@ -61,7 +60,7 @@ int256_t S1(int128_t x, int threads)
     return 0;
 
   double alpha = get_alpha_deleglise_rivat(x);
-  string limit = get_max_x(alpha);
+  std::string limit = get_max_x(alpha);
 
   if (x > to_int128(limit))
     throw primesum_error("S1(x): x must be <= " + limit);
@@ -81,7 +80,7 @@ int256_t S2_trivial(int128_t x, int threads)
     return 0;
 
   double alpha = get_alpha_deleglise_rivat(x);
-  string limit = get_max_x(alpha);
+  std::string limit = get_max_x(alpha);
 
   if (x > to_int128(limit))
     throw primesum_error("S2_trivial(x): x must be <= " + limit);
@@ -93,7 +92,7 @@ int256_t S2_trivial(int128_t x, int threads)
   int64_t z = (int64_t) (x / y);
   int64_t c = PhiTiny::get_c(y);
 
-  if (x <= numeric_limits<int64_t>::max())
+  if (x <= std::numeric_limits<int64_t>::max())
     return S2_trivial((int64_t) x, y, z, c, threads);
   else
     return S2_trivial(x, y, z, c, threads);
@@ -105,7 +104,7 @@ int256_t S2_easy(int128_t x, int threads)
     return 0;
 
   double alpha = get_alpha_deleglise_rivat(x);
-  string limit = get_max_x(alpha);
+  std::string limit = get_max_x(alpha);
 
   if (x > to_int128(limit))
     throw primesum_error("S2_easy(x): x must be <= " + limit);
@@ -117,7 +116,7 @@ int256_t S2_easy(int128_t x, int threads)
   int64_t z = (int64_t) (x / y);
   int64_t c = PhiTiny::get_c(y);
 
-  if (x <= numeric_limits<int64_t>::max())
+  if (x <= std::numeric_limits<int64_t>::max())
     return S2_easy((int64_t) x, y, z, c, threads);
   else
     return S2_easy(x, y, z, c, threads);
@@ -129,7 +128,7 @@ int256_t S2_hard(int128_t x, int threads)
     return 0;
 
   double alpha = get_alpha_deleglise_rivat(x);
-  string limit = get_max_x(alpha);
+  std::string limit = get_max_x(alpha);
 
   if (x > to_int128(limit))
     throw primesum_error("S2_hard(x): x must be <= " + limit);
@@ -191,23 +190,23 @@ int main (int argc, char* argv[])
         res = S2_trivial(x, threads); break;
     }
   }
-  catch (bad_alloc&)
+  catch (std::bad_alloc&)
   {
-    cerr << "Error: failed to allocate memory, your system most likely does" << endl
-         << "       not have enough memory to run this computation." << endl;
+    std::cerr << "Error: failed to allocate memory, your system most likely does" << std::endl
+              << "       not have enough memory to run this computation." << std::endl;
     return 1;
   }
-  catch (exception& e)
+  catch (std::exception& e)
   {
-    cerr << "Error: " << e.what() << endl;
+    std::cerr << "Error: " << e.what() << std::endl;
     return 1;
   }
 
   if (print_result())
   {
     if (is_print())
-      cout << endl;
-    cout << res << endl;
+      std::cout << std::endl;
+    std::cout << res << std::endl;
     if (pco.time)
       print_seconds(get_time() - time);
   }

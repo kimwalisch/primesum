@@ -57,17 +57,16 @@
 #include <algorithm>
 #include <cmath>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
 
 double get_avg(const aligned_vector<double>& timings)
 {
-  size_t n = timings.size();
+  std::size_t n = timings.size();
   double sum = 0;
 
-  for (size_t i = 0; i < n; i++)
+  for (std::size_t i = 0; i < n; i++)
     sum += timings[i];
 
   return sum / n;
@@ -76,20 +75,20 @@ double get_avg(const aligned_vector<double>& timings)
 /// Relative standard deviation
 double rel_std_dev(const aligned_vector<double>& timings)
 {
-  size_t n = timings.size();
+  std::size_t n = timings.size();
   double avg = get_avg(timings);
   double sum = 0;
 
   if (avg == 0)
     return 0;
 
-  for (size_t i = 0; i < n; i++)
+  for (std::size_t i = 0; i < n; i++)
   {
     double mean = timings[i] - avg;
     sum += mean * mean;
   }
 
-  double std_dev = sqrt(sum / max(1.0, n - 1.0));
+  double std_dev = std::sqrt(sum / std::max(1.0, n - 1.0));
   double rsd = 100 * std_dev / avg;
 
   return rsd;
@@ -121,16 +120,16 @@ void S2LoadBalancer::init(int128_t x,
                           int64_t threads)
 {
   // determined by benchmarking
-  double log_threads = max(1.0, log((double) threads));
-  decrease_dividend_ = max(0.5, log_threads / 3);
+  double log_threads = std::max(1.0, std::log((double) threads));
+  decrease_dividend_ = std::max(0.5, log_threads / 3);
 
   min_seconds_ = 0.01 * log_threads;
-  double log_x = log((double) x);
-  double divisor = log(log_x) * log_x;
+  double log_x = std::log((double) x);
+  double divisor = std::log(log_x) * log_x;
   update_min_size(divisor);
 
   double alpha = get_alpha(x, y);
-  smallest_hard_leaf_ = (int64_t) (x / (y * sqrt(alpha) * iroot<6>(x)));
+  smallest_hard_leaf_ = (int64_t) (x / (y * std::sqrt(alpha) * iroot<6>(x)));
 }
 
 double S2LoadBalancer::get_rsd() const
@@ -153,11 +152,11 @@ int64_t S2LoadBalancer::get_min_segment_size() const
 ///
 double S2LoadBalancer::get_pivot(double seconds) const
 {
-  seconds = max(min_seconds_, seconds);
-  double log_seconds = log(seconds);
-  log_seconds = max(min_seconds_, log_seconds);
+  seconds = std::max(min_seconds_, seconds);
+  double log_seconds = std::log(seconds);
+  log_seconds = std::max(min_seconds_, log_seconds);
   double dont_decrease = decrease_dividend_ / (seconds * log_seconds);
-  dont_decrease = min(dont_decrease, rsd_);
+  dont_decrease = std::min(dont_decrease, rsd_);
 
   return rsd_ + dont_decrease;
 }
@@ -180,8 +179,8 @@ bool S2LoadBalancer::is_decrease(double seconds,
 void S2LoadBalancer::update_min_size(double divisor)
 {
   int64_t min_size = 1 << 9;
-  int64_t size = (int64_t) (sqrtz_ / max(1.0, divisor));
-  min_size_ = max(size, min_size);
+  int64_t size = (int64_t) (sqrtz_ / std::max(1.0, divisor));
+  min_size_ = std::max(size, min_size);
   min_size_ = next_power_of_2(min_size_);
 }
 
@@ -202,7 +201,7 @@ void S2LoadBalancer::update(int64_t low,
   double seconds = get_avg(timings);
   total_seconds_ += seconds;
   double pivot = get_pivot(seconds);
-  rsd_ = max(0.1, rel_std_dev(timings));
+  rsd_ = std::max(0.1, rel_std_dev(timings));
 
   // 1 segment per thread
   if (*segment_size < sqrtz_)
@@ -233,8 +232,8 @@ void S2LoadBalancer::update(int64_t low,
   // slightly increase min_size_
   if (high >= smallest_hard_leaf_)
   {
-    update_min_size(log((double) y_));
-    *segment_size = max(min_size_, *segment_size);
+    update_min_size(std::log((double) y_));
+    *segment_size = std::max(min_size_, *segment_size);
   }
 }
 
@@ -257,7 +256,7 @@ void S2LoadBalancer::update(int64_t* segments_per_thread,
       double factor = pivot / rsd_;
       factor = in_between(0.5, factor, 2);
       double segments = *segments_per_thread * factor;
-      segments = max(1.0, segments);
+      segments = std::max(1.0, segments);
       *segments_per_thread = (int64_t) segments;
     }
   }

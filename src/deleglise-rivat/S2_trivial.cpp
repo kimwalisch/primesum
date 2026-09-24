@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <algorithm>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -46,16 +45,16 @@ int256_t S2_trivial_OpenMP(int128_t x,
   #pragma omp parallel for num_threads(threads) reduction(+: s2_trivial)
   for (int64_t i = 0; i < threads; i++)
   {
-    int64_t start = max(prime_c, sqrtz) + 1;
+    int64_t start = std::max(prime_c, sqrtz) + 1;
     int64_t thread_interval = ceil_div(y - start, threads);
     start += thread_interval * i;
-    int64_t stop = min(start + thread_interval, y);
+    int64_t stop = std::min(start + thread_interval, y);
     primesieve::iterator iter(start, stop);
     int128_t prime;
 
     while ((prime = iter.next_prime()) < stop)
     {
-      int64_t xn = (int64_t) max(x / (prime * prime), prime);
+      int64_t xn = (int64_t) std::max(x / (prime * prime), prime);
       int256_t diff = prime_sums[pi[y]] - prime_sums[pi[xn]];
       s2_trivial += diff * prime;
     }
@@ -82,7 +81,7 @@ int256_t S2_trivial(int128_t x,
   int256_t s2_trivial;
 
   // uses less memory
-  if (y <= numeric_limits<uint32_t>::max())
+  if (y <= std::numeric_limits<uint32_t>::max())
   {
     auto prime_sums = generate_prime_sums<uint64_t>(y);
     s2_trivial = S2_trivial_OpenMP(x, y, z, c, prime_sums, threads);

@@ -28,8 +28,6 @@
   #include <omp.h>
 #endif
 
-using namespace std;
-
 namespace {
 
 #ifdef _OPENMP
@@ -58,7 +56,7 @@ int256_t pi(int128_t x)
 /// @param x  integer arithmetic expression e.g. "10^12".
 /// @pre   x  <= get_max_x().
 ///
-string pi(const string& x)
+std::string pi(const std::string& x)
 {
   return pi(x, get_num_threads());
 }
@@ -67,10 +65,10 @@ string pi(const string& x)
 /// @param x  integer arithmetic expression e.g. "10^12".
 /// @pre   x  <= get_max_x().
 ///
-string pi(const string& x, int threads)
+std::string pi(const std::string& x, int threads)
 {
   int256_t pi_x = pi(to_int128(x), threads);
-  ostringstream oss;
+  std::ostringstream oss;
   oss << pi_x;
   return oss.str();
 }
@@ -126,9 +124,9 @@ int128_t prime_sum_tiny(int64_t x)
 /// pi(string x). The return type is a string as max can be a 128-bit
 /// integer which is not supported by all compilers.
 ///
-string get_max_x(double alpha)
+std::string get_max_x(double alpha)
 {
-  ostringstream oss;
+  std::ostringstream oss;
 
   // primesum is limited by:
   // z < 2^62, with z = x^(2/3) / alpha
@@ -136,7 +134,7 @@ string get_max_x(double alpha)
   // x < (2^62 * alpha)^(3/2)
 
   // safety buffer: use 61 instead of 62 
-  double max_x = pow(pow(2.0, 61.0) * alpha, 3.0 / 2.0);
+  double max_x = std::pow(std::pow(2.0, 61.0) * alpha, 3.0 / 2.0);
   oss << (int128_t) max_x; 
 
   return oss.str();
@@ -145,17 +143,17 @@ string get_max_x(double alpha)
 /// Get the time in seconds
 double get_time()
 {
-  auto now = chrono::steady_clock::now();
+  auto now = std::chrono::steady_clock::now();
   auto time = now.time_since_epoch();
-  auto micro = chrono::duration_cast<chrono::microseconds>(time);
+  auto micro = std::chrono::duration_cast<std::chrono::microseconds>(time);
   return (double) micro.count() / 1e6;
 }
 
 int ideal_num_threads(int threads, int64_t sieve_limit, int64_t thread_threshold)
 {
-  thread_threshold = max((int64_t) 1, thread_threshold);
-  threads = (int) min((int64_t) threads, sieve_limit / thread_threshold);
-  threads = max(1, threads);
+  thread_threshold = std::max((int64_t) 1, thread_threshold);
+  threads = (int) std::min((int64_t) threads, sieve_limit / thread_threshold);
+  threads = std::max(1, threads);
   return threads;
 }
 
@@ -191,9 +189,9 @@ double get_alpha_lmo(int128_t x)
     double a = 0.00156512;
     double b = -0.0261411;
     double c = 0.990948;
-    double logx = log((double) x);
+    double logx = std::log((double) x);
 
-    alpha = a * pow(logx, 2) + b * logx + c;
+    alpha = a * std::pow(logx, 2) + b * logx + c;
   }
 
   return in_between(1, alpha, iroot<6>(x));
@@ -216,9 +214,9 @@ double get_alpha_deleglise_rivat(int128_t x)
     double b = 0.00263762;
     double c = -0.125227;
     double d = 1.39952;
-    double logx = log(x2);
+    double logx = std::log(x2);
 
-    alpha = a * pow(logx, 3) + b * pow(logx, 2) + c * logx + d;
+    alpha = a * std::pow(logx, 3) + b * std::pow(logx, 2) + c * logx + d;
   }
 
   return in_between(1, alpha, iroot<6>(x));
@@ -240,7 +238,7 @@ int get_num_threads()
   if (threads_)
     return threads_;
   else
-    return max(1, omp_get_max_threads());
+    return std::max(1, omp_get_max_threads());
 #else
   return 1;
 #endif
@@ -265,14 +263,14 @@ int get_status_precision(int128_t x)
   return (status_precision_ > 0) ? status_precision_ : 0;
 }
 
-int128_t to_int128(const string& expr)
+int128_t to_int128(const std::string& expr)
 {
   int128_t n = calculator::eval<int128_t>(expr);
   return n;
 }
 
 /// Get the primesum version number, in the form “i.j”.
-string primesum_version()
+std::string primesum_version()
 {
   return PRIMESUM_VERSION;
 }

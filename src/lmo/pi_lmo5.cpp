@@ -27,7 +27,6 @@
 
 #include <stdint.h>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -72,7 +71,7 @@ int128_t S2(int64_t x,
   Wheel wheel(primes, (int64_t) primes.size(), /*low = */ 1);
   Vector<int32_t> pi = generate_pi(y);
   Vector<int128_t> phi(primes.size());
-  fill(phi.begin(), phi.end(), 0);
+  std::fill(phi.begin(), phi.end(), 0);
 
   int128_t S2_result = 0;
   int64_t pi_sqrty = pi[isqrt(y)];

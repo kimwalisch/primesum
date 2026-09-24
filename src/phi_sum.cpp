@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -62,7 +61,7 @@ int256_t phi_sum256(int128_t x,
     int128_t x2 = fast_div(x, primes[a]);
     int256_t phi_sum;
 
-    if (x2 <= numeric_limits<int64_t>::max())
+    if (x2 <= std::numeric_limits<int64_t>::max())
       phi_sum = phi_sum128<-SIGN>((int64_t) x2, a - 1, primes);
     else
       phi_sum = phi_sum256<-SIGN>(x2, a - 1, primes);
@@ -94,7 +93,7 @@ int128_t phi_sum(int64_t x, int64_t a)
 
 int256_t phi_sum(int128_t x, int64_t a)
 {
-  if (x <= numeric_limits<int64_t>::max())
+  if (x <= std::numeric_limits<int64_t>::max())
     return phi_sum((int64_t) x, a);
 
   if (a < 10)

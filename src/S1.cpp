@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -95,9 +94,9 @@ int256_t S1(int128_t x,
   int256_t s1_sum;
 
   // uses less memory
-  if (y <= numeric_limits<uint32_t>::max())
+  if (y <= std::numeric_limits<uint32_t>::max())
   {
-    if (x <= numeric_limits<int64_t>::max())
+    if (x <= std::numeric_limits<int64_t>::max())
       s1_sum = S1_OpenMP_master((int64_t) x, (uint32_t) y, c, threads);
     else
       s1_sum = S1_OpenMP_master(x, (uint32_t) y, c, threads);

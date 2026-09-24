@@ -24,7 +24,6 @@
 #include <iostream>
 #include <iomanip>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -171,8 +170,8 @@ P2_OpenMP_master(T x,
     if (is_print())
     {
       double percent = get_percent(low, z);
-      cout << "\rStatus: " << fixed << setprecision(get_status_precision(x))
-           << percent << '%' << flush;
+      std::cout << "\rStatus: " << std::fixed << std::setprecision(get_status_precision(x))
+                << percent << '%' << std::flush;
     }
   }
 
@@ -193,7 +192,7 @@ int256_t P2(int128_t x, int64_t y, int threads)
   int256_t p2;
 
   // uses less memory
-  if (x <= numeric_limits<int64_t>::max())
+  if (x <= std::numeric_limits<int64_t>::max())
     p2 = P2_OpenMP_master((int64_t) x, y, threads);
   else
     p2 = P2_OpenMP_master(x, y, threads);

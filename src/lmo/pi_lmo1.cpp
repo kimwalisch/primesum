@@ -25,8 +25,6 @@
 #include <stdint.h>
 #include <algorithm>
 
-using namespace std;
-
 namespace primesum {
 
 /// Calculate the number of primes below x using the

@@ -22,7 +22,6 @@
 #include <stdint.h>
 #include <algorithm>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -44,7 +43,7 @@ int128_t S2(int64_t x,
   int128_t S2_result = 0;
   int64_t b = 1;
   Vector<char> sieve(limit);
-  fill(sieve.begin(), sieve.end(), 1);
+  std::fill(sieve.begin(), sieve.end(), 1);
 
   // phi(y, b) nodes with b <= c do not contribute to S2, so we
   // simply sieve out the multiples of the first c primes

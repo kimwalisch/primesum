@@ -41,7 +41,6 @@
 #include <algorithm>
 #include <limits>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -116,16 +115,16 @@ private:
   void update_cache(uint64_t x, uint64_t a, int64_t sum)
   {
     if (a < cache_.size() &&
-        x <= numeric_limits<T>::max())
+        x <= std::numeric_limits<T>::max())
     {
       if (x >= cache_[a].size())
       {
         std::size_t old_size = cache_[a].size();
         cache_[a].resize(x + 1);
-        fill(cache_[a].begin() + old_size, cache_[a].end(), 0);
+        std::fill(cache_[a].begin() + old_size, cache_[a].end(), 0);
       }
 
-      cache_[a][x] = (T) abs(sum);
+      cache_[a][x] = (T) std::abs(sum);
     }
   }
 

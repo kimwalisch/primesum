@@ -13,11 +13,9 @@
 #include <cstdlib>
 #include <string>
 
-using namespace std;
-
 namespace {
 
-const string helpMenu(
+const std::string helpMenu(
   "Usage: primesum x [OPTION]...\n"
   "Sum the primes below x <= 10^31 using fast implementations of the\n"
   "combinatorial prime summing function.\n"
@@ -49,7 +47,7 @@ const string helpMenu(
   "  primesum 1e13 --status --threads=4"
 );
 
-const string versionInfo(
+const std::string versionInfo(
   "primesum " PRIMESUM_VERSION ", <https://github.com/kimwalisch/primesum>\n"
   "Copyright (C) 2016 - 2026 Kim Walisch\n"
   "BSD 2-Clause License <https://opensource.org/licenses/BSD-2-Clause>"
@@ -61,13 +59,13 @@ namespace primesum {
 
 void help()
 {
-  cout << helpMenu << endl;
+  std::cout << helpMenu << std::endl;
   exit(1);
 }
 
 void version()
 {
-  cout << versionInfo << endl;
+  std::cout << versionInfo << std::endl;
   exit(1);
 }
 

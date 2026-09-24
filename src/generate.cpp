@@ -15,8 +15,6 @@
 #include <algorithm>
 #include <limits>
 
-using namespace std;
-
 namespace primesum {
 
 /// Generate a vector with the primes <= max.
@@ -49,7 +47,7 @@ Vector<int32_t> generate_pi(int64_t max)
   int64_t sqrt = isqrt(max);
   int64_t size = max + 1;
   Vector<char> sieve(size);
-  fill(sieve.begin(), sieve.end(), 1);
+  std::fill(sieve.begin(), sieve.end(), 1);
 
   for (int64_t i = 2; i <= sqrt; i++)
     if (sieve[i])
@@ -57,7 +55,7 @@ Vector<int32_t> generate_pi(int64_t max)
         sieve[j] = 0;
 
   Vector<int32_t> pi(size);
-  fill(pi.begin(), pi.end(), 0);
+  std::fill(pi.begin(), pi.end(), 0);
   int32_t pix = 0;
 
   for (int64_t i = 2; i < size; i++)
@@ -78,7 +76,7 @@ Vector<int32_t> generate_moebius(int64_t max)
   int64_t sqrt = isqrt(max);
   int64_t size = max + 1;
   Vector<int32_t> mu(size);
-  fill(mu.begin(), mu.end(), 1);
+  std::fill(mu.begin(), mu.end(), 1);
 
   for (int64_t i = 2; i <= sqrt; i++)
   {
@@ -114,7 +112,7 @@ Vector<int32_t> generate_lpf(int64_t max)
   int64_t sqrt = isqrt(max);
   int64_t size = max + 1;
   Vector<int32_t> lpf(size);
-  fill(lpf.begin(), lpf.end(), 1);
+  std::fill(lpf.begin(), lpf.end(), 1);
 
   for (int64_t i = 2; i <= sqrt; i++)
     if (lpf[i] == 1)
@@ -130,7 +128,7 @@ Vector<int32_t> generate_lpf(int64_t max)
   // Lagarias-Miller-Odlyzko prime counting algorithm,
   // thus set lpf[1] = MAX (normally lpf[1] = 1)
   if (lpf.size() > 1)
-    lpf[1] = numeric_limits<int32_t>::max();
+    lpf[1] = std::numeric_limits<int32_t>::max();
 
   return lpf;
 }

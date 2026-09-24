@@ -20,13 +20,11 @@
 #include <sstream>
 #include <string>
 
-using namespace std;
-
 namespace {
 
 double log_percent(double ratio, double factor)
 {
-  double percent = 100.0 * log1p(factor * ratio) / log1p(factor);
+  double percent = 100.0 * std::log1p(factor * ratio) / std::log1p(factor);
   return primesum::in_between(0.0, percent, 100.0);
 }
 
@@ -52,8 +50,8 @@ double log_percent(double ratio,
   if (boost > cap)
     boost = (boost + cap) / 2.0;
 
-  double floor = min(500.0 * ratio, 0.5);
-  return max({base, boost, floor});
+  double floor = std::min(500.0 * ratio, 0.5);
+  return std::max({base, boost, floor});
 }
 
 } // namespace
@@ -69,8 +67,8 @@ S2Status::S2Status(int128_t x, int64_t y)
 
   if (y > 0)
   {
-    y_log_y_ = int64_t(y * log(double(y)));
-    x_tune_ = in_between(0.0, (log10(double(x)) - 20.0) / 2.0, 1.0);
+    y_log_y_ = int64_t(y * std::log(double(y)));
+    x_tune_ = in_between(0.0, (std::log10(double(x)) - 20.0) / 2.0, 1.0);
   }
 }
 
@@ -81,7 +79,7 @@ double S2Status::get_percent_hard(int64_t low, int64_t limit) const
 
   // The first y log(y) values cover much of the early work.
   double percent2 = get_percent(low, y_log_y_);
-  percent2 = min(percent2, 30.0);
+  percent2 = std::min(percent2, 30.0);
 
   // Primecount's estimate for the uneven distribution of hard leaves.
   double ratio = percent1 / 100.0;
@@ -91,7 +89,7 @@ double S2Status::get_percent_hard(int64_t low, int64_t limit) const
                              42.898382, 54.704957, 0.000411627);
   double percent3 = small * (1.0 - x_tune_) + large * x_tune_;
 
-  return max({percent1, percent2, percent3});
+  return std::max({percent1, percent2, percent3});
 }
 
 void S2Status::print_S2_hard(int64_t low, int64_t limit)
@@ -108,19 +106,19 @@ void S2Status::print_S2_hard(int64_t low, int64_t limit)
     time_ = time;
     double percent = get_percent_hard(low, limit);
 
-    percent = min(percent, 100.0 - epsilon_);
+    percent = std::min(percent, 100.0 - epsilon_);
 
     if ((percent - percent_) >= epsilon_)
     {
       percent_ = percent;
-      ostringstream status;
-      ostringstream out;
+      std::ostringstream status;
+      std::ostringstream out;
 
-      status << "Status: " << fixed << setprecision(precision_) << percent << "%";
-      size_t spaces = status.str().length();
-      string reset_line = "\r" + string(spaces,' ') + "\r";
+      status << "Status: " << std::fixed << std::setprecision(precision_) << percent << "%";
+      std::size_t spaces = status.str().length();
+      std::string reset_line = "\r" + std::string(spaces,' ') + "\r";
       out << reset_line << status.str();
-      cout << out.str() << flush;
+      std::cout << out.str() << std::flush;
     }
   }
 }
@@ -131,8 +129,8 @@ double S2Status::skewed_percent(int128_t x, int128_t y)
   double exp = 0.96;
   double percent = get_percent(x, y);
   double base = exp + percent / (101 / (1 - exp));
-  double low = pow(base, 100.0);
-  double dividend = pow(base, percent) - low;
+  double low = std::pow(base, 100.0);
+  double dividend = std::pow(base, percent) - low;
   percent = 100 - (100 * dividend / (1 - low));
 
   return percent;
@@ -159,14 +157,14 @@ void S2Status::print(int128_t n, int128_t limit)
     if ((percent - old) >= epsilon_)
     {
       percent_ = percent;
-      ostringstream status;
-      ostringstream out;
+      std::ostringstream status;
+      std::ostringstream out;
 
-      status << "Status: " << fixed << setprecision(precision_) << percent << "%";
-      size_t spaces = status.str().length();
-      string reset_line = "\r" + string(spaces,' ') + "\r";
+      status << "Status: " << std::fixed << std::setprecision(precision_) << percent << "%";
+      std::size_t spaces = status.str().length();
+      std::string reset_line = "\r" + std::string(spaces,' ') + "\r";
       out << reset_line << status.str();
-      cout << out.str() << flush;
+      std::cout << out.str() << std::flush;
     }
   }
 }

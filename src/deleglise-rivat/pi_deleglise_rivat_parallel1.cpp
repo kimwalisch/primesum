@@ -22,7 +22,6 @@
 #include <stdint.h>
 #include <string>
 
-using namespace std;
 using namespace primesum;
 
 namespace {
@@ -58,7 +57,7 @@ int256_t pi_deleglise_rivat_parallel1(int128_t x, int threads)
     return 0;
 
   double alpha = get_alpha_deleglise_rivat(x);
-  string limit = get_max_x(alpha);
+  std::string limit = get_max_x(alpha);
 
   if (x > to_int128(limit))
     throw primesum_error("pi(x): x must be <= " + limit);
